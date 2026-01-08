@@ -12,16 +12,18 @@ body {
     background-color: var(--bg-light);
     color: var(--text-main);
     -webkit-tap-highlight-color: transparent;
-    transition: background 0.4s ease;
+    transition: background 0.3s ease;
+    overflow-x: hidden; /* Блокируем горизонтальный скролл */
 }
 
 /* Navbar */
 .navbar {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 16px 20px; position: sticky; top: 0; z-index: 100;
+    padding: 12px 20px; position: sticky; top: 0; z-index: 1000;
     background: rgba(255,255,255,0.95);
     backdrop-filter: blur(12px);
     box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    height: 60px; /* Фикс высота для расчетов */
 }
 .supercell-logo { font-weight: 900; line-height: 0.85; font-size: 13px; letter-spacing: 0.5px; text-align: center; }
 .store-badge { background: #ffd700; color: #000; font-size: 9px; padding: 2px 4px; border-radius: 4px; font-weight: bold; margin-left: 2px; vertical-align: super;}
@@ -31,15 +33,15 @@ body {
 /* Login Button */
 .login-btn {
     background: #000; color: #fff; border: none;
-    padding: 10px 16px; border-radius: 50px;
-    font-weight: 800; font-size: 13px;
+    padding: 8px 14px; border-radius: 50px;
+    font-weight: 800; font-size: 12px;
     display: flex; align-items: center; gap: 6px;
     cursor: pointer; transition: transform 0.1s;
 }
 .login-btn:active { transform: scale(0.95); }
-.id-icon { background: #fff; color: #000; padding: 1px 4px; border-radius: 4px; font-size: 9px; font-weight: 900; }
+.id-icon { background: #fff; color: #000; padding: 1px 3px; border-radius: 3px; font-size: 9px; font-weight: 900; }
 
-/* Cart Icon & Animation */
+/* Cart Icon */
 .cart-icon { font-size: 24px; cursor: pointer; position: relative; transition: transform 0.2s; }
 .cart-icon.bump { animation: bump 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 @keyframes bump { 0% { transform: scale(1); } 50% { transform: scale(1.4); } 100% { transform: scale(1); } }
@@ -47,10 +49,26 @@ body {
 .cart-badge {
     position: absolute; top: -5px; right: -8px;
     background: #ff3b30; color: white;
-    font-size: 11px; padding: 2px 6px; border-radius: 12px;
+    font-size: 10px; padding: 2px 5px; border-radius: 10px;
     font-weight: bold; border: 2px solid #fff;
+    min-width: 16px; text-align: center;
 }
 .hidden { display: none !important; }
+
+/* Views Logic (FIXED) */
+.view { 
+    display: none !important; /* Принудительно скрываем */
+    padding-bottom: 40px; 
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.view.active { 
+    display: block !important; /* Принудительно показываем */
+    opacity: 1;
+    animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 /* HUB Grid */
 .container { padding: 20px; }
@@ -88,16 +106,15 @@ body {
 .coc-icon { background: #ff4d4d; }
 .cr-icon { background: #2f80ed; }
 .hd-icon { background: #56ab2f; }
-
 .card-text h3 { margin: 0; font-size: 17px; font-weight: 800; }
-.action-text { font-size: 12px; color: #999; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.action-text { font-size: 11px; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
 /* Brawl Stars Page */
 #view-brawlstars {
     background-color: var(--bs-blue);
     background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
     background-size: 20px 20px;
-    min-height: 100vh; color: white;
+    min-height: calc(100vh - 60px); /* Вычет высоты навбара */
 }
 #view-brawlstars::before {
     content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -106,8 +123,8 @@ body {
 }
 
 .sub-header { padding: 10px 20px; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 20px; z-index: 1; }
-.back-btn { position: absolute; left: 20px; font-weight: 700; opacity: 0.9; cursor: pointer; display: flex; align-items: center; }
-.game-logo { font-weight: 900; letter-spacing: 2px; font-style: italic; font-size: 14px; }
+.back-btn { position: absolute; left: 20px; font-weight: 700; opacity: 0.9; cursor: pointer; color: white; display: flex; align-items: center; font-size: 14px; }
+.game-logo { font-weight: 900; letter-spacing: 2px; font-style: italic; font-size: 14px; color: white; }
 
 .hero-section { padding: 0 20px; margin-bottom: 30px; position: relative; z-index: 1; }
 .hero-card {
@@ -125,13 +142,13 @@ body {
 
 .bonus-tag { background: #000; color: #fff; display: inline-block; padding: 6px 10px; font-size: 11px; font-weight: 900; border-radius: 6px; margin-bottom: 15px; text-transform: uppercase; }
 .hero-content { display: flex; align-items: center; gap: 20px; }
-.hero-visual { font-size: 55px; filter: drop-shadow(0 6px 0 rgba(0,0,0,0.2)); }
-.hero-info h1 { font-size: 22px; font-weight: 900; line-height: 1; margin: 0 0 8px 0; -webkit-text-stroke: 1px black; text-shadow: 0 3px 0 black; text-transform: uppercase; }
-.hero-info p { margin: 0; font-size: 13px; opacity: 1; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+.hero-visual { font-size: 50px; filter: drop-shadow(0 6px 0 rgba(0,0,0,0.2)); }
+.hero-info h1 { font-size: 20px; font-weight: 900; line-height: 1; margin: 0 0 8px 0; -webkit-text-stroke: 1px black; text-shadow: 0 3px 0 black; text-transform: uppercase; color: white; }
+.hero-info p { margin: 0; font-size: 12px; opacity: 1; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.5); color: white; }
 
 /* Offers */
 .offers-section { padding: 0 20px; position: relative; z-index: 1; }
-.section-title { font-size: 12px; font-weight: 900; opacity: 0.7; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+.section-title { font-size: 12px; font-weight: 900; opacity: 0.7; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; color: white; }
 
 .offer-card {
     background: linear-gradient(145deg, #ffffff 0%, #f2f2f2 100%);
@@ -144,15 +161,15 @@ body {
 .gems-pack { background: linear-gradient(135deg, #66ccff, #3366ff); color: white; }
 
 .badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); margin-bottom: 10px; background: #fff; color: #000; text-transform: uppercase; }
-.offer-visual { font-size: 45px; margin: 8px 0; display: block; filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1)); }
+.offer-visual { font-size: 40px; margin: 8px 0; display: block; filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1)); }
 .offer-card h3 { font-weight: 800; font-size: 18px; margin: 6px 0; }
 .price { font-weight: 600; font-size: 15px; opacity: 0.9; margin-bottom: 16px; }
 
 .buy-btn {
-    width: 100%; padding: 14px;
-    border: 2px solid #000; border-radius: 14px;
+    width: 100%; padding: 12px;
+    border: 2px solid #000; border-radius: 12px;
     background: #fff; color: #000;
-    font-weight: 700; font-size: 15px;
+    font-weight: 700; font-size: 14px;
     box-shadow: 0 4px 0 #ccc; cursor: pointer;
 }
 .buy-btn:active { transform: translateY(4px); box-shadow: none; }
@@ -160,9 +177,8 @@ body {
 /* Modals */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6); z-index: 1000;
-    display: flex; align-items: flex-end; /* Mobile friendly bottom sheet */
-    justify-content: center;
+    background: rgba(0,0,0,0.6); z-index: 2000;
+    display: flex; align-items: flex-end; justify-content: center;
     opacity: 0; pointer-events: none; transition: opacity 0.3s;
     backdrop-filter: blur(4px);
 }
@@ -170,7 +186,7 @@ body {
 
 .modal-content {
     background: #fff; width: 100%; max-width: 500px;
-    border-radius: 24px 24px 0 0; padding: 30px 25px 40px;
+    border-radius: 24px 24px 0 0; padding: 30px 25px 50px;
     text-align: center; color: #111;
     transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
 }
@@ -182,7 +198,7 @@ body {
 .close-btn { font-size: 24px; cursor: pointer; opacity: 0.5; padding: 5px; }
 
 input[type="email"] {
-    width: 100%; padding: 16px; border: 2px solid #e0e0e0;
+    width: 100%; padding: 16px; border: 2px solid #e0e0e0; box-sizing: border-box;
     border-radius: 14px; font-size: 16px; margin: 15px 0;
     outline: none; background: #f9f9f9; font-family: var(--font); font-weight: 500;
 }
@@ -203,20 +219,15 @@ input[type="email"]:focus { border-color: #000; background: #fff; }
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* Cart Item Styling */
-.cart-list { max-height: 40vh; overflow-y: auto; margin-bottom: 20px; padding: 0 5px; }
+/* Cart List */
+.cart-list { max-height: 40vh; overflow-y: auto; margin-bottom: 20px; }
 .cart-item {
     display: flex; justify-content: space-between; align-items: center;
     padding: 12px 0; border-bottom: 1px solid #f0f0f0;
-    animation: fadeIn 0.3s;
 }
 .item-info { text-align: left; }
 .item-name { font-weight: 700; font-size: 14px; display: block; }
 .item-price { color: #666; font-size: 13px; font-weight: 500; }
-.remove-btn { color: #ff3b30; font-weight: bold; cursor: pointer; padding: 5px 10px; font-size: 20px; opacity: 0.6; }
-.remove-btn:hover { opacity: 1; }
-
+.remove-btn { color: #ff3b30; font-weight: bold; cursor: pointer; padding: 5px; font-size: 18px; opacity: 0.6; }
 .total-row { font-size: 18px; font-weight: 900; margin-bottom: 20px; display: flex; justify-content: space-between; }
-.checkout-btn { background: #111; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-
-@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+.checkout-btn { background: #111; }
