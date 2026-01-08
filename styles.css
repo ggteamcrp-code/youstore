@@ -3,12 +3,10 @@
     --text-main: #111;
     --font: 'Rubik', sans-serif;
     --card-radius: 20px;
-    
-    /* Game Colors */
     --bs-color: #4737ff;
-    --coc-color: #5c3c2e; /* Коричневый */
-    --cr-color: #2b3b75;  /* Темно-синий */
-    --hd-color: #f7b232;  /* Желтый */
+    --coc-color: #5c3c2e; 
+    --cr-color: #2b3b75;  
+    --hd-color: #f7b232;  
 }
 
 body {
@@ -21,27 +19,21 @@ body {
     overflow-x: hidden;
 }
 
-/* --- ЖЕЛЕЗОБЕТОННОЕ СКРЫТИЕ (Обновлено) --- */
+/* Hard Reset Views */
 #view-hub, #view-brawlstars, #view-clashofclans, #view-clashroyale, #view-hayday {
-    display: none !important;
-    opacity: 0;
+    display: none !important; opacity: 0;
 }
-
 #view-hub.active, #view-brawlstars.active, #view-clashofclans.active, #view-clashroyale.active, #view-hayday.active {
-    display: block !important;
-    animation: fadeIn 0.4s forwards;
+    display: block !important; animation: fadeIn 0.4s forwards;
 }
-
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 /* Navbar */
 .navbar {
     display: flex; justify-content: space-between; align-items: center;
     padding: 12px 20px; position: sticky; top: 0; z-index: 9999;
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-    height: 60px; transition: background 0.3s, color 0.3s;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03); height: 60px; transition: background 0.3s, color 0.3s;
 }
 .supercell-logo { font-weight: 900; line-height: 0.85; font-size: 13px; letter-spacing: 0.5px; text-align: center; }
 .store-badge { background: #ffd700; color: #000; font-size: 9px; padding: 2px 4px; border-radius: 4px; font-weight: bold; margin-left: 2px; vertical-align: super;}
@@ -60,128 +52,52 @@ body {
 }
 .hidden { display: none !important; }
 
-/* --- GAME PAGES BACKGROUNDS --- */
-
-/* Brawl Stars (Skulls) */
-#view-brawlstars {
-    background-color: var(--bs-color);
-    background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
-    background-size: 20px 20px;
-    min-height: calc(100vh - 60px); color: white;
-}
-
-/* Clash of Clans (Shields pattern simulation) */
-#view-clashofclans {
-    background-color: var(--coc-color);
-    background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 10px, transparent 10px, transparent 20px);
-    min-height: calc(100vh - 60px); color: white;
-}
-
-/* Clash Royale (Arena Tiles) */
-#view-clashroyale {
-    background-color: var(--cr-color);
-    background-image: 
-        linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366),
-        linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366);
-    background-position: 0 0, 20px 20px;
-    background-size: 40px 40px;
-    min-height: calc(100vh - 60px); color: white;
-}
-
-/* Hay Day (Sunny Gradient) */
-#view-hayday {
-    background: linear-gradient(180deg, #6ecbf5 0%, #b2e6ff 30%, #ffd966 100%);
-    min-height: calc(100vh - 60px); color: #000;
-}
-/* У Hay Day темный текст, так как фон светлый */
+/* Backgrounds */
+#view-brawlstars { background-color: var(--bs-color); background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; min-height: calc(100vh - 60px); color: white; }
+#view-clashofclans { background-color: var(--coc-color); background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 10px, transparent 10px, transparent 20px); min-height: calc(100vh - 60px); color: white; }
+#view-clashroyale { background-color: var(--cr-color); background-image: linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366), linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366); background-position: 0 0, 20px 20px; background-size: 40px 40px; min-height: calc(100vh - 60px); color: white; }
+#view-hayday { background: linear-gradient(180deg, #6ecbf5 0%, #b2e6ff 30%, #ffd966 100%); min-height: calc(100vh - 60px); color: #000; }
 #view-hayday .sub-header .back-btn, #view-hayday .sub-header .game-logo { color: #2a5a00; }
 #view-hayday .section-title { color: #2a5a00; text-shadow: none; }
 
-
-/* Sub Header */
+/* Components */
 .sub-header { padding: 15px 20px; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 10px; z-index: 1; }
 .back-btn { position: absolute; left: 20px; font-weight: 700; cursor: pointer; color: white; font-size: 14px; }
 .game-logo { font-weight: 900; letter-spacing: 2px; font-style: italic; font-size: 14px; color: white; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
 
-/* Hero Cards */
 .hero-section { padding: 0 20px; margin-bottom: 30px; position: relative; z-index: 1; }
-.hero-card {
-    border-radius: 24px; padding: 24px;
-    border: 3px solid #000; box-shadow: 0 8px 0 rgba(0,0,0,0.3);
-    position: relative; overflow: hidden; color: white;
-}
+.hero-card { border-radius: 24px; padding: 24px; border: 3px solid #000; box-shadow: 0 8px 0 rgba(0,0,0,0.3); position: relative; overflow: hidden; color: white; }
 .bs-hero { background: linear-gradient(180deg, #5ebeff 0%, #0066ff 100%); }
-.coc-hero { background: linear-gradient(180deg, #eecda3 0%, #d8b07d 100%); color: #442817; } /* Cream/Gold */
-.cr-hero { background: linear-gradient(135deg, #0055ff 0%, #a044ff 100%); } /* Blue/Purple */
-.hd-hero { background: linear-gradient(135deg, #d369e5 0%, #a443b5 100%); /* Purple dots like screenshot */
-    background-image: radial-gradient(rgba(255,255,255,0.2) 10%, transparent 10%);
-    background-size: 15px 15px; 
-}
+.coc-hero { background: linear-gradient(180deg, #eecda3 0%, #d8b07d 100%); color: #442817; }
+.cr-hero { background: linear-gradient(135deg, #0055ff 0%, #a044ff 100%); }
+.hd-hero { background: linear-gradient(135deg, #d369e5 0%, #a443b5 100%); background-image: radial-gradient(rgba(255,255,255,0.2) 10%, transparent 10%); background-size: 15px 15px; }
 
-.shine-effect {
-    position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
-    animation: shine 3s infinite;
-}
+.shine-effect { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent); animation: shine 3s infinite; }
 @keyframes shine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-
 .bonus-tag { background: #000; color: #fff; display: inline-block; padding: 6px 10px; font-size: 11px; font-weight: 900; border-radius: 6px; margin-bottom: 10px; text-transform: uppercase; }
 .hero-content { display: flex; align-items: center; gap: 20px; }
 .hero-visual { font-size: 50px; filter: drop-shadow(0 6px 0 rgba(0,0,0,0.2)); }
 .hero-info h1 { font-size: 20px; font-weight: 900; line-height: 1; margin: 0 0 5px 0; text-transform: uppercase; }
 .hero-info p { margin: 0; font-size: 12px; font-weight: 600; opacity: 0.9; }
 
-/* Offer Cards */
 .offers-section { padding: 0 20px; position: relative; z-index: 1; }
 .section-title { font-size: 12px; font-weight: 900; opacity: 0.8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-
-.offer-card {
-    background: #fff; border-radius: 24px; padding: 20px;
-    color: #000; margin-bottom: 16px;
-    border: 2px solid #000; box-shadow: 0 6px 0 rgba(0,0,0,0.2);
-    text-align: center;
-}
-/* Styles for specific game offers */
+.offer-card { background: #fff; border-radius: 24px; padding: 20px; color: #000; margin-bottom: 16px; border: 2px solid #000; box-shadow: 0 6px 0 rgba(0,0,0,0.2); text-align: center; }
 .pass-plus { background: linear-gradient(135deg, #ff99cc, #cc66ff); }
-
-.coc-offer-1 { background: linear-gradient(135deg, #8b0000, #b22222); color: white; } /* Red book */
-.coc-offer-2 { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; } /* Gold */
-
-.cr-offer-1 { background: #fff; } /* White card */
-.cr-offer-2 { background: linear-gradient(135deg, #ffcc33, #ff9900); } /* Gold */
-
+.coc-offer-1 { background: linear-gradient(135deg, #8b0000, #b22222); color: white; }
+.cr-offer-1 { background: #fff; }
 .hd-offer-1 { background: #fff; border-color: #56ab2f; }
-.hd-offer-2 { background: linear-gradient(135deg, #ffd700, #ffcc33); }
-
 .badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); margin-bottom: 10px; background: #fff; color: #000; text-transform: uppercase; }
 .offer-visual { font-size: 40px; margin: 8px 0; display: block; filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1)); }
 .offer-card h3 { font-weight: 800; font-size: 18px; margin: 6px 0; }
 .price { font-weight: 600; font-size: 15px; opacity: 0.9; margin-bottom: 16px; }
-
-.buy-btn {
-    width: 100%; padding: 12px;
-    border: 2px solid #000; border-radius: 12px;
-    background: #fff; color: #000;
-    font-weight: 700; font-size: 14px;
-    box-shadow: 0 4px 0 #ccc; cursor: pointer;
-}
+.buy-btn { width: 100%; padding: 12px; border: 2px solid #000; border-radius: 12px; background: #fff; color: #000; font-weight: 700; font-size: 14px; box-shadow: 0 4px 0 #ccc; cursor: pointer; }
 .buy-btn:active { transform: translateY(4px); box-shadow: none; }
 
-/* Modals & HUB (Existing styles preserved) */
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6); z-index: 2000;
-    display: flex; align-items: flex-end; justify-content: center;
-    opacity: 0; pointer-events: none; transition: opacity 0.3s;
-    backdrop-filter: blur(4px);
-}
+/* Modals */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(4px); }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
-.modal-content {
-    background: #fff; width: 100%; max-width: 500px;
-    border-radius: 24px 24px 0 0; padding: 30px 25px 50px;
-    text-align: center; color: #111;
-    transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-}
+.modal-content { background: #fff; width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; padding: 30px 25px 50px; text-align: center; color: #111; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1); }
 .modal-overlay.open .modal-content { transform: translateY(0); }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
 .modal-header h2 { margin: 0; font-size: 20px; font-weight: 900; text-transform: uppercase; }
@@ -190,7 +106,7 @@ body {
 input[type="email"] { width: 100%; padding: 16px; border: 2px solid #e0e0e0; border-radius: 14px; font-size: 16px; margin: 15px 0; outline: none; background: #f9f9f9; }
 .modal-action-btn { background: #4737ff; color: #fff; width: 100%; padding: 16px; border: none; border-radius: 16px; font-weight: 800; font-size: 16px; cursor: pointer; }
 
-/* HUB Cards Styles */
+/* HUB Cards */
 .games-grid { display: grid; gap: 16px; padding: 20px; }
 .game-card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.05); position: relative; cursor: pointer; transition: transform 0.2s; }
 .game-card:active { transform: scale(0.98); }
@@ -203,9 +119,11 @@ input[type="email"] { width: 100%; padding: 16px; border: 2px solid #e0e0e0; bor
 .hd-card .card-bg { background: linear-gradient(135deg, #a8e063, #56ab2f); }
 .card-content { padding: 16px; display: flex; align-items: center; gap: 15px; }
 .game-icon-box { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: white; }
-.bs-icon { background: #333; }
-.coc-icon { background: #ff4d4d; }
-.cr-icon { background: #2f80ed; }
-.hd-icon { background: #56ab2f; }
+.bs-icon { background: #333; } .coc-icon { background: #ff4d4d; } .cr-icon { background: #2f80ed; } .hd-icon { background: #56ab2f; }
 .card-text h3 { margin: 0; font-size: 17px; font-weight: 800; }
 .action-text { font-size: 11px; color: #999; font-weight: 700; text-transform: uppercase; }
+
+/* PROMO CODE STYLES */
+.promo-section { margin-top: 20px; border-top: 1px solid #f0f0f0; padding-top: 15px; }
+.promo-input-group { display: flex; gap: 10px; }
+#promo-input { margin: 0; padding: 12px; flex-grow: 1; font-weight: 700; text-transform: uppercase; letter-spacing
