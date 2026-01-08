@@ -1,0 +1,123 @@
+:root {
+    --bg-light: #f5f5f7;
+    --bg-dark-blue: #2222ff; /* Базовый синий */
+    --bg-gradient: linear-gradient(135deg, #4737ff 0%, #2e1cc9 100%);
+    --text-dark: #1a1a1a;
+    --text-white: #ffffff;
+    --accent-yellow: #ffc800;
+    --card-radius: 20px;
+    --font-main: 'Rubik', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    transition: background-color 0.3s;
+}
+
+/* Telegram Specifics */
+body.dark-mode {
+    background: var(--bg-gradient);
+    color: var(--text-white);
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: transparent;
+    position: sticky; top: 0; z-index: 100;
+}
+
+.logo { font-weight: 900; line-height: 0.9; font-size: 14px; letter-spacing: 1px; }
+.store-badge { background: #ffd700; color: #000; padding: 2px 4px; border-radius: 4px; font-size: 10px; vertical-align: top; }
+
+.login-btn {
+    background: #000; color: #fff; border: none; padding: 8px 16px;
+    border-radius: 20px; font-weight: 700; cursor: pointer;
+    font-family: var(--font-main);
+}
+
+/* Views & Routing */
+.view { display: none; padding-bottom: 50px; animation: fadeIn 0.3s ease; }
+.view.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Grid Layout (Hub) */
+.container { padding: 20px; }
+.games-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+
+.game-card {
+    background: #fff; border-radius: var(--card-radius);
+    overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    cursor: pointer; transition: transform 0.2s;
+}
+.game-card:active { transform: scale(0.98); }
+
+.card-bg { height: 120px; background-size: cover; background-position: center; }
+.bs-bg { background: linear-gradient(45deg, #a631f5, #5e30f0); } /* Фиолетовый градиент Brawl Stars */
+.coc-bg { background: linear-gradient(45deg, #f5a631, #f05e30); }
+
+.card-content { padding: 15px; display: flex; align-items: center; gap: 10px; }
+.game-icon { width: 40px; height: 40px; }
+.game-card h3 { font-size: 16px; flex-grow: 1; }
+.arrow { color: #888; }
+
+/* Brawl Stars Page Styles */
+#view-brawlstars {
+    background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Very_Black_screen.jpg/640px-Very_Black_screen.jpg'); /* Паттерн черепов имитируем цветом или картинкой */
+    background-color: #3344ff;
+    min-height: 100vh;
+    color: white;
+    padding: 20px;
+}
+
+.back-btn { margin-bottom: 20px; opacity: 0.7; cursor: pointer; font-weight: bold; }
+
+.hero-section h1 { font-weight: 900; text-transform: uppercase; font-size: 28px; margin-bottom: 20px; text-shadow: 0 4px 0 rgba(0,0,0,0.2); line-height: 1; }
+
+.hero-banner {
+    background: linear-gradient(180deg, #5ebeff 0%, #0066ff 100%);
+    border-radius: var(--card-radius);
+    padding: 20px;
+    border: 2px solid #000;
+    box-shadow: 0 6px 0 #000044;
+    position: relative;
+    overflow: hidden;
+}
+
+.banner-tag {
+    background: #000; color: #fff; display: inline-block;
+    padding: 5px 10px; font-size: 12px; font-weight: bold;
+    border-radius: 5px; margin-bottom: 10px;
+}
+
+.banner-text h2 { font-weight: 900; font-size: 22px; margin-bottom: 5px; -webkit-text-stroke: 1px black; }
+.banner-text p { font-size: 14px; opacity: 0.9; }
+
+/* Offers */
+.offers-section { margin-top: 30px; }
+.offers-section h2 { font-size: 18px; margin-bottom: 15px; opacity: 0.8; }
+
+.offer-card {
+    background: linear-gradient(135deg, #ff88cc 0%, #aa44ff 100%);
+    border-radius: var(--card-radius);
+    padding: 20px;
+    border: 3px solid #000;
+    text-align: center;
+}
+
+.buy-btn {
+    margin-top: 15px;
+    background: #fff; border: 2px solid #000;
+    padding: 10px 20px; font-weight: 700; border-radius: 10px;
+    box-shadow: 0 4px 0 #ccc;
+    cursor: pointer;
+}
+.buy-btn:active { transform: translateY(4px); box-shadow: none; }

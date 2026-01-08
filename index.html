@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Supercell Store TMA</title>
+    <!-- Подключаем шрифт, похожий на оригинал -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Скрипт Telegram Web App -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+
+    <!-- Навигация (Header) -->
+    <nav class="navbar">
+        <div class="logo">SUPER<br>CELL <span class="store-badge">STORE</span></div>
+        <button class="login-btn">LOG IN 🆔</button>
+    </nav>
+
+    <!-- VIEW 1: Главная (Hub) -->
+    <main id="view-hub" class="view active">
+        <div class="container">
+            <div class="games-grid">
+                <!-- Карточки генерируются или статичны -->
+                <div class="game-card" onclick="app.router('brawlstars')">
+                    <div class="card-bg bs-bg"></div>
+                    <div class="card-content">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2921/2921226.png" alt="Icon" class="game-icon"> 
+                        <h3>Brawl Stars Store</h3>
+                        <div class="arrow">→</div>
+                    </div>
+                </div>
+                
+                <div class="game-card">
+                    <div class="card-bg coc-bg"></div>
+                    <div class="card-content">
+                        <img src="https://cdn-icons-png.flaticon.com/512/1551/1551225.png" alt="Icon" class="game-icon">
+                        <h3>Clash of Clans Store</h3>
+                        <div class="arrow">→</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- VIEW 2: Страница Brawl Stars -->
+    <main id="view-brawlstars" class="view">
+        <div class="back-btn" onclick="app.router('hub')">← Back to Hub</div>
+        
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h1>DISCOVER BRAWL STARS STORE</h1>
+            <div class="hero-banner">
+                <div class="banner-tag">STORE BONUS +10%</div>
+                <div class="banner-visual">
+                    <!-- Имитация 3D графики CSS-ом -->
+                    <div class="gem-stack">💎</div>
+                </div>
+                <div class="banner-text">
+                    <h2>+10% ON GEMS AND OFFERS</h2>
+                    <p>Get bonus gems, coins, or bling when you buy on the Store!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Offers Grid -->
+        <section class="offers-section">
+            <h2>Recommended for You</h2>
+            <div class="offer-card gold">
+                <div class="badge">Instant 30%</div>
+                <h3>Brawl Pass Plus</h3>
+                <button class="buy-btn">Learn more</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
