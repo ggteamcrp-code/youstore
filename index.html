@@ -2,78 +2,158 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Supercell Store TMA</title>
-    <!-- Подключаем шрифт, похожий на оригинал -->
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Supercell Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <!-- Скрипт Telegram Web App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
-    <!-- Навигация (Header) -->
+    <!-- Навигация -->
     <nav class="navbar">
-        <div class="logo">SUPER<br>CELL <span class="store-badge">STORE</span></div>
-        <button class="login-btn">LOG IN 🆔</button>
+        <div class="logo-container" onclick="app.router('hub')">
+            <div class="supercell-logo">SUPER<br>CELL</div>
+            <div class="store-badge">STORE</div>
+        </div>
+        <div class="nav-actions">
+            <div class="cart-icon" onclick="app.toggleCart()">
+                🛒 <span id="cart-count" class="cart-badge hidden">0</span>
+            </div>
+            <button id="login-btn" class="login-btn" onclick="app.toggleLogin()">
+                LOG IN <span class="id-icon">ID</span>
+            </button>
+        </div>
     </nav>
 
-    <!-- VIEW 1: Главная (Hub) -->
+    <!-- VIEW 1: HUB -->
     <main id="view-hub" class="view active">
         <div class="container">
             <div class="games-grid">
-                <!-- Карточки генерируются или статичны -->
-                <div class="game-card" onclick="app.router('brawlstars')">
-                    <div class="card-bg bs-bg"></div>
+                <!-- Brawl Stars Card -->
+                <div class="game-card bs-card" onclick="app.router('brawlstars')">
+                    <div class="card-bg">
+                        <div class="card-character">💀</div> <!-- Имитация персонажа -->
+                    </div>
                     <div class="card-content">
-                        <img src="https://cdn-icons-png.flaticon.com/512/2921/2921226.png" alt="Icon" class="game-icon"> 
-                        <h3>Brawl Stars Store</h3>
-                        <div class="arrow">→</div>
+                        <div class="game-icon-box bs-icon">★</div>
+                        <div class="card-text">
+                            <h3>Brawl Stars Store</h3>
+                            <span class="action-text">View Offers →</span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="game-card">
-                    <div class="card-bg coc-bg"></div>
+                <!-- Clash of Clans Card -->
+                <div class="game-card coc-card">
+                    <div class="card-bg">
+                        <div class="card-character">🛡️</div>
+                    </div>
                     <div class="card-content">
-                        <img src="https://cdn-icons-png.flaticon.com/512/1551/1551225.png" alt="Icon" class="game-icon">
-                        <h3>Clash of Clans Store</h3>
-                        <div class="arrow">→</div>
+                        <div class="game-icon-box coc-icon">⚔️</div>
+                        <div class="card-text">
+                            <h3>Clash of Clans Store</h3>
+                            <span class="action-text">View Offers →</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- VIEW 2: Страница Brawl Stars -->
+    <!-- VIEW 2: BRAWL STARS -->
     <main id="view-brawlstars" class="view">
-        <div class="back-btn" onclick="app.router('hub')">← Back to Hub</div>
+        <div class="sub-header">
+            <div class="back-btn" onclick="app.router('hub')">
+                <span class="back-arrow">‹</span> Back
+            </div>
+            <div class="game-logo">BRAWL STARS</div>
+        </div>
         
-        <!-- Hero Section -->
+        <!-- Hero Banner -->
         <section class="hero-section">
-            <h1>DISCOVER BRAWL STARS STORE</h1>
-            <div class="hero-banner">
-                <div class="banner-tag">STORE BONUS +10%</div>
-                <div class="banner-visual">
-                    <!-- Имитация 3D графики CSS-ом -->
-                    <div class="gem-stack">💎</div>
-                </div>
-                <div class="banner-text">
-                    <h2>+10% ON GEMS AND OFFERS</h2>
-                    <p>Get bonus gems, coins, or bling when you buy on the Store!</p>
+            <div class="hero-card">
+                <div class="shine-effect"></div>
+                <div class="bonus-tag">✚ STORE BONUS</div>
+                <div class="hero-content">
+                    <div class="hero-visual">💎</div>
+                    <div class="hero-info">
+                        <h1>+10% ON GEMS</h1>
+                        <p>Get bonus gems, coins, or bling instantly!</p>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Offers Grid -->
+        <!-- Offers -->
         <section class="offers-section">
             <h2>Recommended for You</h2>
-            <div class="offer-card gold">
-                <div class="badge">Instant 30%</div>
+            
+            <div class="offer-card pass-plus">
+                <div class="offer-header">
+                    <span class="badge yellow">INSTANT 30%</span>
+                </div>
+                <div class="offer-visual">🎫</div>
                 <h3>Brawl Pass Plus</h3>
-                <button class="buy-btn">Learn more</button>
+                <p class="price">$9.99</p>
+                <button class="buy-btn" onclick="app.addToCart('Brawl Pass Plus', 9.99)">
+                    Purchase
+                </button>
+            </div>
+
+            <div class="offer-card gems-pack">
+                <div class="offer-header">
+                    <span class="badge blue">BONUS x2</span>
+                </div>
+                <div class="offer-visual">💰</div>
+                <h3>170 Gems + 17 Bonus</h3>
+                <p class="price">$9.99</p>
+                <button class="buy-btn" onclick="app.addToCart('170 Gems Pack', 9.99)">
+                    Purchase
+                </button>
             </div>
         </section>
     </main>
+
+    <!-- MODAL: LOGIN -->
+    <div id="login-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>SUPERCELL <span class="id-bold">ID</span></h2>
+                <span class="close-btn" onclick="app.toggleLogin()">✕</span>
+            </div>
+            <div class="login-step-1">
+                <h3>Log in to Store</h3>
+                <p>Enter your email and we'll send a code.</p>
+                <input type="email" id="email-input" placeholder="Enter your email">
+                <div class="checkbox-group">
+                    <input type="checkbox" checked> <span>Remember me</span>
+                </div>
+                <button class="modal-action-btn" onclick="app.processLogin()">LOG IN</button>
+            </div>
+            <div class="login-loader hidden">
+                <div class="spinner"></div>
+                <p>Checking...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CART -->
+    <div id="cart-modal" class="modal-overlay">
+        <div class="modal-content cart-content">
+            <div class="modal-header">
+                <h2>Your Cart 🛒</h2>
+                <span class="close-btn" onclick="app.toggleCart()">✕</span>
+            </div>
+            <div id="cart-items" class="cart-list">
+                <p class="empty-msg">Your cart is empty.</p>
+            </div>
+            <div class="cart-footer">
+                <div class="total-row">Total: <span id="cart-total">$0.00</span></div>
+                <button class="modal-action-btn checkout-btn" onclick="app.checkout()">CHECKOUT</button>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
