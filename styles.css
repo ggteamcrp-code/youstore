@@ -13,18 +13,38 @@ body {
     color: var(--text-main);
     -webkit-tap-highlight-color: transparent;
     transition: background 0.3s ease;
-    overflow-x: hidden; /* Блокируем горизонтальный скролл */
+    overflow-x: hidden;
+}
+
+/* --- ЖЕЛЕЗОБЕТОННОЕ СКРЫТИЕ СТРАНИЦ --- */
+
+/* 1. По умолчанию скрываем ВСЁ по ID */
+#view-hub, #view-brawlstars {
+    display: none !important;
+    opacity: 0;
+}
+
+/* 2. Показываем ТОЛЬКО то, что имеет класс active */
+#view-hub.active, #view-brawlstars.active {
+    display: block !important;
+    animation: fadeIn 0.4s forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
 }
 
 /* Navbar */
 .navbar {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 20px; position: sticky; top: 0; z-index: 1000;
+    padding: 12px 20px; position: sticky; top: 0; z-index: 9999; /* Максимальный слой */
     background: rgba(255,255,255,0.95);
     backdrop-filter: blur(12px);
     box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-    height: 60px; /* Фикс высота для расчетов */
+    height: 60px;
 }
+/* ... Дальше твой старый CSS ... */
 .supercell-logo { font-weight: 900; line-height: 0.85; font-size: 13px; letter-spacing: 0.5px; text-align: center; }
 .store-badge { background: #ffd700; color: #000; font-size: 9px; padding: 2px 4px; border-radius: 4px; font-weight: bold; margin-left: 2px; vertical-align: super;}
 .logo-container { cursor: pointer; display: flex; align-items: center; }
