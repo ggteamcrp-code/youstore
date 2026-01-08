@@ -11,7 +11,7 @@ const app = {
     init: () => {
         tg.expand();
         tg.ready();
-        
+        document.getElementById('view-brawlstars').style.display = 'none'; 
         // 1. Сначала грузим данные
         app.loadState();
         app.updateCartUI();
