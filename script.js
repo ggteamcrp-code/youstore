@@ -1,6 +1,5 @@
 const tg = window.Telegram.WebApp;
 
-// App State
 const state = {
     cart: [],
     isLoggedIn: false,
@@ -11,13 +10,14 @@ const app = {
     init: () => {
         tg.expand();
         tg.ready();
-        document.getElementById('view-brawlstars').style.display = 'none'; 
-        // 1. Сначала грузим данные
+        
+        // Hide all views initially (Safety)
+        document.querySelectorAll('.view').forEach(el => el.style.display = 'none');
+        
         app.loadState();
         app.updateCartUI();
         app.checkLoginUI();
         
-        // 2. ПРИНУДИТЕЛЬНО ставим главную страницу, чтобы скрыть лишнее
         app.router('hub');
     },
 
@@ -33,73 +33,82 @@ const app = {
         try {
             const savedCart = localStorage.getItem('supercell_cart');
             const savedLogin = localStorage.getItem('supercell_login');
-
             if (savedCart) state.cart = JSON.parse(savedCart);
             if (savedLogin) {
-                const loginData = JSON.parse(savedLogin);
-                state.isLoggedIn = loginData.isLoggedIn;
-                state.userEmail = loginData.email;
+                const d = JSON.parse(savedLogin);
+                state.isLoggedIn = d.isLoggedIn;
+                state.userEmail = d.email;
             }
-        } catch (e) {
-            console.error('Error loading state', e);
-        }
+        } catch(e) {}
     },
 
     router: (viewId) => {
-        // Скрываем ВСЕ страницы
-        const views = document.querySelectorAll('.view');
-        views.forEach(el => {
+        // 1. Hide All
+        document.querySelectorAll('.view').forEach(el => {
             el.classList.remove('active');
-            el.style.display = 'none'; // Дублируем скрытие через JS для надежности
+            el.style.display = 'none';
         });
 
-        // Показываем нужную
+        // 2. Show Target
         const target = document.getElementById(`view-${viewId}`);
         if (target) {
-            target.style.display = 'block'; // Сначала дисплей
-            // Небольшая задержка для анимации (CSS transition)
-            requestAnimationFrame(() => {
-                target.classList.add('active');
-            });
+            target.style.display = 'block';
+            requestAnimationFrame(() => target.classList.add('active'));
         }
-        
-        window.scrollTo(0, 0);
+        window.scrollTo(0,0);
 
-        // Настройка цветов шапки
+        // 3. Theme Colors Configuration
         const navbar = document.querySelector('.navbar');
-        const logo = document.querySelector('.supercell-logo');
         const loginBtn = document.querySelector('.login-btn');
-        const cartBadge = document.querySelector('.cart-badge');
+        const logo = document.querySelector('.supercell-logo');
 
-        if (viewId === 'brawlstars') {
-            tg.setHeaderColor('#4737ff');
-            // Синий стиль для шапки
-            navbar.style.background = 'rgba(71, 55, 255, 0.98)';
-            navbar.style.color = '#fff';
-            navbar.style.boxShadow = 'none';
-            logo.style.color = '#fff';
-            
-            loginBtn.style.background = '#fff';
-            loginBtn.style.color = '#000';
-            
-            cartBadge.style.border = '2px solid #4737ff';
-        } else {
-            tg.setHeaderColor('#ffffff');
-            // Белый стиль для шапки (Hub)
-            navbar.style.background = 'rgba(255,255,255,0.98)';
-            navbar.style.color = '#111';
-            navbar.style.boxShadow = '0 4px 20px rgba(0,0,0,0.03)';
-            logo.style.color = '#111';
-            
-            if (!state.isLoggedIn) {
-                loginBtn.style.background = '#000';
-                loginBtn.style.color = '#fff';
-            }
-            cartBadge.style.border = '2px solid #fff';
+        // Defaults (White Theme)
+        let headerColor = '#ffffff';
+        let navBg = 'rgba(255,255,255,0.98)';
+        let navColor = '#111';
+        let btnBg = '#000';
+        let btnColor = '#fff';
+
+        // Game Specific Themes
+        switch(viewId) {
+            case 'brawlstars':
+                headerColor = '#4737ff';
+                navBg = 'rgba(71, 55, 255, 0.98)';
+                navColor = '#fff';
+                btnBg = '#fff'; btnColor = '#000';
+                break;
+            case 'clashofclans':
+                headerColor = '#5c3c2e'; // Brown
+                navBg = 'rgba(92, 60, 46, 0.98)';
+                navColor = '#fff';
+                btnBg = '#fff'; btnColor = '#442817';
+                break;
+            case 'clashroyale':
+                headerColor = '#2b3b75'; // Dark Blue
+                navBg = 'rgba(43, 59, 117, 0.98)';
+                navColor = '#fff';
+                btnBg = '#fff'; btnColor = '#2b3b75';
+                break;
+            case 'hayday':
+                headerColor = '#6ecbf5'; // Sky Blue
+                navBg = 'rgba(110, 203, 245, 0.98)';
+                navColor = '#2a5a00'; // Dark Green text
+                btnBg = '#2a5a00'; btnColor = '#fff';
+                break;
         }
+
+        // Apply Colors
+        tg.setHeaderColor(headerColor);
+        navbar.style.background = navBg;
+        navbar.style.color = navColor;
+        logo.style.color = navColor;
         
-        // Если пользователь залогинен, кнопка всегда зеленая
-        app.checkLoginUI(); 
+        if (!state.isLoggedIn) {
+            loginBtn.style.background = btnBg;
+            loginBtn.style.color = btnColor;
+        } else {
+             app.checkLoginUI();
+        }
     },
 
     addToCart: (name, price) => {
@@ -108,10 +117,9 @@ const app = {
         app.saveState();
         app.updateCartUI();
         
-        // Анимация иконки
         const btn = document.querySelector('.cart-icon');
         btn.classList.remove('bump');
-        void btn.offsetWidth; 
+        void btn.offsetWidth;
         btn.classList.add('bump');
     },
 
@@ -126,35 +134,29 @@ const app = {
     updateCartUI: () => {
         const count = state.cart.length;
         const badge = document.getElementById('cart-count');
-        
         badge.textContent = count;
         if (count > 0) badge.classList.remove('hidden');
         else badge.classList.add('hidden');
         
-        const total = state.cart.reduce((sum, item) => sum + item.price, 0);
-        document.getElementById('cart-total').textContent = '$' + total.toFixed(2);
+        const total = state.cart.reduce((a,b)=>a+b.price,0);
+        document.getElementById('cart-total').textContent = '$'+total.toFixed(2);
     },
 
     toggleCart: () => {
         const modal = document.getElementById('cart-modal');
-        if (!modal.classList.contains('open')) {
-            app.renderCartItems();
-        }
+        if (!modal.classList.contains('open')) app.renderCartItems();
         modal.classList.toggle('open');
     },
 
     renderCartItems: () => {
         const list = document.getElementById('cart-items');
         if (state.cart.length === 0) {
-            list.innerHTML = '<div style="padding: 20px 0; color: #999;">Your cart is empty 🥺</div>';
+            list.innerHTML = '<div style="padding:20px 0; color:#999;">Cart is empty</div>';
         } else {
-            list.innerHTML = state.cart.map((item, index) => `
-                <div class="cart-item">
-                    <div class="item-info">
-                        <span class="item-name">${item.name}</span>
-                        <span class="item-price">$${item.price}</span>
-                    </div>
-                    <div class="remove-btn" onclick="app.removeFromCart(${index})">✕</div>
+            list.innerHTML = state.cart.map((item, i) => `
+                <div class="cart-item" style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee;">
+                    <div style="text-align:left;"><b>${item.name}</b><br><span style="color:#666;">$${item.price}</span></div>
+                    <div onclick="app.removeFromCart(${i})" style="color:red; font-weight:bold; cursor:pointer; padding:5px;">✕</div>
                 </div>
             `).join('');
         }
@@ -164,50 +166,47 @@ const app = {
         if (!state.isLoggedIn) {
             app.toggleCart();
             setTimeout(() => {
-                tg.showAlert('Please Log In to continue');
+                tg.showAlert('Please Log In first');
                 app.toggleLogin();
             }, 300);
             return;
         }
-
         if (state.cart.length === 0) return;
-
+        
+        const amount = state.cart.reduce((a,b)=>a+b.price,0).toFixed(2);
         tg.showPopup({
-            title: 'Confirm Purchase',
-            message: `Pay $${state.cart.reduce((a,b)=>a+b.price,0).toFixed(2)} for ${state.cart.length} items?`,
-            buttons: [{type: 'ok', text: 'Pay Now'}, {type: 'cancel'}]
-        }, (btnId) => {
-            if (btnId === 'ok') {
+            title: 'Purchase',
+            message: `Pay $${amount} for ${state.cart.length} items?`,
+            buttons: [{type:'ok', text:'Pay'}, {type:'cancel'}]
+        }, (id) => {
+            if (id === 'ok') {
                 state.cart = [];
                 app.saveState();
                 app.updateCartUI();
                 app.toggleCart();
                 tg.HapticFeedback.notificationOccurred('success');
-                tg.showPopup({title: 'Success!', message: 'Items added to your account.'});
             }
         });
     },
 
     toggleLogin: () => {
-        if (state.isLoggedIn) return;
+        if(state.isLoggedIn) return;
         document.getElementById('login-modal').classList.toggle('open');
     },
 
     processLogin: () => {
         const email = document.getElementById('email-input').value;
-        if (!email.includes('@')) {
+        if(!email.includes('@')) {
             tg.HapticFeedback.notificationOccurred('error');
             return;
         }
-
         document.querySelector('.login-step-1').classList.add('hidden');
         document.querySelector('.login-loader').classList.remove('hidden');
-
+        
         setTimeout(() => {
             state.isLoggedIn = true;
             state.userEmail = email;
             app.saveState();
-            
             document.getElementById('login-modal').classList.remove('open');
             app.checkLoginUI();
             
@@ -215,17 +214,16 @@ const app = {
                 document.querySelector('.login-step-1').classList.remove('hidden');
                 document.querySelector('.login-loader').classList.add('hidden');
             }, 500);
-
             tg.HapticFeedback.notificationOccurred('success');
         }, 1500);
     },
 
     checkLoginUI: () => {
         const btn = document.querySelector('.login-btn');
-        if (state.isLoggedIn) {
+        if(state.isLoggedIn) {
             const name = state.userEmail.split('@')[0];
-            btn.innerHTML = `👤 ${name.length > 8 ? name.slice(0,8)+'...' : name}`;
-            btn.style.background = '#28ca42'; 
+            btn.innerHTML = `👤 ${name.slice(0,8)}`;
+            btn.style.background = '#28ca42';
             btn.style.color = '#fff';
         }
     }
