@@ -1,6 +1,6 @@
 const tg = window.Telegram.WebApp;
 
-// App State with Persistence
+// App State
 const state = {
     cart: [],
     isLoggedIn: false,
@@ -12,15 +12,13 @@ const app = {
         tg.expand();
         tg.ready();
         
-        // Load Data from LocalStorage
+        // 1. Сначала грузим данные
         app.loadState();
-        
-        // Init UI
         app.updateCartUI();
         app.checkLoginUI();
         
-        // Initial Theme
-        tg.setHeaderColor('#ffffff');
+        // 2. ПРИНУДИТЕЛЬНО ставим главную страницу, чтобы скрыть лишнее
+        app.router('hub');
     },
 
     saveState: () => {
@@ -32,56 +30,88 @@ const app = {
     },
 
     loadState: () => {
-        const savedCart = localStorage.getItem('supercell_cart');
-        const savedLogin = localStorage.getItem('supercell_login');
+        try {
+            const savedCart = localStorage.getItem('supercell_cart');
+            const savedLogin = localStorage.getItem('supercell_login');
 
-        if (savedCart) state.cart = JSON.parse(savedCart);
-        if (savedLogin) {
-            const loginData = JSON.parse(savedLogin);
-            state.isLoggedIn = loginData.isLoggedIn;
-            state.userEmail = loginData.email;
+            if (savedCart) state.cart = JSON.parse(savedCart);
+            if (savedLogin) {
+                const loginData = JSON.parse(savedLogin);
+                state.isLoggedIn = loginData.isLoggedIn;
+                state.userEmail = loginData.email;
+            }
+        } catch (e) {
+            console.error('Error loading state', e);
         }
     },
 
     router: (viewId) => {
-        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
-        document.getElementById(`view-${viewId}`).classList.add('active');
+        // Скрываем ВСЕ страницы
+        const views = document.querySelectorAll('.view');
+        views.forEach(el => {
+            el.classList.remove('active');
+            el.style.display = 'none'; // Дублируем скрытие через JS для надежности
+        });
+
+        // Показываем нужную
+        const target = document.getElementById(`view-${viewId}`);
+        if (target) {
+            target.style.display = 'block'; // Сначала дисплей
+            // Небольшая задержка для анимации (CSS transition)
+            requestAnimationFrame(() => {
+                target.classList.add('active');
+            });
+        }
+        
         window.scrollTo(0, 0);
 
-        // Theme Switcher
+        // Настройка цветов шапки
         const navbar = document.querySelector('.navbar');
         const logo = document.querySelector('.supercell-logo');
         const loginBtn = document.querySelector('.login-btn');
+        const cartBadge = document.querySelector('.cart-badge');
 
         if (viewId === 'brawlstars') {
             tg.setHeaderColor('#4737ff');
-            navbar.style.background = 'rgba(71, 55, 255, 0.95)';
+            // Синий стиль для шапки
+            navbar.style.background = 'rgba(71, 55, 255, 0.98)';
             navbar.style.color = '#fff';
+            navbar.style.boxShadow = 'none';
             logo.style.color = '#fff';
+            
             loginBtn.style.background = '#fff';
             loginBtn.style.color = '#000';
+            
+            cartBadge.style.border = '2px solid #4737ff';
         } else {
             tg.setHeaderColor('#ffffff');
-            navbar.style.background = 'rgba(255,255,255,0.95)';
+            // Белый стиль для шапки (Hub)
+            navbar.style.background = 'rgba(255,255,255,0.98)';
             navbar.style.color = '#111';
+            navbar.style.boxShadow = '0 4px 20px rgba(0,0,0,0.03)';
             logo.style.color = '#111';
-            loginBtn.style.background = '#000';
-            loginBtn.style.color = '#fff';
+            
+            if (!state.isLoggedIn) {
+                loginBtn.style.background = '#000';
+                loginBtn.style.color = '#fff';
+            }
+            cartBadge.style.border = '2px solid #fff';
         }
+        
+        // Если пользователь залогинен, кнопка всегда зеленая
+        app.checkLoginUI(); 
     },
 
-    // --- CART LOGIC ---
     addToCart: (name, price) => {
         tg.HapticFeedback.impactOccurred('medium');
-        
-        state.cart.push({ name, price, id: Date.now() }); // Unique ID for deletion
+        state.cart.push({ name, price, id: Date.now() });
         app.saveState();
         app.updateCartUI();
         
-        // Pulse Animation
-        const btn = document.getElementById('cart-btn');
+        // Анимация иконки
+        const btn = document.querySelector('.cart-icon');
         btn.classList.remove('bump');
-        void btn.offsetWidth; // Trigger reflow
+        void btn.offsetWidth; 
         btn.classList.add('bump');
     },
 
@@ -90,7 +120,7 @@ const app = {
         state.cart.splice(index, 1);
         app.saveState();
         app.updateCartUI();
-        app.renderCartItems(); // Re-render list immediately
+        app.renderCartItems();
     },
 
     updateCartUI: () => {
@@ -101,7 +131,6 @@ const app = {
         if (count > 0) badge.classList.remove('hidden');
         else badge.classList.add('hidden');
         
-        // Total Calc
         const total = state.cart.reduce((sum, item) => sum + item.price, 0);
         document.getElementById('cart-total').textContent = '$' + total.toFixed(2);
     },
@@ -117,7 +146,7 @@ const app = {
     renderCartItems: () => {
         const list = document.getElementById('cart-items');
         if (state.cart.length === 0) {
-            list.innerHTML = '<p class="empty-msg" style="color:#888; padding:20px 0;">Your cart is empty 🥺</p>';
+            list.innerHTML = '<div style="padding: 20px 0; color: #999;">Your cart is empty 🥺</div>';
         } else {
             list.innerHTML = state.cart.map((item, index) => `
                 <div class="cart-item">
@@ -125,19 +154,18 @@ const app = {
                         <span class="item-name">${item.name}</span>
                         <span class="item-price">$${item.price}</span>
                     </div>
-                    <span class="remove-btn" onclick="app.removeFromCart(${index})">✕</span>
+                    <div class="remove-btn" onclick="app.removeFromCart(${index})">✕</div>
                 </div>
             `).join('');
         }
     },
 
     checkout: () => {
-        // AUTH GUARD: Force Login
         if (!state.isLoggedIn) {
-            app.toggleCart(); // Close cart
+            app.toggleCart();
             setTimeout(() => {
                 tg.showAlert('Please Log In to continue');
-                app.toggleLogin(); // Open login
+                app.toggleLogin();
             }, 300);
             return;
         }
@@ -146,7 +174,7 @@ const app = {
 
         tg.showPopup({
             title: 'Confirm Purchase',
-            message: `Pay $${state.cart.reduce((a,b)=>a+b.price,0).toFixed(2)} using Telegram Stars?`,
+            message: `Pay $${state.cart.reduce((a,b)=>a+b.price,0).toFixed(2)} for ${state.cart.length} items?`,
             buttons: [{type: 'ok', text: 'Pay Now'}, {type: 'cancel'}]
         }, (btnId) => {
             if (btnId === 'ok') {
@@ -160,7 +188,6 @@ const app = {
         });
     },
 
-    // --- LOGIN LOGIC ---
     toggleLogin: () => {
         if (state.isLoggedIn) return;
         document.getElementById('login-modal').classList.toggle('open');
@@ -184,7 +211,6 @@ const app = {
             document.getElementById('login-modal').classList.remove('open');
             app.checkLoginUI();
             
-            // Reset modal for next time
             setTimeout(() => {
                 document.querySelector('.login-step-1').classList.remove('hidden');
                 document.querySelector('.login-loader').classList.add('hidden');
@@ -195,13 +221,12 @@ const app = {
     },
 
     checkLoginUI: () => {
+        const btn = document.querySelector('.login-btn');
         if (state.isLoggedIn) {
-            const btn = document.getElementById('login-btn');
             const name = state.userEmail.split('@')[0];
             btn.innerHTML = `👤 ${name.length > 8 ? name.slice(0,8)+'...' : name}`;
-            btn.style.background = '#28ca42'; // Supercell Green
+            btn.style.background = '#28ca42'; 
             btn.style.color = '#fff';
-            btn.style.border = 'none';
         }
     }
 };
