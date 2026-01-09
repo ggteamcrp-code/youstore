@@ -56,9 +56,21 @@ renderHub: () => {
     const grid = document.getElementById('hub-grid');
     const gameCardsHTML = DB.map(game => {
         
-        let characterHTML = `<div class="card-character ${game.anim}">${game.character}</div>`;
-        
-        // Особый случай для Clash Royale, который не использует эмодзи персонажа
+        let characterHTML = ''; // Начинаем с пустой строки
+
+        // Проверяем, есть ли у игры персонаж
+        if (game.character) {
+            // Если это путь к картинке (PNG или GIF)...
+            if (game.character.includes('.png') || game.character.includes('.gif')) {
+                // ...создаем тег <img>
+                characterHTML = `<img src="${game.character}" class="card-character-img ${game.anim}" alt="${game.name} character">`;
+            } else {
+                // ...иначе (если это все еще эмодзи) оставляем старую логику
+                characterHTML = `<div class="card-character ${game.anim}">${game.character}</div>`;
+            }
+        }
+
+        // Особый случай для Clash Royale, который переопределяет все
         if (game.id === 'clashroyale') {
              characterHTML = `
                 <div class="cr-battle-arena-pattern">
@@ -70,7 +82,6 @@ renderHub: () => {
              `;
         }
         
-        // Теперь код просто берет имя класса фона из базы данных
         return `
             <div class="game-card ${game.theme}-card" onclick="app.openGame('${game.id}', this)">
                 <div class="card-bg ${game.pattern}"> 
