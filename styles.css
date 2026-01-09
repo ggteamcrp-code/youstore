@@ -5,7 +5,7 @@
     --card-radius: 24px;
     --gold-gradient: linear-gradient(135deg, #fff5c3 0%, #ffd700 100%);
     
-    /* Default Colors */
+    /* Colors */
     --bs-color: #4737ff;
     --coc-color: #5c3c2e; 
     --cr-color: #2b3b75;  
@@ -14,74 +14,55 @@
 
 body {
     margin: 0; padding: 0;
-    font-family: var(--font);
+    font-family: var(--font); /* Теперь шрифт загрузится корректно */
     background-color: var(--bg-light);
+    /* Легкая сетка на фоне */
+    background-image: linear-gradient(#e1e4e8 1px, transparent 1px), linear-gradient(90deg, #e1e4e8 1px, transparent 1px);
+    background-size: 30px 30px;
     color: var(--text-main);
     -webkit-tap-highlight-color: transparent;
     transition: background 0.3s ease;
     overflow-x: hidden;
 }
 
-/* --- VIEW MANAGEMENT --- */
+/* Helpers */
+.hidden { display: none !important; }
 .view { display: none !important; opacity: 0; transition: opacity 0.3s; padding-bottom: 40px; }
 .view.active { display: block !important; opacity: 1; animation: fadeIn 0.4s forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* --- NAVBAR --- */
+/* Navbar */
 .navbar {
     display: flex; justify-content: space-between; align-items: center;
     padding: 12px 20px; position: sticky; top: 0; z-index: 100;
-    background: rgba(255,255,255,0.98); backdrop-filter: blur(10px);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05); height: 60px;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,0,0,0.05); height: 60px;
 }
-.supercell-logo { font-weight: 900; line-height: 0.9; font-size: 14px; letter-spacing: 0.5px; text-align: center; color: #000; }
+.supercell-logo { font-weight: 900; line-height: 0.9; font-size: 14px; text-align: center; color: #000; }
 .store-badge { background: #ffd700; color: #000; font-size: 9px; padding: 2px 4px; border-radius: 4px; font-weight: 900; margin-left: 2px; vertical-align: super;}
 .nav-actions { display: flex; gap: 12px; align-items: center; }
 
-.login-btn {
-    background: #000; color: #fff; border: none; padding: 8px 16px; border-radius: 50px;
-    font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer;
-}
+.login-btn { background: #000; color: #fff; border: none; padding: 8px 16px; border-radius: 50px; font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
 .id-icon { background: #fff; color: #000; padding: 1px 4px; border-radius: 4px; font-size: 10px; font-weight: 900; }
 .cart-icon { font-size: 24px; cursor: pointer; position: relative; color: #000; }
+.cart-badge { position: absolute; top: -5px; right: -8px; background: #ff3b30; color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; font-weight: bold; border: 2px solid #fff; min-width: 16px; text-align: center; }
 .export-icon { font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: #eee; border-radius: 50%; }
 
-.cart-badge {
-    position: absolute; top: -5px; right: -8px; background: #ff3b30; color: white;
-    font-size: 10px; padding: 2px 5px; border-radius: 10px; font-weight: bold; border: 2px solid #fff;
-    min-width: 16px; text-align: center;
-}
-.hidden { display: none !important; }
-
-/* --- HUB STYLES --- */
+/* HUB */
 .container { padding: 20px 16px; max-width: 600px; margin: 0 auto; }
-.hub-header { margin-bottom: 20px; }
-.hub-header h1 { font-size: 28px; font-weight: 900; margin: 0; letter-spacing: -0.5px; color: #000; }
+.hub-header { margin-bottom: 20px; text-align: left; }
+.hub-header h1 { font-size: 28px; font-weight: 900; margin: 0; color: #000; }
 .hub-header p { margin: 5px 0 0; color: #666; font-size: 15px; font-weight: 500; }
+.grid-toggle { display: inline-block; background: #000; color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
-.grid-toggle { 
-    display: inline-block; background: #000; color: #fff; padding: 6px 12px; 
-    border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 10px; 
-}
-
-.games-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+.games-grid { display: grid; gap: 16px; grid-template-columns: 1fr; transition: all 0.3s; }
 .games-grid.grid-2x6 { grid-template-columns: 1fr 1fr; }
 
-/* GAME CARD */
-.game-card {
-    background: #fff; border-radius: var(--card-radius);
-    overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.06);
-    position: relative; cursor: pointer;
-    transition: transform 0.2s; border: 1px solid rgba(0,0,0,0.05);
-}
+/* Cards */
+.game-card { background: #fff; border-radius: var(--card-radius); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; cursor: pointer; transition: transform 0.2s; border: 1px solid rgba(0,0,0,0.05); }
 .game-card:active { transform: scale(0.98); }
-
-.card-bg {
-    height: 140px; position: relative; overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-}
+.card-bg { height: 140px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .games-grid.grid-2x6 .card-bg { height: 100px; }
-
 .card-character { font-size: 70px; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.3)); z-index: 2; transition: transform 0.3s; }
 .card-character img { width: 90px; height: 90px; object-fit: contain; }
 
@@ -89,52 +70,32 @@ body {
 .game-info { display: flex; flex-direction: column; gap: 4px; }
 .game-info h3 { margin: 0; font-size: 18px; font-weight: 800; color: #000; }
 .action-text { font-size: 12px; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-
-.game-icon-box { 
-    width: 48px; height: 48px; border-radius: 14px; 
-    display: flex; align-items: center; justify-content: center; 
-    font-size: 24px; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
-    background: #333; overflow: hidden;
-}
+.game-icon-box { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: #333; overflow: hidden; }
 .game-icon-box img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- GAME PAGE STYLES --- */
+/* GAME VIEW */
 #view-game { min-height: 100vh; color: white; transition: background 0.3s; }
-
 .sub-header { padding: 15px 20px; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 10px; }
-.back-btn { position: absolute; left: 20px; font-weight: 700; cursor: pointer; color: inherit; font-size: 15px; opacity: 0.9; }
+.back-btn { position: absolute; left: 20px; font-weight: 700; cursor: pointer; color: inherit; font-size: 15px; }
 .game-logo { font-weight: 900; letter-spacing: 1px; font-size: 16px; color: inherit; text-transform: uppercase; }
 
 .hero-section { padding: 0 20px; margin-bottom: 30px; }
-.hero-card { 
-    border-radius: 24px; padding: 24px; 
-    border: 3px solid #000; box-shadow: 0 8px 0 rgba(0,0,0,0.3); 
-    position: relative; overflow: hidden; color: white; background: #333;
-}
+.hero-card { border-radius: 24px; padding: 24px; border: 3px solid #000; box-shadow: 0 8px 0 rgba(0,0,0,0.3); position: relative; overflow: hidden; color: white; background: #333; } /* Default dark bg, overridden by classes */
 .shine-effect { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent); animation: shine 3s infinite; }
 @keyframes shine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-
 .bonus-tag { background: #000; color: #fff; display: inline-block; padding: 6px 10px; font-size: 11px; font-weight: 900; border-radius: 6px; margin-bottom: 10px; text-transform: uppercase; }
 .hero-content { display: flex; align-items: center; gap: 20px; }
 .hero-visual { font-size: 50px; filter: drop-shadow(0 6px 0 rgba(0,0,0,0.2)); }
 .hero-info h1 { font-size: 22px; font-weight: 900; line-height: 1; margin: 0 0 5px 0; text-transform: uppercase; }
 .hero-info p { margin: 0; font-size: 13px; font-weight: 500; opacity: 0.9; }
 
-/* OFFERS CAROUSEL */
+/* Offers */
 .offers-section { padding: 0 20px 40px; position: relative; }
 .section-title { font-size: 13px; font-weight: 900; opacity: 0.8; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; color: inherit; }
-
 .carousel-wrapper { position: relative; }
 .carousel-track { display: flex; gap: 15px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
 .carousel-track::-webkit-scrollbar { display: none; }
-
-.offer-card { 
-    min-width: 85%; scroll-snap-align: center; flex-shrink: 0;
-    background: #fff; border-radius: 24px; padding: 20px; 
-    color: #000; border: 2px solid #000; box-shadow: 0 6px 0 rgba(0,0,0,0.2); 
-    text-align: center; position: relative;
-}
-
+.offer-card { min-width: 85%; scroll-snap-align: center; flex-shrink: 0; background: #fff; border-radius: 24px; padding: 20px; color: #000; border: 2px solid #000; box-shadow: 0 6px 0 rgba(0,0,0,0.2); text-align: center; position: relative; }
 .badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); margin-bottom: 10px; background: #fff; color: #000; text-transform: uppercase; }
 .offer-visual { font-size: 45px; margin: 10px 0; display: block; filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1)); }
 .offer-card h3 { font-weight: 800; font-size: 18px; margin: 5px 0; }
@@ -142,13 +103,13 @@ body {
 .buy-btn { width: 100%; padding: 14px; border: 2px solid #000; border-radius: 14px; background: #fff; color: #000; font-weight: 700; font-size: 15px; box-shadow: 0 4px 0 #ccc; cursor: pointer; }
 .buy-btn:active { transform: translateY(4px); box-shadow: none; }
 
-/* --- DEV TOOLS --- */
+/* Controls */
 .controls-layer { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; z-index: 20; }
 .control-btn { width: 28px; height: 28px; background: #fff; color: #000; border: 2px solid #000; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
 .add-game-card { min-height: 140px; background: rgba(0,0,0,0.05); border: 3px dashed #ccc; border-radius: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 10px; font-size: 40px; color: #ccc; }
 .add-prod-card { min-width: 60px; border: 3px dashed #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 30px; color: #fff; opacity: 0.5; cursor: pointer; }
 
-/* --- MODALS --- */
+/* Modals */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(4px); }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
 .modal-content { background: #fff; width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; padding: 25px; text-align: center; color: #111; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1); max-height: 80vh; overflow-y: auto; }
@@ -156,42 +117,40 @@ body {
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .modal-header h2 { margin: 0; font-size: 20px; font-weight: 900; }
 .close-btn { font-size: 24px; padding: 5px; cursor: pointer; }
-
-/* ADMIN EDITOR STYLES */
 .admin-editor { text-align: left; }
 .edit-row { margin-bottom: 10px; }
 .edit-row label { display: block; font-size: 11px; font-weight: bold; color: #666; margin-bottom: 4px; text-transform: uppercase; }
 .edit-input { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 10px; font-size: 14px; font-family: var(--font); box-sizing: border-box; }
-.edit-input:focus { border-color: #000; outline: none; }
-.admin-actions { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
 .modal-action-btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; }
 .save-btn { background: #4737ff; color: #fff; }
 .delete-btn { color: #ff3b30; background: none; font-size: 13px; text-decoration: underline; margin-top: 5px; cursor: pointer; }
 
-/* THEMES PREVIEW */
+/* THEMES */
 .theme-preview-box { height: 100px; border-radius: 16px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; border: 2px solid #000; }
 .theme-controls { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .theme-char-preview { font-size: 40px; }
+.nav-arrow.static { opacity: 1; pointer-events: all; position: static; transform: none; background: #444; color: #fff; border: none; width: 30px; height: 30px; }
 
-/* --- 20+ THEMES --- */
-/* Basic Colors */
+/* PATTERNS */
 .bs-pattern { background: radial-gradient(circle at top right, #6a35ff, #3d22b3); color: white; }
 .coc-pattern { background: #eecda3; background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,0.1) 40px); color: #442817; }
 .cr-pattern { background: #2b3b75; background-image: linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d), linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d); background-size: 40px 40px; color: white; }
 .hd-pattern { background: linear-gradient(180deg, #6ecbf5 0%, #b2e6ff 30%, #ffd966 100%); color: #2a5a00; }
 
-/* Advanced Themes */
-.theme-arena { background: #2b3b75; color: white; position: relative; overflow: hidden; } /* Add chess animation here if needed */
-.theme-inferno { background: linear-gradient(0deg, #500000, #ff4500); color: white; }
-.theme-cyber { background: #000; border: 2px solid #0ff; color: #0ff; }
-.theme-forest { background: #2a5a00; color: #a8e063; }
+/* EXTRA THEMES */
+.theme-arena { background: #2b3b75; color: white; overflow: hidden; }
+.theme-arena::before { content: '♟️'; position: absolute; font-size: 20px; animation: troopMove 6s linear infinite; top: 20%; left: -20px; }
+@keyframes troopMove { 0% { transform: translateX(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateX(400px); opacity: 0; } }
 .theme-gold { background: radial-gradient(circle, #ffd700, #b8860b); color: #442817; }
-.theme-ice { background: linear-gradient(135deg, #e0f7fa 0%, #00bcd4 100%); color: #006064; }
 .theme-space { background: #0b0d17; color: white; }
+.theme-forest { background: #2a5a00; color: #a8e063; }
+.theme-cyber { background: #000; border: 2px solid #0ff; color: #0ff; }
 .theme-candy { background: repeating-linear-gradient(45deg, #ff9a9e, #ff9a9e 10px, #fad0c4 10px, #fad0c4 20px); color: #d81b60; }
+.theme-water { background: linear-gradient(180deg, #4fc3f7, #0288d1); color: white; }
+.theme-ice { background: linear-gradient(135deg, #e0f7fa 0%, #00bcd4 100%); color: #006064; }
+.theme-inferno { background: linear-gradient(0deg, #500000, #ff4500); color: white; }
 .theme-blueprint { background: #0d47a1; color: white; }
 .theme-matrix { background: #000; color: #0f0; }
-.theme-water { background: linear-gradient(180deg, #4fc3f7, #0288d1); color: white; }
 .theme-noir { background: #222; color: #ddd; }
 .theme-glitch { background: #222; color: #0ff; }
 .theme-sunset { background: linear-gradient(180deg, #ff512f, #dd2476); color: white; }
@@ -202,14 +161,13 @@ body {
 .theme-galaxy { background: linear-gradient(135deg, #1a2980, #26d0ce); color: white; }
 .theme-lava { background: radial-gradient(circle at bottom, #ff0, #f00, #300); color: white; }
 
-/* Dynamic Background Classes for Pages */
+/* Dynamic Page Backgrounds */
 .bs-bg { background: #4737ff; color: white; }
 .coc-bg { background: #5c3c2e; color: white; }
 .cr-bg { background: #2b3b75; color: white; }
 .hd-bg { background: #6ecbf5; color: #2a5a00; }
-/* Generic mapping for other themes */
-.theme-arena-bg, .theme-space-bg, .theme-blueprint-bg { background: #1a1a2e; color: white; }
+.theme-arena-bg, .theme-space-bg, .theme-blueprint-bg, .theme-galaxy-bg { background: #1a1a2e; color: white; }
 .theme-gold-bg, .theme-candy-bg, .theme-paper-bg { background: #fff8e1; color: #333; }
 .theme-ice-bg, .theme-water-bg { background: #e0f7fa; color: #006064; }
-.theme-inferno-bg, .theme-lava-bg { background: #3e0000; color: white; }
+.theme-inferno-bg, .theme-lava-bg, .theme-sunset-bg { background: #3e0000; color: white; }
 .theme-forest-bg, .theme-toxic-bg { background: #1b5e20; color: white; }
