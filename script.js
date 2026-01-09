@@ -50,35 +50,32 @@ const app = {
             });
         });
     },
-
-    // FIX: Corrected the render function for Clash Royale
+    
+    // FIX: Final corrected render function for all cards
     renderHub: () => {
         const grid = document.getElementById('hub-grid');
         const gameCardsHTML = DB.map(game => {
+            // Determine the pattern class
+            let patternClass = `${game.theme}-pattern`;
+            let characterHTML = `<div class="card-character ${game.anim}">${game.character}</div>`;
+
+            // Special case for Clash Royale to inject the arena
             if (game.id === 'clashroyale') {
-                return `
-                    <div class="game-card ${game.theme}-card" onclick="app.openGame('${game.id}')">
-                        <div class="card-bg cr-battle-arena-pattern">
-                            <div class="arena-projectiles">
-                                <span class="projectile fire">🔥</span>
-                                <span class="projectile swords">⚔️</span>
-                            </div>
-                            <div class="card-content-overlay">
-                                <div class="game-info">
-                                    <h3>${game.name}</h3>
-                                    <span class="action-text">View Offers →</span>
-                                </div>
-                                <div class="game-icon-box ${game.theme}-icon">${game.icon}</div>
-                            </div>
+                 patternClass = 'cr-battle-arena-wrapper'; // Use a wrapper class
+                 characterHTML = `
+                    <div class="cr-battle-arena-pattern">
+                         <div class="arena-projectiles">
+                            <span class="projectile fire">🔥</span>
+                            <span class="projectile swords">⚔️</span>
                         </div>
                     </div>
-                `;
+                 `;
             }
             
             return `
                 <div class="game-card ${game.theme}-card" onclick="app.openGame('${game.id}')">
-                    <div class="card-bg ${game.theme}-pattern">
-                        <div class="card-character ${game.anim}">${game.character}</div>
+                    <div class="card-bg">
+                        ${characterHTML}
                     </div>
                     <div class="card-content">
                         <div class="game-info">
