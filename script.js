@@ -55,11 +55,11 @@ const app = {
 renderHub: () => {
     const grid = document.getElementById('hub-grid');
     const gameCardsHTML = DB.map(game => {
-        let patternClass = `${game.theme}-pattern`;
+        
         let characterHTML = `<div class="card-character ${game.anim}">${game.character}</div>`;
-
+        
+        // Особый случай для Clash Royale, который не использует эмодзи персонажа
         if (game.id === 'clashroyale') {
-             patternClass = 'cr-battle-arena-wrapper';
              characterHTML = `
                 <div class="cr-battle-arena-pattern">
                      <div class="arena-projectiles">
@@ -70,11 +70,10 @@ renderHub: () => {
              `;
         }
         
-        // ИЗМЕНЕНИЕ ЗДЕСЬ: в onclick теперь передается 'this', чтобы
-        // функция знала, по какому элементу кликнули.
+        // Теперь код просто берет имя класса фона из базы данных
         return `
             <div class="game-card ${game.theme}-card" onclick="app.openGame('${game.id}', this)">
-                <div class="card-bg ${patternClass}">
+                <div class="card-bg ${game.pattern}"> 
                     ${characterHTML}
                 </div>
                 <div class="card-content">
@@ -89,7 +88,6 @@ renderHub: () => {
     }).join('');
     grid.innerHTML = gameCardsHTML;
 },
-
     // И ЗАМЕНИТЕ ЕЕ НА ЭТОТ НОВЫЙ КОД:
 openGame: (gameId, clickedCard) => {
     const game = DB.find(g => g.id === gameId);
