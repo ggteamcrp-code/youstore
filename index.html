@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Supercell YouStore</title>
-    <link rel="stylesheet" href="styles.css?v=34.0">
+    <link rel="stylesheet" href="styles.css?v=35.0">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
@@ -83,8 +83,8 @@
         </div>
     </div>
 
-    <div id="collab-login-modal" class="modal-overlay">
-    <div class="modal-content">
+    <div id="collab-login-modal" class="modal-overlay" onclick="app.closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
             <div class="collab-header">
                 YOUSTORE <span class="collab-x">X</span> SUPERCELL <span class="id-bold">ID</span>
