@@ -314,8 +314,38 @@ contactSupport: () => {
     updateCartUI: () => { const c = state.cart.length; const b = document.getElementById('cart-count'); b.textContent = c; if (c > 0) b.classList.remove('hidden'); else b.classList.add('hidden'); const t = state.cart.reduce((a,b)=>a+b.price,0); document.getElementById('cart-total').textContent = '$'+t.toFixed(2); },
     toggleCart: () => { const m = document.getElementById('cart-modal'); if (!m.classList.contains('open')) { app.renderCartItems(); document.getElementById('promo-input').value = ''; document.getElementById('promo-msg').classList.add('hidden'); } m.classList.toggle('open'); },
     renderCartItems: () => { const l = document.getElementById('cart-items'); if (state.cart.length === 0) { l.innerHTML = '<div style="padding:20px 0; color:#999;">Cart is empty</div>'; } else { l.innerHTML = state.cart.map((item, i) => { const isPromo = item.isPromo; const itemClass = isPromo ? 'cart-item promo-item' : 'cart-item'; const baseStyle = isPromo ? '' : 'display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #eee;'; const priceHTML = item.originalPrice ? `<span class="old-price">$${item.originalPrice.toFixed(2)}</span><span class="new-price">FREE</span><span class="promo-badge">GIFT</span>` : `<span style="color:#666;">$${item.price.toFixed(2)}</span>`; return `<div class="${itemClass}" style="${baseStyle}"><div style="text-align:left;"><b style="font-size:14px; display:block; margin-bottom:4px;">${item.name}</b>${priceHTML}</div><div onclick="app.removeFromCart(${i})" style="color:${isPromo?'#442817':'#ff3b30'}; font-weight:900; cursor:pointer; padding:5px; font-size:16px; opacity:0.7;">✕</div></div>`; }).join(''); } },
-    checkout: () => { if (!state.isLoggedIn) { app.toggleCart(); setTimeout(() => { tg.showAlert('Please Log In first'); app.toggleLogin(); }, 300); return; } if (state.cart.length === 0) return; const amount = state.cart.reduce((a,b)=>a+b.price,0).toFixed(2); tg.showPopup({ title: 'Purchase', message: `Pay $${amount}?`, buttons: [{type:'ok', text:'Pay'}, {type:'cancel'}] }, (id) => { if (id === 'ok') { state.cart = []; app.saveState(); app.updateCartUI(); app.toggleCart(); tg.HapticFeedback.notificationOccurred('success'); } }); },
-    toggleLogin: () => { if(state.isLoggedIn) return; document.getElementById('login-modal').classList.toggle('open'); },
+    // И ЗАМЕНИТЕ ЕЕ НА ЭТОТ КОД:
+checkout: () => {
+    // Если пользователь не залогинен...
+    if (!state.isLoggedIn) {
+        // ...закрываем корзину...
+        app.toggleCart(); 
+        // ...и через мгновение запускаем нашу новую, красивую анимацию логина.
+        setTimeout(() => {
+            tg.showAlert('Please Log In first');
+            app.handleAuthClick(); // <-- ГЛАВНОЕ ИЗМЕНЕНИЕ: вызываем правильную функцию
+        }, 300);
+        return; 
+    } 
+
+    if (state.cart.length === 0) return; 
+
+    const amount = state.cart.reduce((a,b)=>a+b.price,0).toFixed(2); 
+    tg.showPopup({ 
+        title: 'Purchase', 
+        message: `Pay $${amount}?`, 
+        buttons: [{type:'ok', text:'Pay'}, {type:'cancel'}] 
+    }, (id) => { 
+        if (id === 'ok') { 
+            state.cart = []; 
+            app.saveState(); 
+            app.updateCartUI(); 
+            app.toggleCart(); 
+            tg.HapticFeedback.notificationOccurred('success'); 
+        } 
+    }); 
+},
+    _LEGACY_toggleLogin: () => { if(state.isLoggedIn) return; document.getElementById('login-modal').classList.toggle('open'); },
     processLogin: () => { const e = document.getElementById('email-input').value; if(!e.includes('@')) return; document.querySelector('.login-step-1').classList.add('hidden'); document.querySelector('.login-loader').classList.remove('hidden'); setTimeout(() => { state.isLoggedIn = true; state.userEmail = e; app.saveState(); document.getElementById('login-modal').classList.remove('open'); app.checkLoginUI(); setTimeout(() => { document.querySelector('.login-step-1').classList.remove('hidden'); document.querySelector('.login-loader').classList.add('hidden'); }, 500); }, 1500); },
     checkLoginUI: () => { const btn = document.querySelector('.login-btn'); if(state.isLoggedIn) { const name = state.userEmail.split('@')[0]; btn.innerHTML = `👤 ${name.slice(0,8)}`; btn.style.background = '#28ca42'; btn.style.color = '#fff'; } else { btn.innerHTML = `LOG IN <span class="id-icon">ID</span>`; } }
 };
