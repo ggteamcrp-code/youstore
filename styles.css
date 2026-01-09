@@ -40,7 +40,7 @@ body { margin: 0; padding: 0; font-family: var(--font); background-color: var(--
 .game-card:active { transform: scale(0.97) !important; }
 
 .card-bg { height: 150px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease-out; }
-.card-character { transition: transform 0.2s ease-out; transform-style: preserve-3d; }
+.card-character { transition: transform 0.2s ease-out; transform-style: preserve-3d; z-index: 5; } /* Added z-index */
 
 .bs-pattern { background: radial-gradient(circle at top right, #6a35ff, #3d22b3); }
 .bs-pattern::before { content: ''; position: absolute; width: 100%; height: 100%; background-image: radial-gradient(rgba(255,255,255,0.15) 2px, transparent 2px); background-size: 24px 24px; opacity: 0.6; }
@@ -54,12 +54,15 @@ body { margin: 0; padding: 0; font-family: var(--font); background-color: var(--
 .hd-pattern::before { content: ''; position: absolute; top: 50%; left: 50%; width: 200%; height: 200%; background: conic-gradient(from 0deg, rgba(255,255,255,0.4) 0deg 20deg, transparent 20deg 40deg, rgba(255,255,255,0.4) 40deg 60deg, transparent 60deg 80deg, rgba(255,255,255,0.4) 80deg 100deg, transparent 100deg 120deg, rgba(255,255,255,0.4) 120deg 140deg, transparent 140deg 160deg, rgba(255,255,255,0.4) 160deg 180deg, transparent 180deg 200deg, rgba(255,255,255,0.4) 200deg 220deg, transparent 220deg 240deg, rgba(255,255,255,0.4) 240deg 260deg, transparent 260deg 280deg, rgba(255,255,255,0.4) 280deg 300deg, transparent 300deg 320deg, rgba(255,255,255,0.4) 320deg 340deg, transparent 340deg 360deg); transform: translate(-50%, -50%); animation: rotateRays 20s linear infinite; }
 .card-character.bouncing { font-size: 75px; position: relative; z-index: 1; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.2)); animation: bounceChar 1.5s infinite; }
 
-/* FIX: Corrected height for CR Arena Pattern */
+/* FIX: Corrected Clash Royale Arena implementation */
+.cr-battle-arena-wrapper { background: transparent !important; }
 .cr-battle-arena-pattern {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background: linear-gradient(to bottom, #b1ec82, #89d05a);
-    position: relative;
     overflow: hidden;
-    height: 150px; /* This was the missing rule! */
+    z-index: 1;
 }
 .cr-battle-arena-pattern::before {
     content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 35px;
@@ -80,24 +83,13 @@ body { margin: 0; padding: 0; font-family: var(--font); background-color: var(--
 @keyframes fire-fly { from { transform: translate(30px, 0) scale(0.8); } to { transform: translate(250px, 40px) scale(1.2) rotate(90deg); } }
 @keyframes swords-fly { from { transform: translate(-30px, 0) scale(0.8) rotate(180deg); } to { transform: translate(-250px, -40px) scale(1.2) rotate(270deg); } }
 
-.card-content-overlay {
-    position: absolute; bottom: 0; left: 0; width: 100%;
-    padding: 18px 20px;
-    display: flex; align-items: center; justify-content: space-between;
-    box-sizing: border-box;
-    z-index: 10;
-    background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
-}
-.card-content-overlay .game-info h3 { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.7); }
-.card-content-overlay .action-text { color: #eee; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-
 
 @keyframes float { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
 @keyframes clash { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1) rotate(10deg); } }
 @keyframes rotateRays { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 @keyframes bounceChar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px) scaleY(0.9); } }
 
-.card-content { padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; }
+.card-content { padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 10; }
 .game-info { display: flex; flex-direction: column; gap: 4px; }
 .game-info h3 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: 0.3px; }
 .action-text { font-size: 12px; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -181,3 +173,4 @@ input[type="email"], #promo-input { width: 100%; box-sizing: border-box; padding
 .cr-bg-dynamic { background-color: var(--cr-color); background-image: linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366), linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366); background-position: 0 0, 20px 20px; background-size: 40px 40px; color: white; }
 .hd-bg-dynamic { background: linear-gradient(180deg, #6ecbf5 0%, #b2e6ff 30%, #ffd966 100%); color: #000; }
 .hd-bg-dynamic .back-btn, .hd-bg-dynamic .game-logo, .hd-bg-dynamic .section-title { color: #2a5a00; text-shadow: none; }
+
