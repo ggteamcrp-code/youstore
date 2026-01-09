@@ -41,7 +41,17 @@ body { margin: 0; padding: 0; font-family: var(--font); background-color: var(--
 
 .card-bg { height: 150px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease-out; }
 .card-character { transition: transform 0.2s ease-out; transform-style: preserve-3d; z-index: 5; } /* Added z-index */
-
+/* ДОБАВЬТЕ ЭТОТ НОВЫЙ КЛАСС СРАЗУ ПОСЛЕ НЕГО */
+.card-character-img {
+    height: 90%; /* Занимает почти всю высоту фона */
+    width: auto;
+    max-width: 90%; /* Чтобы не прилипало к краям */
+    object-fit: contain; /* Сохраняет пропорции */
+    transition: transform 0.2s ease-out;
+    transform-style: preserve-3d;
+    z-index: 5;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));
+}
 .bs-pattern { background: radial-gradient(circle at top right, #6a35ff, #3d22b3); }
 .bs-pattern::before { content: ''; position: absolute; width: 100%; height: 100%; background-image: radial-gradient(rgba(255,255,255,0.15) 2px, transparent 2px); background-size: 24px 24px; opacity: 0.6; }
 .card-character.floating { font-size: 80px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); animation: float 3s ease-in-out infinite; }
