@@ -51,7 +51,7 @@ const app = {
         });
     },
     
-    // FINAL FIX: Correctly apply patternClass to all cards
+    // FINAL, FINAL FIX: Correctly apply patternClass to all cards in the return statement
     renderHub: () => {
         const grid = document.getElementById('hub-grid');
         const gameCardsHTML = DB.map(game => {
@@ -59,7 +59,8 @@ const app = {
             let characterHTML = `<div class="card-character ${game.anim}">${game.character}</div>`;
 
             if (game.id === 'clashroyale') {
-                 patternClass = 'cr-battle-arena-wrapper';
+                 patternClass = 'cr-battle-arena-wrapper'; // This class is for the container
+                 // The characterHTML is replaced by the whole arena structure
                  characterHTML = `
                     <div class="cr-battle-arena-pattern">
                          <div class="arena-projectiles">
@@ -70,6 +71,7 @@ const app = {
                  `;
             }
             
+            // The bug was here. Now ${patternClass} is correctly placed.
             return `
                 <div class="game-card ${game.theme}-card" onclick="app.openGame('${game.id}')">
                     <div class="card-bg ${patternClass}">
