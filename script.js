@@ -251,11 +251,6 @@ openGame: (gameId, clickedCard) => {
     saveState: () => { localStorage.setItem('supercell_cart', JSON.stringify(state.cart)); localStorage.setItem('supercell_login', JSON.stringify({ isLoggedIn: state.isLoggedIn, email: state.userEmail, usedPromos: state.usedPromos || [], promoUsageCount: state.promoUsageCount || {} })); },
     loadState: () => { try { const savedCart = localStorage.getItem('supercell_cart'); const savedLogin = localStorage.getItem('supercell_login'); if (savedCart) state.cart = JSON.parse(savedCart); if (savedLogin) { const d = JSON.parse(savedLogin); state.isLoggedIn = d.isLoggedIn; state.userEmail = d.email; state.usedPromos = d.usedPromos || []; state.promoUsageCount = d.promoUsageCount || {}; } } catch(e) {} },
     handleAuthClick: () => {
-    // ... ее текущий, неправильный код ...
-},
-
-// И ЗАМЕНИТЕ ЕЕ НА ЭТОТ ПРАВИЛЬНЫЙ КОД:
-handleAuthClick: () => {
     // ЕСЛИ пользователь залогинен...
     if (state.isLoggedIn) {
         // ...показываем стандартное окно подтверждения выхода
