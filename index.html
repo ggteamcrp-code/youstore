@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Supercell Store</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=11.0">
+    <link rel="stylesheet" href="styles.css?v=7.0">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
+    <!-- NAVBAR (Без изменений) -->
     <nav class="navbar">
-        <!-- УБРАЛ onclick="app.router('hub')" ОТСЮДА -->
-        <div class="logo-container" id="logo-trigger">
+        <!-- ...код навбара... -->
+        <div class="logo-container" onclick="app.router('hub')">
             <div class="supercell-logo">SUPER<br>CELL</div>
             <div class="store-badge">STORE</div>
         </div>
         <div class="nav-actions">
-            <div id="export-btn" class="export-icon hidden" onclick="admin.exportConfig()">📤</div>
             <div id="cart-btn" class="cart-icon" onclick="app.toggleCart()">
                 🛒 <span id="cart-count" class="cart-badge hidden">0</span>
             </div>
@@ -27,50 +27,53 @@
         </div>
     </nav>
 
-    <!-- HUB -->
+    <!-- HUB VIEW -->
     <main id="view-hub" class="view active">
         <div class="container">
             <div class="hub-header">
                 <h1>Choose Game</h1>
                 <p>Select a universe to view offers</p>
-                <div id="grid-toggle" class="grid-toggle hidden" onclick="admin.toggleGrid()">⊞ Layout</div>
             </div>
+            <!-- ПУСТОЙ КОНТЕЙНЕР! JS САМ ЗАПОЛНИТ ЕГО -->
             <div id="hub-grid" class="games-grid"></div>
-            <div id="add-game-btn" class="add-game-card hidden" onclick="admin.openEditor('new_game')"><div class="plus-icon">+</div></div>
         </div>
     </main>
 
-    <!-- GAME PAGE -->
+    <!-- DYNAMIC GAME VIEW (ОДИН ШАБЛОН ДЛЯ ВСЕХ ИГР) -->
     <main id="view-game" class="view">
         <div class="sub-header">
             <div class="back-btn" onclick="app.router('hub')">‹ Back</div>
-            <div id="game-title" class="game-logo">GAME</div>
+            <div id="game-title" class="game-logo">GAME NAME</div>
         </div>
-        <section class="hero-section"><div id="game-hero"></div></section>
+        
+        <section class="hero-section">
+            <!-- Сюда JS вставит героя -->
+            <div id="game-hero"></div>
+        </section>
+
         <section class="offers-section">
             <div class="section-title">OFFERS</div>
-            <div class="carousel-wrapper">
-                <div class="nav-arrow left" onclick="app.scrollCarousel(-1)">‹</div>
-                <div class="carousel-track" id="prod-track"></div>
-                <div class="nav-arrow right" onclick="app.scrollCarousel(1)">›</div>
-                <div id="add-prod-btn" class="add-prod-card hidden" onclick="admin.addProduct()"><span>+</span></div>
-            </div>
+            <!-- Сюда JS вставит товары -->
+            <div id="game-offers"></div>
         </section>
     </main>
 
-    <!-- MODALS -->
+    <!-- MODALS (LOGIN & CART) - Оставляем как было -->
     <div id="login-modal" class="modal-overlay">
+        <!-- ...код логина... -->
         <div class="modal-content">
             <div class="modal-header"><h2>SUPERCELL <span class="id-bold">ID</span></h2><span class="close-btn" onclick="app.toggleLogin()">✕</span></div>
             <div class="login-step-1">
+                <h3>Log in to Store</h3><p>Enter your email to save progress.</p>
                 <input type="email" id="email-input" placeholder="Enter your email">
                 <button class="modal-action-btn" onclick="app.processLogin()">LOG IN</button>
             </div>
-            <div class="login-loader hidden"><div class="spinner"></div></div>
+            <div class="login-loader hidden"><div class="spinner"></div><p>Checking ID...</p></div>
         </div>
     </div>
 
     <div id="cart-modal" class="modal-overlay">
+         <!-- ...код корзины... -->
         <div class="modal-content cart-content">
             <div class="modal-header"><h2>Your Cart 🛒</h2><span class="close-btn" onclick="app.toggleCart()">✕</span></div>
             <div id="cart-items" class="cart-list"></div>
@@ -88,31 +91,7 @@
         </div>
     </div>
 
-    <!-- ADMIN MODALS -->
-    <div id="admin-modal" class="modal-overlay">
-        <div class="modal-content admin-content">
-            <div class="modal-header"><h2>🛠 EDITOR</h2><span class="close-btn" onclick="document.getElementById('admin-modal').classList.remove('open')">✕</span></div>
-            <div id="admin-editor" class="admin-editor"></div>
-            <div class="admin-actions">
-                <button class="modal-action-btn save-btn" onclick="admin.save()">💾 SAVE</button>
-                <button class="text-btn delete-btn" id="delete-trigger" onclick="admin.deleteItem()">🗑 DELETE</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="theme-modal" class="modal-overlay">
-        <div class="modal-content theme-content">
-            <div class="modal-header"><h2>🎨 THEMES</h2><span class="close-btn" onclick="document.getElementById('theme-modal').classList.remove('open')">✕</span></div>
-            <div class="theme-preview-box" id="theme-preview-box"><div class="theme-char-preview">💀</div></div>
-            <div class="theme-controls">
-                <button class="nav-arrow static" onclick="admin.changeThemePreview(-1)">‹</button>
-                <h3 id="theme-name-display">Default</h3>
-                <button class="nav-arrow static" onclick="admin.changeThemePreview(1)">›</button>
-            </div>
-            <button class="modal-action-btn save-btn" onclick="admin.applyTheme()">APPLY</button>
-        </div>
-    </div>
-
+    <!-- ВАЖНО: Сначала база данных, потом скрипт -->
     <script src="database.js"></script>
     <script src="script.js"></script>
 </body>
