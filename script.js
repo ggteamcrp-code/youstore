@@ -4,7 +4,8 @@ const state = {
     cart: [],
     isLoggedIn: false,
     userEmail: '',
-    usedPromos: [] // Защита от повторного ввода
+    usedPromos: [], // Список активированных кодов
+    promoUsageCount: {} // Счетчик использования кодов (глобально имитируем)
 };
 
 const app = {
@@ -12,7 +13,7 @@ const app = {
         tg.expand();
         tg.ready();
         
-        // Hide all views initially
+        // Safety Hide
         document.querySelectorAll('.view').forEach(el => el.style.display = 'none');
         
         app.loadState();
@@ -27,7 +28,8 @@ const app = {
         localStorage.setItem('supercell_login', JSON.stringify({
             isLoggedIn: state.isLoggedIn,
             email: state.userEmail,
-            usedPromos: state.usedPromos || []
+            usedPromos: state.usedPromos || [],
+            promoUsageCount: state.promoUsageCount || {}
         }));
     },
 
@@ -41,41 +43,49 @@ const app = {
                 state.isLoggedIn = d.isLoggedIn;
                 state.userEmail = d.email;
                 state.usedPromos = d.usedPromos || [];
+                state.promoUsageCount = d.promoUsageCount || {};
             }
         } catch(e) {}
     },
 
-    // --- LOGOUT LOGIC ---
+    // --- LOGOUT LOGIC (FIXED) ---
     handleAuthClick: () => {
         if (state.isLoggedIn) {
-            // Если уже залогинен -> Предлагаем выйти
+            // Используем нативный Telegram попап
             tg.showPopup({
-                title: 'Log Out?',
-                message: 'Your cart will be cleared. Are you sure?',
-                buttons: [{type: 'destructive', text: 'Log Out'}, {type: 'cancel'}]
-            }, (id) => {
-                if (id === 'destructive') {
+                title: 'Log Out',
+                message: 'Are you sure? Your cart will be cleared.',
+                buttons: [
+                    {id: 'logout', type: 'destructive', text: 'Log Out'},
+                    {id: 'cancel', type: 'cancel'}
+                ]
+            }, (btnId) => {
+                if (btnId === 'logout') {
                     app.logout();
                 }
             });
         } else {
-            // Если не залогинен -> Открываем окно входа
             app.toggleLogin();
         }
     },
 
     logout: () => {
+        // Полный сброс
         state.isLoggedIn = false;
         state.userEmail = '';
-        state.cart = []; // Очищаем корзину как в ТЗ
-        state.usedPromos = [];
+        state.cart = [];
+        state.usedPromos = []; 
+        // promoUsageCount НЕ сбрасываем, так как это "глобальный" лимит на код
+        
         app.saveState();
         app.checkLoginUI();
         app.updateCartUI();
+        app.router('hub'); // Возвращаем на главную
+        
         tg.HapticFeedback.notificationOccurred('success');
     },
 
-    // --- PROMO CODE LOGIC ---
+    // --- PROMO CODE LOGIC (WOW EFFECT) ---
     redeemCode: () => {
         const input = document.getElementById('promo-input');
         const msg = document.getElementById('promo-msg');
@@ -84,47 +94,68 @@ const app = {
         if (!code) return;
 
         // Код из ТЗ: /PRM1423PP
-        if (code === '/PRM1423PP') {
+        const PROMO_CODE = '/PRM1423PP';
+        const MAX_USES = 100;
+
+        if (code === PROMO_CODE) {
+            // 1. Проверка: уже использовал?
             if (state.usedPromos.includes(code)) {
-                msg.textContent = 'Code already used!';
-                msg.className = 'promo-msg error';
-                msg.classList.remove('hidden');
-                tg.HapticFeedback.notificationOccurred('error');
+                app.showPromoMessage('You already used this code!', 'error');
                 return;
             }
 
-            // Добавляем PRO PASS за 0
-            state.cart.push({
+            // 2. Проверка: лимит исчерпан?
+            const currentUses = state.promoUsageCount[code] || 0;
+            if (currentUses >= MAX_USES) {
+                app.showPromoMessage('Code expired (Limit reached)', 'error');
+                return;
+            }
+
+            // SUCCESS FLOW
+            // Увеличиваем счетчик
+            state.promoUsageCount[code] = currentUses + 1;
+            state.usedPromos.push(code);
+
+            // Добавляем золотой товар
+            state.cart.unshift({ // unshift чтобы добавился сверху
                 name: 'PRO PASS',
                 price: 0,
-                originalPrice: 9.99, // Старая цена
+                originalPrice: 9.99,
                 isPromo: true,
                 id: Date.now()
             });
             
-            state.usedPromos.push(code);
             app.saveState();
             app.updateCartUI();
-            app.renderCartItems(); // Обновляем список сразу
+            app.renderCartItems(); 
 
+            // Очистка и сообщение
             input.value = '';
-            msg.textContent = 'Promo Applied! Free Item Added.';
-            msg.className = 'promo-msg success';
-            msg.classList.remove('hidden');
-            tg.HapticFeedback.notificationOccurred('success');
+            app.showPromoMessage(`✨ Success! (${state.promoUsageCount[code]}/${MAX_USES} claimed)`, 'success');
             
-            // Эффект конфетти (вибрация)
-            setTimeout(() => tg.HapticFeedback.impactOccurred('heavy'), 100);
+            // SUPER HAPTICS & CONFETTI FEELS
+            tg.HapticFeedback.notificationOccurred('success');
+            setTimeout(() => tg.HapticFeedback.impactOccurred('heavy'), 150);
+            setTimeout(() => tg.HapticFeedback.impactOccurred('heavy'), 300);
 
         } else {
-            msg.textContent = 'Invalid Code';
-            msg.className = 'promo-msg error';
-            msg.classList.remove('hidden');
+            app.showPromoMessage('Invalid Promo Code', 'error');
             tg.HapticFeedback.notificationOccurred('error');
         }
     },
 
-    // Остальная логика без изменений (router, addToCart, checkout...)
+    showPromoMessage: (text, type) => {
+        const msg = document.getElementById('promo-msg');
+        msg.textContent = text;
+        msg.className = `promo-msg ${type}`;
+        msg.classList.remove('hidden');
+        // Автоскрытие через 3 сек
+        setTimeout(() => {
+            msg.classList.add('hidden');
+        }, 4000);
+    },
+
+    // Standard Methods...
     router: (viewId) => {
         document.querySelectorAll('.view').forEach(el => {
             el.classList.remove('active');
@@ -166,6 +197,7 @@ const app = {
         if (!state.isLoggedIn) {
             loginBtn.style.background = btnBg;
             loginBtn.style.color = btnColor;
+            loginBtn.innerHTML = `LOG IN <span class="id-icon">ID</span>`;
         } else {
              app.checkLoginUI();
         }
@@ -205,9 +237,8 @@ const app = {
         const modal = document.getElementById('cart-modal');
         if (!modal.classList.contains('open')) {
             app.renderCartItems();
-            // Сброс сообщения промокода
-            document.getElementById('promo-msg').classList.add('hidden');
             document.getElementById('promo-input').value = '';
+            document.getElementById('promo-msg').classList.add('hidden');
         }
         modal.classList.toggle('open');
     },
@@ -218,26 +249,24 @@ const app = {
             list.innerHTML = '<div style="padding:20px 0; color:#999;">Cart is empty</div>';
         } else {
             list.innerHTML = state.cart.map((item, i) => {
-                // Если есть старая цена, рисуем её
+                // ВИЗУАЛ ДЛЯ ПРОМО
+                const isPromo = item.isPromo;
+                const itemClass = isPromo ? 'cart-item promo-item' : 'cart-item';
+                
+                // Стиль для обычных товаров
+                const baseStyle = isPromo ? '' : 'display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #eee;';
+
                 const priceHTML = item.originalPrice 
-                    ? `<span class="old-price">$${item.originalPrice}</span> <span class="new-price">$0.00</span> <span class="promo-badge">GIFT</span>`
-                    : `<span>$${item.price}</span>`;
-                
-                // Класс для подсветки промо-товара
-                const itemClass = item.isPromo ? 'cart-item promo-item' : 'cart-item';
-                
-                // Обычный стиль для элемента
-                const style = item.isPromo 
-                    ? '' // Стили заданы в CSS классе
-                    : 'display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee;';
+                    ? `<span class="old-price">$${item.originalPrice}</span><span class="new-price">FREE</span><span class="promo-badge">GIFT</span>`
+                    : `<span style="color:#666;">$${item.price}</span>`;
 
                 return `
-                <div class="${itemClass}" style="${style}">
+                <div class="${itemClass}" style="${baseStyle}">
                     <div style="text-align:left;">
-                        <b style="font-size:14px;">${item.name}</b><br>
-                        <span style="color:#666; font-size:13px;">${priceHTML}</span>
+                        <b style="font-size:14px; display:block; margin-bottom:4px;">${item.name}</b>
+                        ${priceHTML}
                     </div>
-                    <div onclick="app.removeFromCart(${i})" style="color:red; font-weight:bold; cursor:pointer; padding:5px;">✕</div>
+                    <div onclick="app.removeFromCart(${i})" style="color:${isPromo?'#442817':'#ff3b30'}; font-weight:900; cursor:pointer; padding:5px; font-size:16px; opacity:0.7;">✕</div>
                 </div>
             `}).join('');
         }
@@ -262,7 +291,7 @@ const app = {
         }, (id) => {
             if (id === 'ok') {
                 state.cart = [];
-                state.usedPromos = []; // Опционально сбрасываем использованные коды после покупки
+                // Промокоды НЕ сбрасываем, чтобы нельзя было абузить
                 app.saveState();
                 app.updateCartUI();
                 app.toggleCart();
@@ -308,9 +337,9 @@ const app = {
             btn.style.background = '#28ca42';
             btn.style.color = '#fff';
         } else {
-            // Если вышли - возвращаем стандартный вид
+            // Reset to defaults
             btn.innerHTML = `LOG IN <span class="id-icon">ID</span>`;
-            // Цвет кнопки сбросится роутером
+            // Цвет будет установлен роутером
         }
     }
 };
