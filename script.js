@@ -14,10 +14,10 @@ const app = {
         tg.expand();
         tg.ready();
         
-        // 1. РЕНДЕРИМ ХАБ ИЗ БАЗЫ ДАННЫХ
         app.renderHub();
+        // NEW: Инициализируем 3D-эффекты для карточек
+        app.initCardFX(); 
 
-        // 2. Стандартная инициализация
         document.querySelectorAll('.view').forEach(el => el.style.display = 'none');
         app.loadState();
         app.updateCartUI();
@@ -25,23 +25,61 @@ const app = {
         app.router('hub');
     },
 
-    // --- NEW: RENDER ENGINE ---
+    // NEW: Функция для инициализации 3D-эффекта на карточках
+    initCardFX: () => {
+        document.querySelectorAll('.game-card').forEach(card => {
+            const bg = card.querySelector('.card-bg');
+            const character = card.querySelector('.card-character');
+
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                // Чувствительность наклона
+                const rotateX = (y - centerY) / 15;
+                const rotateY = (centerX - x) / 15;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+                // Двигаем дочерние элементы для создания глубины
+                if(bg) bg.style.transform = 'translateZ(20px)';
+                if(character) character.style.transform = 'translateZ(50px)';
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+                if(bg) bg.style.transform = 'translateZ(0)';
+                if(character) character.style.transform = 'translateZ(0)';
+            });
+        });
+    },
+
     renderHub: () => {
         const grid = document.getElementById('hub-grid');
-        grid.innerHTML = DB.map(game => `
-            <div class="game-card ${game.theme}-card" onclick="app.openGame('${game.id}')">
-                <div class="card-bg ${game.theme}-pattern">
-                    <div class="card-character ${game.anim}">${game.character}</div>
-                </div>
-                <div class="card-content">
-                    <div class="game-info">
-                        <h3>${game.name}</h3>
-                        <span class="action-text">View Offers →</span>
+        // NEW: Добавил новый фон cr-arena-pattern для Clash Royale в качестве примера
+        const gameCardsHTML = DB.map(game => {
+            let patternClass = `${game.theme}-pattern`;
+            if (game.id === 'clashroyale') {
+                 patternClass = 'cr-arena-pattern'; // Пример использования нового фона
+            }
+            return `
+                <div class="game-card ${game.theme}-card" onclick="app.openGame('${game.id}')">
+                    <div class="card-bg ${patternClass}">
+                        <div class="card-character ${game.anim}">${game.character}</div>
                     </div>
-                    <div class="game-icon-box ${game.theme}-icon">${game.icon}</div>
+                    <div class="card-content">
+                        <div class="game-info">
+                            <h3>${game.name}</h3>
+                            <span class="action-text">View Offers →</span>
+                        </div>
+                        <div class="game-icon-box ${game.theme}-icon">${game.icon}</div>
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
+        grid.innerHTML = gameCardsHTML;
     },
 
     openGame: (gameId) => {
@@ -50,146 +88,148 @@ const app = {
 
         state.activeGameId = gameId;
 
-        // 1. Заполняем заголовок
         document.getElementById('game-title').textContent = game.name.toUpperCase();
         
-        // 2. Заполняем Героя
-        const heroHTML = `
-            <div class="hero-card ${game.theme}-hero">
-                <div class="shine-effect"></div>
-                <div class="bonus-tag">${game.hero.tag}</div>
-                <div class="hero-content">
-                    <div class="hero-visual">${game.hero.visual}</div>
-                    <div class="hero-info">
-                        <h1>${game.hero.title}</h1>
-                        <p>${game.hero.desc}</p>
+        // NEW: Улучшенный Hero-блок с частицами для Brawl Stars
+        let heroHTML;
+        if (game.id === 'brawlstars') {
+            // Генерируем 50 частиц для фона
+            const particles = Array.from({ length: 50 }).map(() => `<div class="particle"></div>`).join('');
+            heroHTML = `
+                <div class="hero-card ${game.theme}-hero">
+                    <div class="shine-effect"></div>
+                    <div class="particles-container">${particles}</div> 
+                    <div class="bonus-tag">${game.hero.tag}</div>
+                    <div class="hero-content">
+                        <div class="hero-visual">${game.hero.visual}</div>
+                        <div class="hero-info">
+                            <h1>${game.hero.title}</h1>
+                            <p>${game.hero.desc}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
+        } else {
+             // Стандартный рендер для остальных игр
+             heroHTML = `
+                <div class="hero-card ${game.theme}-hero">
+                    <div class="shine-effect"></div>
+                    <div class="bonus-tag">${game.hero.tag}</div>
+                    <div class="hero-content">
+                        <div class="hero-visual">${game.hero.visual}</div>
+                        <div class="hero-info">
+                            <h1>${game.hero.title}</h1>
+                            <p>${game.hero.desc}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
         document.getElementById('game-hero').innerHTML = heroHTML;
 
-        // 3. Заполняем Товары
+        // NEW: Изменил вызов addToCart, чтобы передавать элемент для анимации
         const offersHTML = game.products.map(prod => `
             <div class="offer-card ${game.theme}-offer">
                 <span class="badge">${prod.badge}</span>
                 <div class="offer-visual">${prod.icon}</div>
                 <h3>${prod.name}</h3>
                 <p class="price">$${prod.price}</p>
-                <button class="buy-btn" onclick="app.addToCart('${prod.name}', ${prod.price})">Purchase</button>
+                <button class="buy-btn" onclick="app.addToCart(this, '${prod.name}', ${prod.price}, '${prod.icon}')">Purchase</button>
             </div>
         `).join('');
         document.getElementById('game-offers').innerHTML = offersHTML;
 
-        // 4. Переходим на универсальную страницу игры
         app.router('game');
     },
+    
+    // NEW: Полностью переработанная функция addToCart с анимацией полета
+    addToCart: (button, name, price, icon) => {
+        tg.HapticFeedback.impactOccurred('medium');
+
+        // 1. Создаем клон иконки для анимации
+        const flyingIcon = document.createElement('div');
+        flyingIcon.className = 'flying-icon';
+        flyingIcon.innerText = icon;
+        document.body.appendChild(flyingIcon);
+
+        // 2. Получаем координаты
+        const rect = button.closest('.offer-card').querySelector('.offer-visual').getBoundingClientRect();
+        const cartIcon = document.getElementById('cart-btn');
+        const cartRect = cartIcon.getBoundingClientRect();
+
+        // 3. Устанавливаем начальную позицию
+        flyingIcon.style.top = `${rect.top + rect.height / 2}px`;
+        flyingIcon.style.left = `${rect.left + rect.width / 2}px`;
+
+        // 4. Запускаем анимацию
+        requestAnimationFrame(() => {
+            flyingIcon.style.transform = `translate(${cartRect.left - rect.left - 10}px, ${cartRect.top - rect.top - 10}px) scale(0.2)`;
+            flyingIcon.style.opacity = '0';
+        });
+
+        // 5. После завершения анимации добавляем товар в корзину и чистим DOM
+        setTimeout(() => {
+            state.cart.push({ name, price, id: Date.now() });
+            app.saveState();
+            app.updateCartUI();
+            
+            // Анимация "bump" для иконки корзины
+            cartIcon.classList.remove('bump');
+            void cartIcon.offsetWidth;
+            cartIcon.classList.add('bump');
+            
+            flyingIcon.remove();
+        }, 600); // Длительность должна совпадать с transition в CSS
+    },
+
 
     router: (viewId) => {
         document.querySelectorAll('.view').forEach(el => {
             el.classList.remove('active');
             el.style.display = 'none';
         });
-
-        // Если открываем игру, ID вьюхи всегда 'view-game', но стили зависят от state.activeGameId
         const targetId = viewId === 'game' ? 'view-game' : `view-${viewId}`;
         const target = document.getElementById(targetId);
-        
         if (target) {
             target.style.display = 'block';
             requestAnimationFrame(() => target.classList.add('active'));
         }
         window.scrollTo(0,0);
-
-        // Styling based on Game
         app.applyTheme(viewId === 'game' ? state.activeGameId : 'hub');
     },
-
     applyTheme: (context) => {
-        // Defaults
-        let colors = {
-            header: '#ffffff', navBg: 'rgba(255,255,255,0.98)', 
-            navColor: '#111', btnBg: '#000', btnColor: '#fff',
-            bg: 'none', bgColor: 'var(--bg-light)'
-        };
-
-        // Находим настройки темы в DB
+        let colors = { header: '#ffffff', navBg: 'rgba(255,255,255,0.98)', navColor: '#111', btnBg: '#000', btnColor: '#fff', bg: 'none', bgColor: 'var(--bg-light)' };
         const game = DB.find(g => g.id === context);
-        
         if (game) {
-            // Маппинг цветов (можно тоже вынести в DB, но пока так проще)
             if (game.theme === 'bs') colors = { header: '#4737ff', navBg: 'rgba(71, 55, 255, 0.98)', navColor: '#fff', btnBg: '#fff', btnColor: '#000', bgColor: '#4737ff' };
             if (game.theme === 'coc') colors = { header: '#5c3c2e', navBg: 'rgba(92, 60, 46, 0.98)', navColor: '#fff', btnBg: '#fff', btnColor: '#442817', bgColor: '#5c3c2e' };
             if (game.theme === 'cr') colors = { header: '#2b3b75', navBg: 'rgba(43, 59, 117, 0.98)', navColor: '#fff', btnBg: '#fff', btnColor: '#2b3b75', bgColor: '#2b3b75' };
             if (game.theme === 'hd') colors = { header: '#6ecbf5', navBg: 'rgba(110, 203, 245, 0.98)', navColor: '#2a5a00', btnBg: '#2a5a00', btnColor: '#fff', bgColor: '#6ecbf5' };
         }
-
         const navbar = document.querySelector('.navbar');
         const loginBtn = document.querySelector('.login-btn');
         const logo = document.querySelector('.supercell-logo');
         const viewGame = document.getElementById('view-game');
-
         tg.setHeaderColor(colors.header);
         navbar.style.background = colors.navBg;
         navbar.style.color = colors.navColor;
         logo.style.color = colors.navColor;
-
         if (!state.isLoggedIn) {
             loginBtn.style.background = colors.btnBg;
             loginBtn.style.color = colors.btnColor;
         } else {
             app.checkLoginUI();
         }
-
-        // Применяем фон для страницы игры динамически
         if (context !== 'hub' && game) {
             viewGame.className = `view active ${game.theme}-bg-dynamic`;
         }
     },
-
-    // --- ОСТАЛЬНОЙ КОД БЕЗ ИЗМЕНЕНИЙ (saveState, loadState, redeemCode и т.д.) ---
-    saveState: () => {
-        localStorage.setItem('supercell_cart', JSON.stringify(state.cart));
-        localStorage.setItem('supercell_login', JSON.stringify({
-            isLoggedIn: state.isLoggedIn, email: state.userEmail, usedPromos: state.usedPromos || [], promoUsageCount: state.promoUsageCount || {}
-        }));
-    },
-    loadState: () => {
-        try {
-            const savedCart = localStorage.getItem('supercell_cart');
-            const savedLogin = localStorage.getItem('supercell_login');
-            if (savedCart) state.cart = JSON.parse(savedCart);
-            if (savedLogin) { const d = JSON.parse(savedLogin); state.isLoggedIn = d.isLoggedIn; state.userEmail = d.email; state.usedPromos = d.usedPromos || []; state.promoUsageCount = d.promoUsageCount || {}; }
-        } catch(e) {}
-    },
-    handleAuthClick: () => {
-        if (state.isLoggedIn) {
-            tg.showPopup({ title: 'Log Out', message: 'Are you sure?', buttons: [{id: 'logout', type: 'destructive', text: 'Log Out'}, {id: 'cancel', type: 'cancel'}] }, (btnId) => { if (btnId === 'logout') app.logout(); });
-        } else { app.toggleLogin(); }
-    },
-    logout: () => {
-        state.isLoggedIn = false; state.userEmail = ''; state.cart = []; state.usedPromos = []; state.promoUsageCount = {};
-        app.saveState(); app.checkLoginUI(); app.updateCartUI(); app.router('hub'); tg.HapticFeedback.notificationOccurred('success');
-    },
-    redeemCode: () => {
-        const input = document.getElementById('promo-input');
-        const code = input.value.trim().toUpperCase();
-        if (!code) return;
-        if (code === '/RESET') { state.usedPromos = []; state.promoUsageCount = {}; app.saveState(); input.value = ''; app.showPromoMessage('♻️ DEV MODE: Reset!', 'success'); return; }
-        const PROMO_CODE = '/PRM1423PP'; const MAX_USES = 100;
-        if (code === PROMO_CODE) {
-            if (state.usedPromos.includes(code)) { app.showPromoMessage('Already used!', 'error'); return; }
-            if ((state.promoUsageCount[code] || 0) >= MAX_USES) { app.showPromoMessage('Limit reached', 'error'); return; }
-            state.promoUsageCount[code] = (state.promoUsageCount[code] || 0) + 1;
-            state.usedPromos.push(code);
-            state.cart.unshift({ name: 'PRO PASS', price: 0, originalPrice: 9.99, isPromo: true, id: Date.now() });
-            app.saveState(); app.updateCartUI(); app.renderCartItems(); input.value = '';
-            app.showPromoMessage('✨ Success!', 'success');
-            tg.HapticFeedback.notificationOccurred('success');
-        } else { app.showPromoMessage('Invalid Code', 'error'); }
-    },
+    saveState: () => { localStorage.setItem('supercell_cart', JSON.stringify(state.cart)); localStorage.setItem('supercell_login', JSON.stringify({ isLoggedIn: state.isLoggedIn, email: state.userEmail, usedPromos: state.usedPromos || [], promoUsageCount: state.promoUsageCount || {} })); },
+    loadState: () => { try { const savedCart = localStorage.getItem('supercell_cart'); const savedLogin = localStorage.getItem('supercell_login'); if (savedCart) state.cart = JSON.parse(savedCart); if (savedLogin) { const d = JSON.parse(savedLogin); state.isLoggedIn = d.isLoggedIn; state.userEmail = d.email; state.usedPromos = d.usedPromos || []; state.promoUsageCount = d.promoUsageCount || {}; } } catch(e) {} },
+    handleAuthClick: () => { if (state.isLoggedIn) { tg.showPopup({ title: 'Log Out', message: 'Are you sure?', buttons: [{id: 'logout', type: 'destructive', text: 'Log Out'}, {id: 'cancel', type: 'cancel'}] }, (btnId) => { if (btnId === 'logout') app.logout(); }); } else { app.toggleLogin(); } },
+    logout: () => { state.isLoggedIn = false; state.userEmail = ''; state.cart = []; state.usedPromos = []; state.promoUsageCount = {}; app.saveState(); app.checkLoginUI(); app.updateCartUI(); app.router('hub'); tg.HapticFeedback.notificationOccurred('success'); },
+    redeemCode: () => { const input = document.getElementById('promo-input'); const code = input.value.trim().toUpperCase(); if (!code) return; if (code === '/RESET') { state.usedPromos = []; state.promoUsageCount = {}; app.saveState(); input.value = ''; app.showPromoMessage('♻️ DEV MODE: Reset!', 'success'); return; } const PROMO_CODE = '/PRM1423PP'; const MAX_USES = 100; if (code === PROMO_CODE) { if (state.usedPromos.includes(code)) { app.showPromoMessage('Already used!', 'error'); return; } if ((state.promoUsageCount[code] || 0) >= MAX_USES) { app.showPromoMessage('Limit reached', 'error'); return; } state.promoUsageCount[code] = (state.promoUsageCount[code] || 0) + 1; state.usedPromos.push(code); state.cart.unshift({ name: 'PRO PASS', price: 0, originalPrice: 9.99, isPromo: true, id: Date.now() }); app.saveState(); app.updateCartUI(); app.renderCartItems(); input.value = ''; app.showPromoMessage('✨ Success!', 'success'); tg.HapticFeedback.notificationOccurred('success'); } else { app.showPromoMessage('Invalid Code', 'error'); } },
     showPromoMessage: (text, type) => { const msg = document.getElementById('promo-msg'); msg.textContent = text; msg.className = `promo-msg ${type}`; msg.classList.remove('hidden'); setTimeout(() => msg.classList.add('hidden'), 4000); },
-    addToCart: (name, price) => { tg.HapticFeedback.impactOccurred('medium'); state.cart.push({ name, price, id: Date.now() }); app.saveState(); app.updateCartUI(); const btn = document.querySelector('.cart-icon'); btn.classList.remove('bump'); void btn.offsetWidth; btn.classList.add('bump'); },
     removeFromCart: (index) => { tg.HapticFeedback.impactOccurred('light'); state.cart.splice(index, 1); app.saveState(); app.updateCartUI(); app.renderCartItems(); },
     updateCartUI: () => { const c = state.cart.length; const b = document.getElementById('cart-count'); b.textContent = c; if (c > 0) b.classList.remove('hidden'); else b.classList.add('hidden'); const t = state.cart.reduce((a,b)=>a+b.price,0); document.getElementById('cart-total').textContent = '$'+t.toFixed(2); },
     toggleCart: () => { const m = document.getElementById('cart-modal'); if (!m.classList.contains('open')) { app.renderCartItems(); document.getElementById('promo-input').value = ''; document.getElementById('promo-msg').classList.add('hidden'); } m.classList.toggle('open'); },
