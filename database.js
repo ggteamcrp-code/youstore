@@ -1,11 +1,12 @@
+// И ЗАМЕНИТЕ ЕГО НА ЭТОТ:
 const DB = [
     {
         id: 'brawlstars',
         name: 'Brawl Stars',
         theme: 'bs',
         anim: 'floating',
-        pattern: 'techno-grid-pattern', // <-- ИСПОЛЬЗУЕМ НОВЫЙ ФОН
-        character: '⭐️',
+        pattern: 'techno-grid-pattern',
+        character: 'img/bs-character.png', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
         icon: '💀',
         hero: {
             tag: 'FREE GEMS',
@@ -24,8 +25,8 @@ const DB = [
         name: 'Clash of Clans',
         theme: 'coc',
         anim: 'clashing',
-        pattern: 'jungle-ruins-pattern', // <-- ИСПОЛЬЗУЕМ НОВЫЙ ФОН
-        character: '⚔️',
+        pattern: 'jungle-ruins-pattern',
+        character: 'img/coc-character.gif', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
         icon: '👺',
         hero: {
             tag: '20% MORE',
@@ -44,8 +45,8 @@ const DB = [
         name: 'Clash Royale',
         theme: 'cr',
         anim: 'tilting',
-        pattern: 'cr-battle-arena-wrapper', // <-- Оставляем нашу особую арену
-        character: '👑',
+        pattern: 'cr-battle-arena-wrapper',
+        character: null, // <-- ИЗМЕНЕНИЕ: Для CR персонаж не нужен, так как там целая арена
         icon: '🤴',
         hero: {
             tag: 'BEST VALUE',
@@ -64,8 +65,8 @@ const DB = [
         name: 'Hay Day',
         theme: 'hd',
         anim: 'bouncing',
-        pattern: 'ocean-deep-pattern', // <-- ИСПОЛЬЗУЕМ НОВЫЙ ФОН
-        character: '🐔',
+        pattern: 'ocean-deep-pattern',
+        character: 'img/hd-character.png', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
         icon: '🚜',
         hero: {
             tag: 'SEASONAL',
@@ -80,4 +81,3 @@ const DB = [
         ]
     }
 ];
-
