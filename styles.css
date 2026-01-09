@@ -174,3 +174,27 @@ input[type="email"], #promo-input { width: 100%; box-sizing: border-box; padding
 .hd-bg-dynamic { background: linear-gradient(180deg, #6ecbf5 0%, #b2e6ff 30%, #ffd966 100%); color: #000; }
 .hd-bg-dynamic .back-btn, .hd-bg-dynamic .game-logo, .hd-bg-dynamic .section-title { color: #2a5a00; text-shadow: none; }
 
+/* --- NEW: Styles for Seamless Page Transition --- */
+
+.game-card-clone {
+    position: fixed;
+    z-index: 9999;
+    /* Убираем тени и границы, чтобы не мешали в полете */
+    box-shadow: none !important; 
+    border: none !important;
+    margin: 0; /* Убираем внешние отступы */
+    transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1), 
+                border-radius 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+    will-change: transform, border-radius;
+    overflow: hidden; /* Важно, чтобы скругление углов работало */
+}
+
+/* 
+  Этот класс будет временно применяться к view, 
+  чтобы скрыть его, пока идет анимация 
+*/
+.view-transitioning {
+    opacity: 0 !important;
+    transition: none !important;
+    animation: none !important;
+}
