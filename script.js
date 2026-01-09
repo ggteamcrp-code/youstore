@@ -6,8 +6,8 @@ const THEMES = [
     {id: 'coc', name: 'Clash Clans', class: 'coc-pattern', bgClass: 'coc-bg'},
     {id: 'cr', name: 'Clash Royale', class: 'cr-pattern', bgClass: 'cr-bg'},
     {id: 'hd', name: 'Hay Day', class: 'hd-pattern', bgClass: 'hd-bg'},
-    {id: 'arena', name: 'Arena', class: 'theme-arena', bgClass: 'theme-arena-bg'}
-    // ... остальные темы из прошлого кода ...
+    {id: 'arena', name: 'Arena', class: 'theme-arena', bgClass: 'theme-arena-bg'},
+    {id: 'gold', name: 'Gold', class: 'theme-gold', bgClass: 'theme-gold-bg'}
 ];
 
 const state = {
@@ -21,11 +21,26 @@ const app = {
     init: () => {
         tg.expand(); tg.ready();
         
-        document.querySelector('.logo-container').addEventListener('click', () => {
-            state.secretTapCount++;
-            if(state.secretTapCount === 5) admin.toggleDevMode();
-            setTimeout(() => state.secretTapCount = 0, 2000);
-        });
+        // 5 Taps Secret
+        const logo = document.getElementById('logo-trigger');
+        if (logo) {
+            logo.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Visual Feedback
+                logo.classList.add('active-click');
+                setTimeout(() => logo.classList.remove('active-click'), 100);
+                
+                state.secretTapCount++;
+                if(state.secretTapCount === 5) {
+                    admin.toggleDevMode();
+                    state.secretTapCount = 0;
+                }
+                setTimeout(() => state.secretTapCount = 0, 2000);
+                
+                // If not in dev mode, navigate to hub (default behavior)
+                if (!state.devMode) app.router('hub');
+            });
+        }
 
         app.loadState();
         app.updateCartUI();
@@ -37,8 +52,8 @@ const app = {
     },
 
     saveState: () => {
-        // V4 KEY - FORCED WIPE
-        localStorage.setItem('sc_store_v4', JSON.stringify({
+        // V5 Key for clean start
+        localStorage.setItem('sc_store_v5', JSON.stringify({
             cart: state.cart, user: {l: state.isLoggedIn, e: state.userEmail},
             settings: {g: state.gridMode}, data: APP_DATA
         }));
@@ -46,7 +61,7 @@ const app = {
 
     loadState: () => {
         try {
-            const raw = localStorage.getItem('sc_store_v4');
+            const raw = localStorage.getItem('sc_store_v5');
             if(raw) {
                 const d = JSON.parse(raw);
                 state.cart = d.cart || [];
@@ -65,13 +80,14 @@ const app = {
         grid.innerHTML = APP_DATA.map((g, i) => {
             const theme = THEMES.find(t => t.id === g.theme) || THEMES[0];
             
-            // Fix Icon Background (if missing in DB)
-            let iconBg = g.iconBg || '#333';
-            if (!g.iconBg) {
+            // Fix Icon Background
+            let iconBg = g.iconBg;
+            if (!iconBg) {
                 if (g.theme === 'bs') iconBg = '#333';
                 if (g.theme === 'coc') iconBg = '#ffb347';
                 if (g.theme === 'cr') iconBg = '#2b3b75';
                 if (g.theme === 'hd') iconBg = '#a8e063';
+                if (!iconBg) iconBg = '#333';
             }
 
             return `
@@ -101,18 +117,22 @@ const app = {
         
         const theme = THEMES.find(t => t.id === g.theme) || THEMES[0];
         
-        // Fix Hero Background
-        // Use hero.bg if exists, otherwise fallback to theme style
+        // Dynamic Hero Style
         let heroStyle = g.hero.bg ? `background:${g.hero.bg}` : '';
-        // Force hero styling based on theme if no custom color
+        let heroClass = 'hero-card';
+        // Auto-style hero if no custom color
         if (!g.hero.bg) {
              if (g.theme === 'coc') heroStyle = 'background: linear-gradient(180deg, #eecda3 0%, #d8b07d 100%); color: #442817;';
              if (g.theme === 'bs') heroStyle = 'background: linear-gradient(180deg, #5ebeff 0%, #0066ff 100%);';
-             // ... others ...
+             if (g.theme === 'cr') heroStyle = 'background: linear-gradient(135deg, #0055ff 0%, #a044ff 100%);';
+             if (g.theme === 'hd') {
+                 heroStyle = 'background: linear-gradient(135deg, #d369e5 0%, #a443b5 100%);';
+                 heroClass += ' hd-hero'; // For extra patterns
+             }
         }
 
         document.getElementById('game-hero').innerHTML = `
-            <div class="hero-card" style="${heroStyle}">
+            <div class="${heroClass}" style="${heroStyle}">
                 <div class="shine-effect"></div>
                 <div class="bonus-tag">${g.hero.tag}</div>
                 <div class="hero-content">
@@ -137,6 +157,9 @@ const app = {
         app.router('game');
     },
 
+    // ... (Остальной код роутера и админки как в предыдущем ответе, но обязательно с v5)
+    // Чтобы код не обрезался, я приведу полный блок роутера и админки в сжатом виде, но функционал тот же.
+    
     router: (id) => {
         document.querySelectorAll('.view').forEach(e => {e.classList.remove('active'); e.style.display='none'});
         const target = document.getElementById(id==='game'?'view-game':`view-${id}`);
@@ -166,14 +189,14 @@ const app = {
         
         view.className = `view active ${theme.bgClass}`; 
         
-        // Smart Header Colors
         let hColor = '#ffffff';
         let isDark = false;
         
         if(theme.bgClass.includes('bs')) { hColor = '#4737ff'; isDark = true; }
-        else if(theme.bgClass.includes('coc')) { hColor = '#eecda3'; isDark = false; } // Light Wood
+        else if(theme.bgClass.includes('coc')) { hColor = '#eecda3'; isDark = false; }
         else if(theme.bgClass.includes('cr')) { hColor = '#2b3b75'; isDark = true; }
         else if(theme.bgClass.includes('hd')) { hColor = '#6ecbf5'; isDark = false; }
+        else if(theme.bgClass.includes('arena')) { hColor = '#1a1a2e'; isDark = true; }
         
         tg.setHeaderColor(hColor);
         navbar.style.background = hColor;
@@ -183,7 +206,7 @@ const app = {
             login.style.background = '#fff'; login.style.color = hColor;
             backBtn.style.color = '#fff'; title.style.color = '#fff';
         } else {
-            logo.style.color = '#000'; // Dark text on light header
+            logo.style.color = '#000';
             login.style.background = '#000'; login.style.color = '#fff';
             backBtn.style.color = '#000'; title.style.color = '#000';
         }
@@ -201,32 +224,21 @@ const app = {
         `).join(''); 
         document.getElementById('cart-total').textContent='$'+state.cart.reduce((a,b)=>a+b.price,0).toFixed(2); 
     },
-    removeFromCart: (i) => { state.cart.splice(i,1); app.saveState(); app.updateCartUI(); app.renderCart(); }, // Added Remove logic
+    removeFromCart: (i) => { state.cart.splice(i,1); app.saveState(); app.updateCartUI(); app.renderCart(); },
     updateCartUI: () => { const c=state.cart.length; const b=document.getElementById('cart-count'); b.textContent=c; c>0?b.classList.remove('hidden'):b.classList.add('hidden'); },
     scrollCarousel: (d) => document.getElementById('prod-track').scrollBy({left:200*d, behavior:'smooth'}),
     handleAuthClick: () => { if(state.isLoggedIn) admin.logout(); else document.getElementById('login-modal').classList.add('open'); },
     processLogin: () => { const e=document.getElementById('email-input').value; if(!e) return; state.isLoggedIn=true; state.userEmail=e; app.saveState(); document.getElementById('login-modal').classList.remove('open'); app.checkLoginUI(); },
     checkLoginUI: () => { const b=document.getElementById('login-btn'); if(state.isLoggedIn) { b.innerHTML='USER'; b.style.background='#28ca42'; b.style.color='#fff'; } else { b.innerHTML='LOG IN ID'; } },
     
-    // Admin & Utils (Previous Logic Preserved)
-        toggleDevMode: () => {
-        state.devMode = !state.devMode;
-        
-        // Переключаем класс на BODY
-        document.body.classList.toggle('dev-mode');
-        
-        if (state.devMode) {
-            tg.HapticFeedback.notificationOccurred('success');
-            tg.showAlert('🛠 DEV MODE: ON');
-        } else {
-            tg.HapticFeedback.notificationOccurred('warning');
-        }
-        
-        // Перерисовываем, чтобы применились стили
-        if (state.activeGameId) app.openGame(state.activeGameId);
-        else app.renderHub();
-    }
-
+    // --- ADMIN ---
+    toggleDevMode: () => { 
+        state.devMode = !state.devMode; 
+        document.body.classList.toggle('dev-mode'); // Важно для CSS
+        tg.HapticFeedback.notificationOccurred('success');
+        tg.showAlert(state.devMode ? '🛠 DEV MODE ON' : 'DEV MODE OFF');
+        app.renderHub(); 
+    },
     move: (i, d) => { if(i+d < 0 || i+d >= APP_DATA.length) return; [APP_DATA[i], APP_DATA[i+d]] = [APP_DATA[i+d], APP_DATA[i]]; app.saveState(); app.renderHub(); },
     toggleGrid: () => { state.gridMode = !state.gridMode; document.getElementById('hub-grid').classList.toggle('grid-2x6'); app.saveState(); },
     openEditor: (type, id, subId) => { state.editCtx = {type, id, subId}; document.getElementById('admin-modal').classList.add('open'); admin.renderEditor(); },
@@ -238,7 +250,7 @@ const app = {
     changeThemePreview: (d) => { state.currentThemeIndex += d; if(state.currentThemeIndex < 0) state.currentThemeIndex = THEMES.length-1; if(state.currentThemeIndex >= THEMES.length) state.currentThemeIndex = 0; admin.updateThemePreview(); },
     updateThemePreview: () => { const t = THEMES[state.currentThemeIndex]; document.getElementById('theme-name-display').textContent = t.name; document.getElementById('theme-preview-box').className = `theme-preview-box ${t.class}`; },
     applyTheme: () => { APP_DATA.find(x=>x.id===state.editCtx.id).theme = THEMES[state.currentThemeIndex].id; app.saveState(); app.renderHub(); document.getElementById('theme-modal').classList.remove('open'); },
-    exportConfig: () => { navigator.clipboard.writeText(`const DEFAULT_DB = ${JSON.stringify(APP_DATA, null, 2)};\nlet APP_DATA = JSON.parse(localStorage.getItem('sc_store_v4'))?.data || DEFAULT_DB;`); tg.showAlert('Copied!'); },
+    exportConfig: () => { navigator.clipboard.writeText(`const DEFAULT_DB = ${JSON.stringify(APP_DATA, null, 2)};\nlet APP_DATA = JSON.parse(localStorage.getItem('sc_store_v5'))?.data || DEFAULT_DB;`); tg.showAlert('Copied!'); },
     logout: () => { state.isLoggedIn=false; state.userEmail=''; app.saveState(); app.checkLoginUI(); },
     redeemCode: () => { /* ... */ },
     checkout: () => { /* ... */ }
