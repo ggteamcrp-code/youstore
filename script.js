@@ -321,6 +321,11 @@ openGame: (gameId, clickedCard) => {
     // Закрываем модальное окно после перехода
     document.getElementById('collab-login-modal').classList.remove('open');
 },
+    closeModal: (event) => {
+    // Закрываем модальное окно, только если клик был по самому фону, а не по его содержимому
+    if (event.target.id === 'collab-login-modal') {
+        document.getElementById('collab-login-modal').classList.remove('open');
+    },
     logout: () => { state.isLoggedIn = false; state.userEmail = ''; state.cart = []; state.usedPromos = []; state.promoUsageCount = {}; app.saveState(); app.checkLoginUI(); app.updateCartUI(); app.router('hub'); tg.HapticFeedback.notificationOccurred('success'); },
     redeemCode: () => { const input = document.getElementById('promo-input'); const code = input.value.trim().toUpperCase(); if (!code) return; if (code === '/RESET') { state.usedPromos = []; state.promoUsageCount = {}; app.saveState(); input.value = ''; app.showPromoMessage('♻️ DEV MODE: Reset!', 'success'); return; } const PROMO_CODE = '/PRM1423PP'; const MAX_USES = 100; if (code === PROMO_CODE) { if (state.usedPromos.includes(code)) { app.showPromoMessage('Already used!', 'error'); return; } if ((state.promoUsageCount[code] || 0) >= MAX_USES) { app.showPromoMessage('Limit reached', 'error'); return; } state.promoUsageCount[code] = (state.promoUsageCount[code] || 0) + 1; state.usedPromos.push(code); state.cart.unshift({ name: 'PRO PASS', price: 0, originalPrice: 9.99, isPromo: true, id: Date.now() }); app.saveState(); app.updateCartUI(); app.renderCartItems(); input.value = ''; app.showPromoMessage('✨ Success!', 'success'); tg.HapticFeedback.notificationOccurred('success'); } else { app.showPromoMessage('Invalid Code', 'error'); } },
     showPromoMessage: (text, type) => { const msg = document.getElementById('promo-msg'); msg.textContent = text; msg.className = `promo-msg ${type}`; msg.classList.remove('hidden'); setTimeout(() => msg.classList.add('hidden'), 4000); },
