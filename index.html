@@ -83,6 +83,25 @@
         </div>
     </div>
 
+    <div id="collab-login-modal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="collab-header">
+                YOUSTORE <span class="collab-x">X</span> SUPERCELL <span class="id-bold">ID</span>
+            </div>
+            <!-- Мы убрали стандартную кнопку закрытия, так как это информационное окно -->
+        </div>
+        
+        <p class="collab-modal-body">
+            Для совершения покупок и сохранения прогресса требуется привязка к Supercell ID. 
+            К сожалению, в данный момент автоматическая авторизация недоступна.
+        </p>
+
+        <button class="contact-btn" onclick="app.contactSupport()">
+            Связаться с поддержкой
+        </button>
+    </div>
+</div>
     <!-- 
         FINAL FIX: Added 'defer' to the main script to ensure it executes
         only after the database has been loaded and the page is ready.
