@@ -6,7 +6,7 @@ const DB = [
         theme: 'bs',
         anim: 'floating',
         pattern: 'techno-grid-pattern',
-        character: 'bs-character.png', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
+        character: '⭐', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
         icon: '💀',
         hero: {
             tag: 'FREE GEMS',
@@ -26,7 +26,7 @@ const DB = [
         theme: 'coc',
         anim: 'clashing',
         pattern: 'jungle-ruins-pattern',
-        character: 'coc-character.png', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
+        character: '⚔️', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
         icon: '👺',
         hero: {
             tag: '20% MORE',
@@ -46,7 +46,7 @@ const DB = [
         theme: 'cr',
         anim: 'tilting',
         pattern: 'cr-battle-arena-wrapper',
-        character: null, // <-- ИЗМЕНЕНИЕ: Для CR персонаж не нужен, так как там целая арена
+        character: '🏹', // <-- ИЗМЕНЕНИЕ: Для CR персонаж не нужен, так как там целая арена
         icon: '🤴',
         hero: {
             tag: 'BEST VALUE',
@@ -66,7 +66,7 @@ const DB = [
         theme: 'hd',
         anim: 'bouncing',
         pattern: 'ocean-deep-pattern',
-        character: 'hd-character.png', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
+        character: '🌾', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
         icon: '🚜',
         hero: {
             tag: 'SEASONAL',
