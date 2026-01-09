@@ -51,17 +51,15 @@ const app = {
         });
     },
     
-    // FIX: Final corrected render function for all cards
+    // FINAL FIX: Correctly apply patternClass to all cards
     renderHub: () => {
         const grid = document.getElementById('hub-grid');
         const gameCardsHTML = DB.map(game => {
-            // Determine the pattern class
             let patternClass = `${game.theme}-pattern`;
             let characterHTML = `<div class="card-character ${game.anim}">${game.character}</div>`;
 
-            // Special case for Clash Royale to inject the arena
             if (game.id === 'clashroyale') {
-                 patternClass = 'cr-battle-arena-wrapper'; // Use a wrapper class
+                 patternClass = 'cr-battle-arena-wrapper';
                  characterHTML = `
                     <div class="cr-battle-arena-pattern">
                          <div class="arena-projectiles">
@@ -74,7 +72,7 @@ const app = {
             
             return `
                 <div class="game-card ${game.theme}-card" onclick="app.openGame('${game.id}')">
-                    <div class="card-bg">
+                    <div class="card-bg ${patternClass}">
                         ${characterHTML}
                     </div>
                     <div class="card-content">
