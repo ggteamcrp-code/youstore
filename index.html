@@ -91,6 +91,25 @@
         </div>
     </div>
 
+    <!-- ADMIN PANEL -->
+<div id="admin-modal" class="modal-overlay">
+    <div class="modal-content admin-content">
+        <div class="modal-header">
+            <h2>🛠 EDITOR</h2>
+            <span class="close-btn" onclick="document.getElementById('admin-modal').classList.remove('open')">✕</span>
+        </div>
+        
+        <div id="admin-editor" class="admin-editor">
+            <!-- JS INJECTS INPUTS HERE -->
+        </div>
+
+        <div class="admin-actions">
+            <button class="modal-action-btn save-btn" onclick="admin.save()">💾 SAVE</button>
+            <button class="modal-action-btn export-btn" onclick="admin.exportConfig()">📤 Export Code</button>
+        </div>
+    </div>
+</div>
+
     <!-- ВАЖНО: Сначала база данных, потом скрипт -->
     <script src="database.js"></script>
     <script src="script.js"></script>
