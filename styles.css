@@ -1,11 +1,11 @@
 :root {
-    --bg-light: #f0f2f5; /* Чуть темнее для контраста */
+    --bg-light: #f5f5f7;
     --text-main: #111;
     --font: 'Rubik', sans-serif;
     --card-radius: 24px;
     --gold-gradient: linear-gradient(135deg, #fff5c3 0%, #ffd700 100%);
     
-    /* Game Colors */
+    /* Default Colors */
     --bs-color: #4737ff;
     --coc-color: #5c3c2e; 
     --cr-color: #2b3b75;  
@@ -16,471 +16,200 @@ body {
     margin: 0; padding: 0;
     font-family: var(--font);
     background-color: var(--bg-light);
-    /* Глобальный фон: легкая сетка */
-    background-image: linear-gradient(#e1e4e8 1px, transparent 1px), linear-gradient(90deg, #e1e4e8 1px, transparent 1px);
-    background-size: 30px 30px;
     color: var(--text-main);
     -webkit-tap-highlight-color: transparent;
     transition: background 0.3s ease;
     overflow-x: hidden;
 }
 
-/* Reset Views */
-#view-hub, #view-brawlstars, #view-clashofclans, #view-clashroyale, #view-hayday { display: none !important; opacity: 0; }
-#view-hub.active, #view-brawlstars.active, #view-clashofclans.active, #view-clashroyale.active, #view-hayday.active { display: block !important; animation: fadeIn 0.4s forwards; }
+/* --- VIEW MANAGEMENT --- */
+.view { display: none !important; opacity: 0; transition: opacity 0.3s; padding-bottom: 40px; }
+.view.active { display: block !important; opacity: 1; animation: fadeIn 0.4s forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Navbar */
+/* --- NAVBAR --- */
 .navbar {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 20px; position: sticky; top: 0; z-index: 9999;
-    background: rgba(255,255,255,0.95); backdrop-filter: blur(15px);
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    height: 60px; transition: background 0.3s, color 0.3s;
+    padding: 12px 20px; position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.98); backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05); height: 60px;
 }
-.supercell-logo { font-weight: 900; line-height: 0.85; font-size: 13px; letter-spacing: 0.5px; text-align: center; }
-.store-badge { background: #ffd700; color: #000; font-size: 9px; padding: 2px 4px; border-radius: 4px; font-weight: bold; margin-left: 2px; vertical-align: super;}
+.supercell-logo { font-weight: 900; line-height: 0.9; font-size: 14px; letter-spacing: 0.5px; text-align: center; color: #000; }
+.store-badge { background: #ffd700; color: #000; font-size: 9px; padding: 2px 4px; border-radius: 4px; font-weight: 900; margin-left: 2px; vertical-align: super;}
 .nav-actions { display: flex; gap: 12px; align-items: center; }
-.login-btn { background: #000; color: #fff; border: none; padding: 8px 14px; border-radius: 50px; font-weight: 800; font-size: 12px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-.id-icon { background: #fff; color: #000; padding: 1px 3px; border-radius: 3px; font-size: 9px; font-weight: 900; }
-.cart-icon { font-size: 24px; cursor: pointer; position: relative; }
-.cart-badge { position: absolute; top: -5px; right: -8px; background: #ff3b30; color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; font-weight: bold; border: 2px solid #fff; min-width: 16px; text-align: center; }
+
+.login-btn {
+    background: #000; color: #fff; border: none; padding: 8px 16px; border-radius: 50px;
+    font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer;
+}
+.id-icon { background: #fff; color: #000; padding: 1px 4px; border-radius: 4px; font-size: 10px; font-weight: 900; }
+.cart-icon { font-size: 24px; cursor: pointer; position: relative; color: #000; }
+.export-icon { font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: #eee; border-radius: 50%; }
+
+.cart-badge {
+    position: absolute; top: -5px; right: -8px; background: #ff3b30; color: white;
+    font-size: 10px; padding: 2px 5px; border-radius: 10px; font-weight: bold; border: 2px solid #fff;
+    min-width: 16px; text-align: center;
+}
 .hidden { display: none !important; }
 
-/* HUB Styling */
-.hub-header { padding: 10px 10px 20px; text-align: left; }
-.hub-header h1 { font-size: 28px; font-weight: 900; margin: 0; letter-spacing: -0.5px; }
-.hub-header p { margin: 5px 0 0; color: #666; font-size: 14px; font-weight: 500; }
+/* --- HUB STYLES --- */
+.container { padding: 20px 16px; max-width: 600px; margin: 0 auto; }
+.hub-header { margin-bottom: 20px; }
+.hub-header h1 { font-size: 28px; font-weight: 900; margin: 0; letter-spacing: -0.5px; color: #000; }
+.hub-header p { margin: 5px 0 0; color: #666; font-size: 15px; font-weight: 500; }
 
-.games-grid { display: grid; gap: 20px; padding: 0 10px 40px; }
+.grid-toggle { 
+    display: inline-block; background: #000; color: #fff; padding: 6px 12px; 
+    border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 10px; 
+}
 
+.games-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+.games-grid.grid-2x6 { grid-template-columns: 1fr 1fr; }
+
+/* GAME CARD */
 .game-card {
     background: #fff; border-radius: var(--card-radius);
-    overflow: hidden; box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.06);
     position: relative; cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 1px solid rgba(0,0,0,0.05);
+    transition: transform 0.2s; border: 1px solid rgba(0,0,0,0.05);
 }
-.game-card:active { transform: scale(0.97); }
-.game-card:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(0,0,0,0.12); }
+.game-card:active { transform: scale(0.98); }
 
 .card-bg {
-    height: 150px; /* Больше высота для красоты */
-    position: relative; overflow: hidden;
+    height: 140px; position: relative; overflow: hidden;
     display: flex; align-items: center; justify-content: center;
 }
+.games-grid.grid-2x6 .card-bg { height: 100px; }
 
-/* --- PREMIUM PATTERNS & ANIMATIONS --- */
+.card-character { font-size: 70px; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.3)); z-index: 2; transition: transform 0.3s; }
+.card-character img { width: 90px; height: 90px; object-fit: contain; }
 
-/* 1. Brawl Stars: Neon & Skulls */
-.bs-pattern {
-    background: radial-gradient(circle at top right, #6a35ff, #3d22b3);
-}
-/* Черепа на фоне */
-.bs-pattern::before {
-    content: ''; position: absolute; width: 100%; height: 100%;
-    background-image: radial-gradient(rgba(255,255,255,0.15) 2px, transparent 2px);
-    background-size: 24px 24px; opacity: 0.6;
-}
-.card-character.floating { font-size: 80px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); animation: float 3s ease-in-out infinite; }
-
-/* 2. Clash of Clans: WOOD PLANKS */
-.coc-pattern {
-    background-color: #eecda3;
-    /* Рисуем доски градиентом */
-    background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,0.1) 40px),
-                      repeating-linear-gradient(90deg, transparent, transparent 150px, rgba(0,0,0,0.05) 151px);
-    background-size: 100% 40px; /* Высота доски */
-}
-/* Тень виньетка */
-.coc-pattern::after {
-    content: ''; position: absolute; width: 100%; height: 100%;
-    box-shadow: inset 0 0 40px rgba(92, 60, 46, 0.6);
-}
-.card-character.clashing { font-size: 75px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); animation: clash 2s infinite; }
-
-/* 3. Clash Royale: CHECKERED ARENA */
-.cr-pattern {
-    background-color: #2b3b75;
-    background-image: 
-        linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d),
-        linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d);
-    background-position: 0 0, 20px 20px;
-    background-size: 40px 40px;
-}
-.card-character.tilting { font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4)); animation: tilt 3s ease-in-out infinite; }
-
-/* 4. Hay Day: SUN RAYS */
-.hd-pattern {
-    background: #6ecbf5;
-    overflow: hidden;
-}
-/* Вращающиеся лучи */
-.hd-pattern::before {
-    content: ''; position: absolute; top: 50%; left: 50%;
-    width: 200%; height: 200%;
-    background: conic-gradient(from 0deg, rgba(255,255,255,0.4) 0deg 20deg, transparent 20deg 40deg, rgba(255,255,255,0.4) 40deg 60deg, transparent 60deg 80deg, rgba(255,255,255,0.4) 80deg 100deg, transparent 100deg 120deg, rgba(255,255,255,0.4) 120deg 140deg, transparent 140deg 160deg, rgba(255,255,255,0.4) 160deg 180deg, transparent 180deg 200deg, rgba(255,255,255,0.4) 200deg 220deg, transparent 220deg 240deg, rgba(255,255,255,0.4) 240deg 260deg, transparent 260deg 280deg, rgba(255,255,255,0.4) 280deg 300deg, transparent 300deg 320deg, rgba(255,255,255,0.4) 320deg 340deg, transparent 340deg 360deg);
-    transform: translate(-50%, -50%);
-    animation: rotateRays 20s linear infinite;
-}
-.card-character.bouncing { font-size: 75px; position: relative; z-index: 1; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.2)); animation: bounceChar 1.5s infinite; }
-
-/* ANIMATION KEYFRAMES */
-@keyframes float { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
-@keyframes clash { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1) rotate(10deg); } }
-@keyframes tilt { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
-@keyframes rotateRays { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-@keyframes bounceChar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px) scaleY(0.9); } }
-
-
-.card-content { padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; }
+.card-content { padding: 16px; display: flex; align-items: center; justify-content: space-between; background: #fff; }
 .game-info { display: flex; flex-direction: column; gap: 4px; }
-.game-info h3 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: 0.3px; }
+.game-info h3 { margin: 0; font-size: 18px; font-weight: 800; color: #000; }
 .action-text { font-size: 12px; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
 .game-icon-box { 
     width: 48px; height: 48px; border-radius: 14px; 
     display: flex; align-items: center; justify-content: center; 
-    font-size: 24px; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
+    font-size: 24px; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+    background: #333; overflow: hidden;
 }
-.bs-icon { background: #333; } .coc-icon { background: #ff4d4d; } .cr-icon { background: #2f80ed; } .hd-icon { background: #56ab2f; }
+.game-icon-box img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Inner Pages Backgrounds (Same as before) */
-#view-brawlstars { background-color: var(--bs-color); background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; min-height: calc(100vh - 60px); color: white; }
-#view-clashofclans { background-color: var(--coc-color); background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 10px, transparent 10px, transparent 20px); min-height: calc(100vh - 60px); color: white; }
-#view-clashroyale { background-color: var(--cr-color); background-image: linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366), linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366); background-position: 0 0, 20px 20px; background-size: 40px 40px; min-height: calc(100vh - 60px); color: white; }
-#view-hayday { background: linear-gradient(180deg, #6ecbf5 0%, #b2e6ff 30%, #ffd966 100%); min-height: calc(100vh - 60px); color: #000; }
-#view-hayday .sub-header .back-btn, #view-hayday .sub-header .game-logo { color: #2a5a00; }
-#view-hayday .section-title { color: #2a5a00; text-shadow: none; }
+/* --- GAME PAGE STYLES --- */
+#view-game { min-height: 100vh; color: white; transition: background 0.3s; }
 
-/* Components (Header, Cards, Modals etc - from previous step) */
-.sub-header { padding: 15px 20px; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 10px; z-index: 1; }
-.back-btn { position: absolute; left: 20px; font-weight: 700; cursor: pointer; color: white; font-size: 14px; }
-.game-logo { font-weight: 900; letter-spacing: 2px; font-style: italic; font-size: 14px; color: white; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+.sub-header { padding: 15px 20px; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 10px; }
+.back-btn { position: absolute; left: 20px; font-weight: 700; cursor: pointer; color: inherit; font-size: 15px; opacity: 0.9; }
+.game-logo { font-weight: 900; letter-spacing: 1px; font-size: 16px; color: inherit; text-transform: uppercase; }
 
-.hero-section { padding: 0 20px; margin-bottom: 30px; position: relative; z-index: 1; }
-.hero-card { border-radius: 24px; padding: 24px; border: 3px solid #000; box-shadow: 0 8px 0 rgba(0,0,0,0.3); position: relative; overflow: hidden; color: white; }
-.bs-hero { background: linear-gradient(180deg, #5ebeff 0%, #0066ff 100%); }
-.coc-hero { background: linear-gradient(180deg, #eecda3 0%, #d8b07d 100%); color: #442817; }
-.cr-hero { background: linear-gradient(135deg, #0055ff 0%, #a044ff 100%); }
-.hd-hero { background: linear-gradient(135deg, #d369e5 0%, #a443b5 100%); background-image: radial-gradient(rgba(255,255,255,0.2) 10%, transparent 10%); background-size: 15px 15px; }
-.shine-effect { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent); animation: shine 3s infinite; }
+.hero-section { padding: 0 20px; margin-bottom: 30px; }
+.hero-card { 
+    border-radius: 24px; padding: 24px; 
+    border: 3px solid #000; box-shadow: 0 8px 0 rgba(0,0,0,0.3); 
+    position: relative; overflow: hidden; color: white; background: #333;
+}
+.shine-effect { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent); animation: shine 3s infinite; }
+@keyframes shine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
 .bonus-tag { background: #000; color: #fff; display: inline-block; padding: 6px 10px; font-size: 11px; font-weight: 900; border-radius: 6px; margin-bottom: 10px; text-transform: uppercase; }
 .hero-content { display: flex; align-items: center; gap: 20px; }
 .hero-visual { font-size: 50px; filter: drop-shadow(0 6px 0 rgba(0,0,0,0.2)); }
-.hero-info h1 { font-size: 20px; font-weight: 900; line-height: 1; margin: 0 0 5px 0; text-transform: uppercase; }
-.hero-info p { margin: 0; font-size: 12px; font-weight: 600; opacity: 0.9; }
+.hero-info h1 { font-size: 22px; font-weight: 900; line-height: 1; margin: 0 0 5px 0; text-transform: uppercase; }
+.hero-info p { margin: 0; font-size: 13px; font-weight: 500; opacity: 0.9; }
 
-.offers-section { padding: 0 20px; position: relative; z-index: 1; }
-.section-title { font-size: 12px; font-weight: 900; opacity: 0.8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-.offer-card { background: #fff; border-radius: 24px; padding: 20px; color: #000; margin-bottom: 16px; border: 2px solid #000; box-shadow: 0 6px 0 rgba(0,0,0,0.2); text-align: center; }
-.pass-plus { background: linear-gradient(135deg, #ff99cc, #cc66ff); }
-.coc-offer-1 { background: linear-gradient(135deg, #8b0000, #b22222); color: white; }
-.cr-offer-1 { background: #fff; }
-.hd-offer-1 { background: #fff; border-color: #56ab2f; }
+/* OFFERS CAROUSEL */
+.offers-section { padding: 0 20px 40px; position: relative; }
+.section-title { font-size: 13px; font-weight: 900; opacity: 0.8; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; color: inherit; }
+
+.carousel-wrapper { position: relative; }
+.carousel-track { display: flex; gap: 15px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.carousel-track::-webkit-scrollbar { display: none; }
+
+.offer-card { 
+    min-width: 85%; scroll-snap-align: center; flex-shrink: 0;
+    background: #fff; border-radius: 24px; padding: 20px; 
+    color: #000; border: 2px solid #000; box-shadow: 0 6px 0 rgba(0,0,0,0.2); 
+    text-align: center; position: relative;
+}
+
 .badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); margin-bottom: 10px; background: #fff; color: #000; text-transform: uppercase; }
-.offer-visual { font-size: 40px; margin: 8px 0; display: block; filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1)); }
-.offer-card h3 { font-weight: 800; font-size: 18px; margin: 6px 0; }
-.price { font-weight: 600; font-size: 15px; opacity: 0.9; margin-bottom: 16px; }
-.buy-btn { width: 100%; padding: 12px; border: 2px solid #000; border-radius: 12px; background: #fff; color: #000; font-weight: 700; font-size: 14px; box-shadow: 0 4px 0 #ccc; cursor: pointer; }
+.offer-visual { font-size: 45px; margin: 10px 0; display: block; filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1)); }
+.offer-card h3 { font-weight: 800; font-size: 18px; margin: 5px 0; }
+.price { font-weight: 600; font-size: 16px; opacity: 0.9; margin-bottom: 15px; }
+.buy-btn { width: 100%; padding: 14px; border: 2px solid #000; border-radius: 14px; background: #fff; color: #000; font-weight: 700; font-size: 15px; box-shadow: 0 4px 0 #ccc; cursor: pointer; }
 .buy-btn:active { transform: translateY(4px); box-shadow: none; }
 
-/* Modals */
+/* --- DEV TOOLS --- */
+.controls-layer { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; z-index: 20; }
+.control-btn { width: 28px; height: 28px; background: #fff; color: #000; border: 2px solid #000; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+.add-game-card { min-height: 140px; background: rgba(0,0,0,0.05); border: 3px dashed #ccc; border-radius: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 10px; font-size: 40px; color: #ccc; }
+.add-prod-card { min-width: 60px; border: 3px dashed #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 30px; color: #fff; opacity: 0.5; cursor: pointer; }
+
+/* --- MODALS --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(4px); }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
-.modal-content { background: #fff; width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; padding: 30px 25px 50px; text-align: center; color: #111; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1); }
+.modal-content { background: #fff; width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; padding: 25px; text-align: center; color: #111; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1); max-height: 80vh; overflow-y: auto; }
 .modal-overlay.open .modal-content { transform: translateY(0); }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-.modal-header h2 { margin: 0; font-size: 20px; font-weight: 900; text-transform: uppercase; }
-.id-bold { background: #000; color: #fff; padding: 2px 6px; border-radius: 6px; font-size: 14px; }
-.close-btn { font-size: 24px; cursor: pointer; opacity: 0.5; }
-input[type="email"] { width: 100%; padding: 16px; border: 2px solid #e0e0e0; border-radius: 14px; font-size: 16px; margin: 15px 0; outline: none; background: #f9f9f9; }
-.modal-action-btn { background: #4737ff; color: #fff; width: 100%; padding: 16px; border: none; border-radius: 16px; font-weight: 800; font-size: 16px; cursor: pointer; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-header h2 { margin: 0; font-size: 20px; font-weight: 900; }
+.close-btn { font-size: 24px; padding: 5px; cursor: pointer; }
 
-/* PROMO STYLES */
-.promo-section { margin-top: 25px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
-.promo-input-group { display: flex; gap: 10px; background: #f9f9f9; border: 2px solid #e5e5e5; border-radius: 16px; padding: 6px; }
-#promo-input { margin: 0; padding: 10px; flex-grow: 1; border: none; background: transparent; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; outline: none; }
-.promo-btn { background: #000; color: white; border: none; border-radius: 12px; font-weight: 800; padding: 0 20px; cursor: pointer; font-size: 13px; transition: transform 0.1s; }
-.promo-btn:active { transform: scale(0.95); }
-.promo-msg { font-size: 13px; font-weight: 700; margin-top: 10px; text-align: center; min-height: 20px;}
-.promo-msg.success { color: #28ca42; animation: bounce 0.5s; }
-.promo-msg.error { color: #ff3b30; animation: shake 0.4s; }
+/* ADMIN EDITOR STYLES */
+.admin-editor { text-align: left; }
+.edit-row { margin-bottom: 10px; }
+.edit-row label { display: block; font-size: 11px; font-weight: bold; color: #666; margin-bottom: 4px; text-transform: uppercase; }
+.edit-input { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 10px; font-size: 14px; font-family: var(--font); box-sizing: border-box; }
+.edit-input:focus { border-color: #000; outline: none; }
+.admin-actions { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+.modal-action-btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; }
+.save-btn { background: #4737ff; color: #fff; }
+.delete-btn { color: #ff3b30; background: none; font-size: 13px; text-decoration: underline; margin-top: 5px; cursor: pointer; }
 
-.cart-item.promo-item { background: var(--gold-gradient); border: 2px solid #ffd700; border-radius: 16px; padding: 15px !important; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; justify-content: space-between; align-items: center; }
-.promo-item .item-name { color: #442817; font-size: 15px; font-weight: 900; }
-.old-price { position: relative; color: #886655; margin-right: 8px; font-size: 13px; font-weight: 600; }
-.old-price::after { content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 2px; background: #ff3b30; transform: rotate(-5deg); }
-.new-price { color: #2a5a00; font-weight: 900; font-size: 15px; }
-.promo-badge { background: #ff3b30; color: #fff; font-size: 10px; padding: 3px 6px; border-radius: 50px; font-weight: 900; vertical-align: middle; margin-left: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+/* THEMES PREVIEW */
+.theme-preview-box { height: 100px; border-radius: 16px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; border: 2px solid #000; }
+.theme-controls { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.theme-char-preview { font-size: 40px; }
 
-@keyframes popIn { 0% { opacity: 0; transform: scale(0.5) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-@keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-5px);} }
-@keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+/* --- 20+ THEMES --- */
+/* Basic Colors */
+.bs-pattern { background: radial-gradient(circle at top right, #6a35ff, #3d22b3); color: white; }
+.coc-pattern { background: #eecda3; background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,0.1) 40px); color: #442817; }
+.cr-pattern { background: #2b3b75; background-image: linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d), linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d); background-size: 40px 40px; color: white; }
+.hd-pattern { background: linear-gradient(180deg, #6ecbf5 0%, #b2e6ff 30%, #ffd966 100%); color: #2a5a00; }
 
-/* Dynamic Game Backgrounds */
-.bs-bg-dynamic {
-    background-color: var(--bs-color);
-    background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
-    background-size: 20px 20px;
-    color: white;
-}
-
-.coc-bg-dynamic {
-    background-color: var(--coc-color);
-    background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 10px, transparent 10px, transparent 20px);
-    color: white;
-}
-
-.cr-bg-dynamic {
-    background-color: var(--cr-color);
-    background-image: linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366), linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366);
-    background-position: 0 0, 20px 20px;
-    background-size: 40px 40px;
-    color: white;
-}
-
-.hd-bg-dynamic {
-    background: linear-gradient(180deg, #6ecbf5 0%, #b2e6ff 30%, #ffd966 100%);
-    color: #000;
-}
-.hd-bg-dynamic .back-btn, .hd-bg-dynamic .game-logo { color: #2a5a00; text-shadow: none; }
-.hd-bg-dynamic .section-title { color: #2a5a00; text-shadow: none; }
-
-/* Динамические стили для предложений (offers) */
-.bs-offer { background: #fff; }
-.coc-offer { background: #fff; border-color: #5c3c2e; }
-.cr-offer { background: #fff; border-color: #2b3b75; }
-.hd-offer { background: #fff; border-color: #56ab2f; }
-
-/* ... (ВЕСЬ ПРЕДЫДУЩИЙ CSS ОСТАВЛЯЕМ, ДОБАВЛЯЕМ В КОНЕЦ) ... */
-
-/* --- CAROUSEL STYLES (Слайдер товаров) --- */
-.carousel-wrapper {
-    position: relative;
-    padding: 10px 0;
-}
-
-.carousel-track {
-    display: flex;
-    gap: 15px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding-bottom: 20px; /* Место для скроллбара/теней */
-    -webkit-overflow-scrolling: touch; /* Плавность на iOS */
-    scrollbar-width: none; /* Скрываем скроллбар Firefox */
-}
-.carousel-track::-webkit-scrollbar { display: none; } /* Скрываем скроллбар Chrome */
-
-/* Карточка в карусели */
-.carousel-card {
-    min-width: 85%; /* На мобилках видно соседнюю карточку */
-    scroll-snap-align: center;
-    flex-shrink: 0;
-}
-
-/* Стрелки навигации */
-.nav-arrow {
-    position: absolute;
-    top: 50%; transform: translateY(-50%);
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    background: #fff; color: #000;
-    border: 2px solid #000;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; font-weight: bold; cursor: pointer;
-    z-index: 10;
-    opacity: 0; pointer-events: none; transition: opacity 0.3s;
-}
-/* Показываем стрелки только если устройство поддерживает ховер (ПК) */
-@media (hover: hover) {
-    .carousel-wrapper:hover .nav-arrow { opacity: 1; pointer-events: all; }
-}
-.nav-arrow.left { left: 0; }
-.nav-arrow.right { right: 0; }
-
-/* --- VISUAL ADMIN CONTROLS (Pencils & Plus) --- */
-
-/* Скрыты по умолчанию */
-.admin-trigger, .add-game-card { display: none !important; }
-
-/* Показываем, если включен режим разработчика */
-body.dev-mode .admin-trigger {
-    display: flex !important;
-    position: absolute; top: 10px; right: 10px;
-    width: 32px; height: 32px;
-    background: #fff; color: #000;
-    border: 2px solid #000; border-radius: 8px;
-    align-items: center; justify-content: center;
-    font-size: 16px; cursor: pointer; z-index: 20;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
-    animation: popIn 0.3s;
-}
-body.dev-mode .admin-trigger:active { transform: translateY(2px); box-shadow: none; }
-
-/* Кнопка добавления игры (+) */
-body.dev-mode .add-game-card {
-    display: flex !important;
-    min-height: 150px;
-    background: rgba(0,0,0,0.05);
-    border: 3px dashed #999;
-    border-radius: var(--card-radius);
-    align-items: center; justify-content: center;
-    cursor: pointer;
-}
-.plus-icon { font-size: 50px; color: #999; }
-
-/* Индикатор режима разработчика */
-.dev-badge {
-    position: fixed; bottom: 10px; right: 10px;
-    background: #00ff00; color: #000;
-    padding: 5px 10px; border-radius: 20px;
-    font-size: 10px; font-weight: bold; z-index: 10000;
-    pointer-events: none; display: none;
-}
-body.dev-mode .dev-badge { display: block; }
-
-/* ... [ВСТАВИТЬ В НАЧАЛО] Стили из прошлых шагов ... */
-
-/* --- 1. GLOBAL & GRID --- */
-.games-grid { display: grid; gap: 16px; padding: 0 10px 40px; grid-template-columns: 1fr; transition: all 0.3s; }
-.games-grid.grid-2x6 { grid-template-columns: 1fr 1fr; } /* Сетка 2 колонки */
-.games-grid.grid-2x6 .game-card { min-height: 180px; }
-.games-grid.grid-2x6 .card-bg { height: 100px; }
-.games-grid.grid-2x6 .game-info h3 { font-size: 14px; }
-
-/* --- 2. ICONS & IMAGES --- */
-.game-icon-box img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
-.card-character img { width: 100px; height: 100px; object-fit: contain; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); }
-
-/* --- 3. UI ELEMENTS --- */
-.export-icon { 
-    font-size: 20px; cursor: pointer; padding: 8px; 
-    border-radius: 50%; background: #eee; width: 36px; height: 36px;
-    display: flex; align-items: center; justify-content: center;
-}
-.grid-toggle { 
-    display: inline-block; background: #000; color: #fff; padding: 5px 10px; 
-    border-radius: 8px; font-size: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; 
-}
-.add-prod-card {
-    min-width: 60px; height: 100%; display: flex !important;
-    align-items: center; justify-content: center;
-    border: 2px dashed #ccc; border-radius: 16px; margin-left: 10px; cursor: pointer;
-    font-size: 30px; color: #ccc;
-}
-
-/* Edit Controls Overlay */
-.game-card .controls-layer {
-    position: absolute; top: 10px; right: 10px; z-index: 20; display: flex; gap: 5px;
-}
-.control-btn {
-    width: 28px; height: 28px; background: #fff; color: #000;
-    border: 2px solid #000; border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; cursor: pointer; box-shadow: 0 2px 0 rgba(0,0,0,0.2);
-}
-.control-btn.move-btn { font-size: 10px; } /* Стрелочки */
-
-/* --- 4. THEME ENGINE (20 Themes) --- */
-
-/* Theme 1: Clash Royale Arena (Animated Figures) */
-.theme-arena {
-    background-color: #2b3b75;
-    background-image: 
-        linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d),
-        linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d);
-    background-position: 0 0, 20px 20px; background-size: 40px 40px;
-    overflow: hidden;
-}
-.theme-arena::before, .theme-arena::after {
-    content: '♟️'; position: absolute; font-size: 20px;
-    animation: troopMove 6s linear infinite;
-}
-.theme-arena::before { top: 20%; left: -20px; animation-delay: 0s; }
-.theme-arena::after { bottom: 20%; right: -20px; animation-direction: reverse; animation-delay: 3s; filter: hue-rotate(180deg); }
-@keyframes troopMove { 0% { transform: translateX(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateX(400px); opacity: 0; } }
-
-/* Theme 2: Inferno */
-.theme-inferno { background: linear-gradient(0deg, #500000, #ff4500); }
-.theme-inferno::before { content: ''; position: absolute; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, transparent 0, transparent 5px, rgba(255,200,0,0.1) 6px); animation: heat 1s infinite; }
-
-/* Theme 3: Cyberpunk */
-.theme-cyber { background: #000; border: 2px solid #0ff; }
-.theme-cyber::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent 50%, rgba(0,255,255,0.2) 50%); background-size: 4px 100%; }
-
-/* Theme 4: Forest */
-.theme-forest { background: #2a5a00; background-image: radial-gradient(#3a7a00 15%, transparent 16%), radial-gradient(#3a7a00 15%, transparent 16%); background-size: 20px 20px; background-position: 0 0, 10px 10px; }
-
-/* Theme 5: Gold Vault */
-.theme-gold { background: radial-gradient(circle, #ffd700, #b8860b); }
-.theme-gold::before { content: '✨'; position: absolute; animation: sparkle 2s infinite; top: 10%; left: 10%; font-size: 10px; }
-
-/* Theme 6: Ice Age */
-.theme-ice { background: linear-gradient(135deg, #e0f7fa 0%, #00bcd4 100%); }
-.theme-ice::after { content: ''; position: absolute; width: 200%; height: 200%; background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="white" opacity="0.5"/></svg>'); animation: snow 10s linear infinite; }
-
-/* Theme 7: Space */
-.theme-space { background: #0b0d17; background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px); background-size: 50px 50px; }
-
-/* Theme 8: Candy */
-.theme-candy { background: repeating-linear-gradient(45deg, #ff9a9e, #ff9a9e 10px, #fad0c4 10px, #fad0c4 20px); }
-
-/* Theme 9: Blueprint */
-.theme-blueprint { background: #0d47a1; background-image: linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 20px 20px; }
-
-/* Theme 10: Matrix */
+/* Advanced Themes */
+.theme-arena { background: #2b3b75; color: white; position: relative; overflow: hidden; } /* Add chess animation here if needed */
+.theme-inferno { background: linear-gradient(0deg, #500000, #ff4500); color: white; }
+.theme-cyber { background: #000; border: 2px solid #0ff; color: #0ff; }
+.theme-forest { background: #2a5a00; color: #a8e063; }
+.theme-gold { background: radial-gradient(circle, #ffd700, #b8860b); color: #442817; }
+.theme-ice { background: linear-gradient(135deg, #e0f7fa 0%, #00bcd4 100%); color: #006064; }
+.theme-space { background: #0b0d17; color: white; }
+.theme-candy { background: repeating-linear-gradient(45deg, #ff9a9e, #ff9a9e 10px, #fad0c4 10px, #fad0c4 20px); color: #d81b60; }
+.theme-blueprint { background: #0d47a1; color: white; }
 .theme-matrix { background: #000; color: #0f0; }
-.theme-matrix::before { content: '1010101010'; position: absolute; color: rgba(0,255,0,0.2); font-family: monospace; font-size: 20px; writing-mode: vertical-rl; }
+.theme-water { background: linear-gradient(180deg, #4fc3f7, #0288d1); color: white; }
+.theme-noir { background: #222; color: #ddd; }
+.theme-glitch { background: #222; color: #0ff; }
+.theme-sunset { background: linear-gradient(180deg, #ff512f, #dd2476); color: white; }
+.theme-toxic { background: repeating-radial-gradient(circle, #76b852, #76b852 10px, #8dc26f 10px, #8dc26f 20px); color: #1b5e20; }
+.theme-paper { background: #fdfbf7; color: #333; }
+.theme-neon { background: #111; color: #f0f; border-bottom: 2px solid #f0f; }
+.theme-retro { background: #d7c49e; color: #5d4037; }
+.theme-galaxy { background: linear-gradient(135deg, #1a2980, #26d0ce); color: white; }
+.theme-lava { background: radial-gradient(circle at bottom, #ff0, #f00, #300); color: white; }
 
-/* Theme 11: Underwater */
-.theme-water { background: linear-gradient(180deg, #4fc3f7, #0288d1); }
-.theme-water::after { content: '○'; position: absolute; bottom: 0; left: 50%; color: rgba(255,255,255,0.4); animation: bubbles 4s infinite; }
-
-/* Theme 12: Noir */
-.theme-noir { background: #222; background-image: radial-gradient(circle, #444 1px, transparent 1px); background-size: 10px 10px; filter: grayscale(100%); }
-
-/* Theme 13: Glitch */
-.theme-glitch { background: #222; animation: glitch-bg 3s infinite; }
-@keyframes glitch-bg { 0% { background: #222; } 2% { background: #333; } 4% { background: #222; } }
-
-/* Theme 14: Sunset */
-.theme-sunset { background: linear-gradient(180deg, #ff512f, #dd2476); }
-
-/* Theme 15: Toxic */
-.theme-toxic { background: repeating-radial-gradient(circle, #76b852, #76b852 10px, #8dc26f 10px, #8dc26f 20px); }
-
-/* Theme 16: Paper */
-.theme-paper { background: #fdfbf7; border: 1px solid #ccc; box-shadow: inset 0 0 20px rgba(0,0,0,0.05); }
-
-/* Theme 17: Neon City */
-.theme-neon { background: #111; border-bottom: 4px solid #f0f; }
-.theme-neon::after { content: ''; position: absolute; bottom: 0; width: 100%; height: 2px; background: #f0f; box-shadow: 0 0 10px #f0f; }
-
-/* Theme 18: Retro */
-.theme-retro { background: #d7c49e; border: 4px double #8b4513; }
-
-/* Theme 19: Galaxy */
-.theme-galaxy { background: linear-gradient(135deg, #1a2980, #26d0ce); }
-
-/* Theme 20: Lava */
-.theme-lava { background: radial-gradient(circle at bottom, #ff0, #f00, #300); }
-
-/* Theme Preview Box */
-.theme-preview-box {
-    width: 100%; height: 120px; border-radius: 16px; margin-bottom: 20px;
-    display: flex; align-items: center; justify-content: center;
-    border: 2px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    transition: all 0.3s;
-}
-.theme-char-preview { font-size: 50px; }
-.theme-content { background: #222; color: #fff; text-align: center; padding: 20px; border-radius: 24px 24px 0 0; }
-.theme-controls { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 20px; }
-.nav-arrow.static { opacity: 1; pointer-events: all; position: static; transform: none; background: #444; color: #fff; border: none; }
-
-/* ANIMATIONS */
-@keyframes snow { from { background-position: 0 0; } to { background-position: 50px 100px; } }
-@keyframes bubbles { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(-100px) scale(1.2); opacity: 0; } }
-@keyframes heat { 0%,100% {opacity: 0.5;} 50% {opacity: 0.8;} }
-@keyframes sparkle { 0%,100% { opacity:0; transform: scale(0.5); } 50% { opacity:1; transform: scale(1.2); } }
+/* Dynamic Background Classes for Pages */
+.bs-bg { background: #4737ff; color: white; }
+.coc-bg { background: #5c3c2e; color: white; }
+.cr-bg { background: #2b3b75; color: white; }
+.hd-bg { background: #6ecbf5; color: #2a5a00; }
+/* Generic mapping for other themes */
+.theme-arena-bg, .theme-space-bg, .theme-blueprint-bg { background: #1a1a2e; color: white; }
+.theme-gold-bg, .theme-candy-bg, .theme-paper-bg { background: #fff8e1; color: #333; }
+.theme-ice-bg, .theme-water-bg { background: #e0f7fa; color: #006064; }
+.theme-inferno-bg, .theme-lava-bg { background: #3e0000; color: white; }
+.theme-forest-bg, .theme-toxic-bg { background: #1b5e20; color: white; }
