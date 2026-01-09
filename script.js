@@ -50,134 +50,118 @@ const app = {
             });
         });
     },
-    
-    // И ЗАМЕНИТЕ ЕЕ НА ЭТОТ КОД:
-renderHub: () => {
-    const grid = document.getElementById('hub-grid');
-    const gameCardsHTML = DB.map(game => {
-        
-        let characterHTML = ''; // Начинаем с пустой строки
 
-        // Проверяем, есть ли у игры персонаж
-        if (game.character) {
-            // Если это путь к картинке (PNG или GIF)...
-            if (game.character.includes('.png') || game.character.includes('.gif')) {
-                // ...создаем тег <img>
-                characterHTML = `<img src="${game.character}" class="card-character-img ${game.anim}" alt="${game.name} character">`;
-            } else {
-                // ...иначе (если это все еще эмодзи) оставляем старую логику
-                characterHTML = `<div class="card-character ${game.anim}">${game.character}</div>`;
+    renderHub: () => {
+        const grid = document.getElementById('hub-grid');
+        const gameCardsHTML = DB.map(game => {
+            
+            let characterHTML = ''; // Начинаем с пустой строки
+    
+            if (game.character) {
+                if (game.character.includes('.png') || game.character.includes('.gif')) {
+                    characterHTML = `<img src="${game.character}" class="card-character-img ${game.anim}" alt="${game.name} character">`;
+                } else {
+                    characterHTML = `<div class="card-character ${game.anim}">${game.character}</div>`;
+                }
             }
-        }
-
-        // Особый случай для Clash Royale, который переопределяет все
-        if (game.id === 'clashroyale') {
-             characterHTML = `
-                <div class="cr-battle-arena-pattern">
-                     <div class="arena-projectiles">
-                        <span class="projectile fire">🔥</span>
-                        <span class="projectile swords">⚔️</span>
+    
+            if (game.id === 'clashroyale') {
+                 characterHTML = `
+                    <div class="cr-battle-arena-pattern">
+                         <div class="arena-projectiles">
+                            <span class="projectile fire">🔥</span>
+                            <span class="projectile swords">⚔️</span>
+                        </div>
+                    </div>
+                 `;
+            }
+            
+            return `
+                <div class="game-card ${game.theme}-card" onclick="app.openGame('${game.id}', this)">
+                    <div class="card-bg ${game.pattern}"> 
+                        ${characterHTML}
+                    </div>
+                    <div class="card-content">
+                        <div class="game-info">
+                            <h3>${game.name}</h3>
+                            <span class="action-text">View Offers →</span>
+                        </div>
+                        <div class="game-icon-box ${game.theme}-icon">${game.icon}</div>
                     </div>
                 </div>
-             `;
+            `;
+        }).join('');
+        grid.innerHTML = gameCardsHTML;
+    },
+
+    openGame: (gameId, clickedCard) => {
+        const game = DB.find(g => g.id === gameId);
+        if (!game) return;
+
+        tg.HapticFeedback.impactOccurred('light');
+
+        const hubView = document.getElementById('view-hub');
+        const gameView = document.getElementById('view-game');
+        
+        state.activeGameId = gameId;
+        document.getElementById('game-title').textContent = game.name.toUpperCase();
+        
+        let heroHTML;
+        if (game.id === 'brawlstars') {
+            const particles = Array.from({ length: 50 }).map(() => `<div class="particle"></div>`).join('');
+            heroHTML = `<div class="hero-card ${game.theme}-hero"><div class="shine-effect"></div><div class="particles-container">${particles}</div> <div class="bonus-tag">${game.hero.tag}</div><div class="hero-content"><div class="hero-visual">${game.hero.visual}</div><div class="hero-info"><h1>${game.hero.title}</h1><p>${game.hero.desc}</p></div></div></div>`;
+        } else {
+             heroHTML = `<div class="hero-card ${game.theme}-hero"><div class="shine-effect"></div><div class="bonus-tag">${game.hero.tag}</div><div class="hero-content"><div class="hero-visual">${game.hero.visual}</div><div class="hero-info"><h1>${game.hero.title}</h1><p>${game.hero.desc}</p></div></div></div>`;
         }
-        
-        return `
-            <div class="game-card ${game.theme}-card" onclick="app.openGame('${game.id}', this)">
-                <div class="card-bg ${game.pattern}"> 
-                    ${characterHTML}
-                </div>
-                <div class="card-content">
-                    <div class="game-info">
-                        <h3>${game.name}</h3>
-                        <span class="action-text">View Offers →</span>
-                    </div>
-                    <div class="game-icon-box ${game.theme}-icon">${game.icon}</div>
-                </div>
-            </div>
-        `;
-    }).join('');
-    grid.innerHTML = gameCardsHTML;
-},
-    // И ЗАМЕНИТЕ ЕЕ НА ЭТОТ НОВЫЙ КОД:
-openGame: (gameId, clickedCard) => {
-    const game = DB.find(g => g.id === gameId);
-    if (!game) return;
 
-    tg.HapticFeedback.impactOccurred('light');
+        const gameHeroElement = document.getElementById('game-hero');
+        gameHeroElement.innerHTML = heroHTML;
 
-    // 1. Получаем "до" и "после" элементы
-    const hubView = document.getElementById('view-hub');
-    const gameView = document.getElementById('view-game');
-    
-    // ----- Сначала рендерим контент на новом экране, но держим его невидимым -----
-    state.activeGameId = gameId;
-    document.getElementById('game-title').textContent = game.name.toUpperCase();
-    
-    let heroHTML;
-    if (game.id === 'brawlstars') {
-        const particles = Array.from({ length: 50 }).map(() => `<div class="particle"></div>`).join('');
-        heroHTML = `<div class="hero-card ${game.theme}-hero"><div class="shine-effect"></div><div class="particles-container">${particles}</div> <div class="bonus-tag">${game.hero.tag}</div><div class="hero-content"><div class="hero-visual">${game.hero.visual}</div><div class="hero-info"><h1>${game.hero.title}</h1><p>${game.hero.desc}</p></div></div></div>`;
-    } else {
-         heroHTML = `<div class="hero-card ${game.theme}-hero"><div class="shine-effect"></div><div class="bonus-tag">${game.hero.tag}</div><div class="hero-content"><div class="hero-visual">${game.hero.visual}</div><div class="hero-info"><h1>${game.hero.title}</h1><p>${game.hero.desc}</p></div></div></div>`;
-    }
-    const gameHeroElement = document.getElementById('game-hero');
-    gameHeroElement.innerHTML = heroHTML;
+        const offersHTML = game.products.map(prod => `<div class="offer-card ${game.theme}-offer"><span class="badge">${prod.badge}</span><div class="offer-visual">${prod.icon}</div><h3>${prod.name}</h3><p class="price">$${prod.price}</p><button class="buy-btn" onclick="app.addToCart(this, '${prod.name}', ${prod.price}, '${prod.icon}')">Purchase</button></div>`).join('');
+        document.getElementById('game-offers').innerHTML = offersHTML;
 
-    const offersHTML = game.products.map(prod => `<div class="offer-card ${game.theme}-offer"><span class="badge">${prod.badge}</span><div class="offer-visual">${prod.icon}</div><h3>${prod.name}</h3><p class="price">$${prod.price}</p><button class="buy-btn" onclick="app.addToCart(this, '${prod.name}', ${prod.price}, '${prod.icon}')">Purchase</button></div>`).join('');
-    document.getElementById('game-offers').innerHTML = offersHTML;
+        app.applyTheme(gameId);
 
-    app.applyTheme(gameId);
+        const startRect = clickedCard.getBoundingClientRect();
+        const targetHeroCard = gameHeroElement.querySelector('.hero-card');
 
-    // 2. Получаем геометрию начальной и конечной точек
-    const startRect = clickedCard.getBoundingClientRect();
-    const targetHeroCard = gameHeroElement.querySelector('.hero-card');
-
-    // Временно показываем, чтобы измерить
-    gameView.style.display = 'block';
-    const endRect = targetHeroCard.getBoundingClientRect();
-    gameView.style.display = 'none';
-
-    // 3. Создаем и настраиваем клон
-    const clone = clickedCard.cloneNode(true);
-    clone.classList.add('game-card-clone');
-    document.body.appendChild(clone);
-    
-    clone.style.top = `${startRect.top}px`;
-    clone.style.left = `${startRect.left}px`;
-    clone.style.width = `${startRect.width}px`;
-    clone.style.height = `${startRect.height}px`;
-
-    // 4. Скрываем оригинал и готовим сцену
-    clickedCard.style.opacity = '0';
-    hubView.classList.add('view-transitioning');
-
-    // 5. ЗАПУСК АНИМАЦИИ (FLIP)
-    requestAnimationFrame(() => {
-        const scaleX = endRect.width / startRect.width;
-        const scaleY = endRect.height / startRect.height;
-        const translateX = endRect.left - startRect.left;
-        const translateY = endRect.top - startRect.top;
-
-        clone.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
-        clone.style.transformOrigin = 'top left';
-        // Углы тоже анимируем
-        clone.style.borderRadius = getComputedStyle(targetHeroCard).borderRadius;
-    });
-
-    // 6. Завершение и очистка
-    setTimeout(() => {
-        hubView.classList.remove('active', 'view-transitioning');
-        hubView.style.display = 'none';
-        
         gameView.style.display = 'block';
-        gameView.classList.add('active');
+        const endRect = targetHeroCard.getBoundingClientRect();
+        gameView.style.display = 'none';
+
+        const clone = clickedCard.cloneNode(true);
+        clone.classList.add('game-card-clone');
+        document.body.appendChild(clone);
         
-        clone.remove();
-        clickedCard.style.opacity = '1'; // Возвращаем видимость на случай возврата назад
-        window.scrollTo(0,0);
-    }, 500); // Должно совпадать с длительностью transition
-},
+        clone.style.top = `${startRect.top}px`;
+        clone.style.left = `${startRect.left}px`;
+        clone.style.width = `${startRect.width}px`;
+        clone.style.height = `${startRect.height}px`;
+
+        clickedCard.style.opacity = '0';
+        hubView.classList.add('view-transitioning');
+
+        requestAnimationFrame(() => {
+            const scaleX = endRect.width / startRect.width;
+            const scaleY = endRect.height / startRect.height;
+            const translateX = endRect.left - startRect.left;
+            const translateY = endRect.top - startRect.top;
+
+            clone.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
+            clone.style.transformOrigin = 'top left';
+            clone.style.borderRadius = getComputedStyle(targetHeroCard).borderRadius;
+        });
+
+        setTimeout(() => {
+            hubView.classList.remove('active', 'view-transitioning');
+            hubView.style.display = 'none';
+            gameView.style.display = 'block';
+            gameView.classList.add('active');
+            clone.remove();
+            clickedCard.style.opacity = '1';
+            window.scrollTo(0,0);
+        }, 500);
+    },
     
     addToCart: (button, name, price, icon) => {
         tg.HapticFeedback.impactOccurred('medium');
@@ -249,100 +233,112 @@ openGame: (gameId, clickedCard) => {
     },
     
     saveState: () => { localStorage.setItem('supercell_cart', JSON.stringify(state.cart)); localStorage.setItem('supercell_login', JSON.stringify({ isLoggedIn: state.isLoggedIn, email: state.userEmail, usedPromos: state.usedPromos || [], promoUsageCount: state.promoUsageCount || {} })); },
+    
     loadState: () => { try { const savedCart = localStorage.getItem('supercell_cart'); const savedLogin = localStorage.getItem('supercell_login'); if (savedCart) state.cart = JSON.parse(savedCart); if (savedLogin) { const d = JSON.parse(savedLogin); state.isLoggedIn = d.isLoggedIn; state.userEmail = d.email; state.usedPromos = d.usedPromos || []; state.promoUsageCount = d.promoUsageCount || {}; } } catch(e) {} },
+    
     handleAuthClick: () => {
-    // Если пользователь уже залогинен, ничего не делаем
-    if (state.isLoggedIn) return;
+        if (state.isLoggedIn) {
+            tg.showPopup({
+                title: 'Log Out',
+                message: 'Are you sure?',
+                buttons: [
+                    {id: 'logout', type: 'destructive', text: 'Log Out'},
+                    {id: 'cancel', type: 'cancel'}
+                ]
+            }, (btnId) => {
+                if (btnId === 'logout') app.logout();
+            });
+        } else {
+            tg.HapticFeedback.impactOccurred('medium');
+            const startLogo = document.querySelector('.logo-container');
+            const endLogo = document.getElementById('login-btn');
+            if (!startLogo || !endLogo) return;
+            const startRect = startLogo.getBoundingClientRect();
+            const endRect = endLogo.getBoundingClientRect();
+            const spark = document.createElement('div');
+            spark.className = 'connection-spark';
+            document.body.appendChild(spark);
+            const startX = startRect.left + startRect.width / 2;
+            const startY = startRect.top + startRect.height / 2;
+            spark.style.transform = `translate(${startX}px, ${startY}px) scale(0)`;
+            spark.style.opacity = '1';
+            requestAnimationFrame(() => {
+                const endX = endRect.left + endRect.width / 2;
+                const endY = endRect.top + endRect.height / 2;
+                spark.style.transform = `translate(${endX}px, ${endY}px) scale(1)`;
+            });
+            setTimeout(() => {
+                spark.style.opacity = '0';
+                document.getElementById('collab-login-modal').classList.add('open');
+                setTimeout(() => {
+                    spark.remove();
+                }, 300);
+            }, 600);
+        }
+    },
 
-    tg.HapticFeedback.impactOccurred('medium');
+    contactSupport: () => {
+        const botUsername = 'youstorescbot';
+        const message = "*ВАЖНО! Для быстрого рассмотрения заявки отправьте сообщение не редактируя текст! Здравствуйте! У меня возникла проблема с авторизацией через Supercell ID в вашем магазине. ID товара: #289184. Код ошибки: ERORR1101NOTTRUEREGION";
+        const url = `https://t.me/${botUsername}?start=${encodeURIComponent(message)}`;
+        tg.openTelegramLink(url);
+    },
 
-    // 1. Получаем координаты логотипов
-    const startLogo = document.querySelector('.logo-container');
-    const endLogo = document.getElementById('login-btn'); // Кнопка "LOG IN"
-    if (!startLogo || !endLogo) return;
+    logout: () => { 
+        state.isLoggedIn = false; 
+        state.userEmail = ''; 
+        state.cart = []; 
+        state.usedPromos = []; 
+        state.promoUsageCount = {}; 
+        app.saveState(); 
+        app.checkLoginUI(); 
+        app.updateCartUI(); 
+        app.router('hub'); 
+        tg.HapticFeedback.notificationOccurred('success'); 
+    },
 
-    const startRect = startLogo.getBoundingClientRect();
-    const endRect = endLogo.getBoundingClientRect();
-
-    // 2. Создаем "искру"
-    const spark = document.createElement('div');
-    spark.className = 'connection-spark';
-    document.body.appendChild(spark);
-
-    // 3. Устанавливаем начальную позицию (центр нашего лого)
-    const startX = startRect.left + startRect.width / 2;
-    const startY = startRect.top + startRect.height / 2;
-    spark.style.transform = `translate(${startX}px, ${startY}px) scale(0)`;
-    spark.style.opacity = '1';
-
-    // 4. Запускаем анимацию полета
-    requestAnimationFrame(() => {
-        const endX = endRect.left + endRect.width / 2;
-        const endY = endRect.top + endRect.height / 2;
-        spark.style.transform = `translate(${endX}px, ${endY}px) scale(1)`;
-    });
-
-    // 5. По завершении анимации открываем модальное окно и убираем искру
-    setTimeout(() => {
-        spark.style.opacity = '0';
-        document.getElementById('collab-login-modal').classList.add('open');
-        
-        setTimeout(() => {
-            spark.remove();
-        }, 300); // Даем время искре исчезнуть
-        
-    }, 600); // Должно совпадать с transition в CSS
-},
-
-contactSupport: () => {
-    // ВАЖНО: Замените 'YOUR_BOT_USERNAME' на реальное имя вашего бота
-    const botUsername = 'youstorescbot';
-    
-    const message = "Здравствуйте! У меня возникла проблема с авторизацией через Supercell ID в вашем магазине.";
-
-    const url = `https://t.me/${botUsername}?start=${encodeURIComponent(message)}`;
-    
-    tg.openTelegramLink(url);
-},
     redeemCode: () => { const input = document.getElementById('promo-input'); const code = input.value.trim().toUpperCase(); if (!code) return; if (code === '/RESET') { state.usedPromos = []; state.promoUsageCount = {}; app.saveState(); input.value = ''; app.showPromoMessage('♻️ DEV MODE: Reset!', 'success'); return; } const PROMO_CODE = '/PRM1423PP'; const MAX_USES = 100; if (code === PROMO_CODE) { if (state.usedPromos.includes(code)) { app.showPromoMessage('Already used!', 'error'); return; } if ((state.promoUsageCount[code] || 0) >= MAX_USES) { app.showPromoMessage('Limit reached', 'error'); return; } state.promoUsageCount[code] = (state.promoUsageCount[code] || 0) + 1; state.usedPromos.push(code); state.cart.unshift({ name: 'PRO PASS', price: 0, originalPrice: 9.99, isPromo: true, id: Date.now() }); app.saveState(); app.updateCartUI(); app.renderCartItems(); input.value = ''; app.showPromoMessage('✨ Success!', 'success'); tg.HapticFeedback.notificationOccurred('success'); } else { app.showPromoMessage('Invalid Code', 'error'); } },
+    
     showPromoMessage: (text, type) => { const msg = document.getElementById('promo-msg'); msg.textContent = text; msg.className = `promo-msg ${type}`; msg.classList.remove('hidden'); setTimeout(() => msg.classList.add('hidden'), 4000); },
+    
     removeFromCart: (index) => { tg.HapticFeedback.impactOccurred('light'); state.cart.splice(index, 1); app.saveState(); app.updateCartUI(); app.renderCartItems(); },
+    
     updateCartUI: () => { const c = state.cart.length; const b = document.getElementById('cart-count'); b.textContent = c; if (c > 0) b.classList.remove('hidden'); else b.classList.add('hidden'); const t = state.cart.reduce((a,b)=>a+b.price,0); document.getElementById('cart-total').textContent = '$'+t.toFixed(2); },
+    
     toggleCart: () => { const m = document.getElementById('cart-modal'); if (!m.classList.contains('open')) { app.renderCartItems(); document.getElementById('promo-input').value = ''; document.getElementById('promo-msg').classList.add('hidden'); } m.classList.toggle('open'); },
+    
     renderCartItems: () => { const l = document.getElementById('cart-items'); if (state.cart.length === 0) { l.innerHTML = '<div style="padding:20px 0; color:#999;">Cart is empty</div>'; } else { l.innerHTML = state.cart.map((item, i) => { const isPromo = item.isPromo; const itemClass = isPromo ? 'cart-item promo-item' : 'cart-item'; const baseStyle = isPromo ? '' : 'display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #eee;'; const priceHTML = item.originalPrice ? `<span class="old-price">$${item.originalPrice.toFixed(2)}</span><span class="new-price">FREE</span><span class="promo-badge">GIFT</span>` : `<span style="color:#666;">$${item.price.toFixed(2)}</span>`; return `<div class="${itemClass}" style="${baseStyle}"><div style="text-align:left;"><b style="font-size:14px; display:block; margin-bottom:4px;">${item.name}</b>${priceHTML}</div><div onclick="app.removeFromCart(${i})" style="color:${isPromo?'#442817':'#ff3b30'}; font-weight:900; cursor:pointer; padding:5px; font-size:16px; opacity:0.7;">✕</div></div>`; }).join(''); } },
-    // И ЗАМЕНИТЕ ЕЕ НА ЭТОТ КОД:
-checkout: () => {
-    // Если пользователь не залогинен...
-    if (!state.isLoggedIn) {
-        // ...закрываем корзину...
-        app.toggleCart(); 
-        // ...и через мгновение запускаем нашу новую, красивую анимацию логина.
-        setTimeout(() => {
-            tg.showAlert('Please Log In first');
-            app.handleAuthClick(); // <-- ГЛАВНОЕ ИЗМЕНЕНИЕ: вызываем правильную функцию
-        }, 300);
-        return; 
-    } 
-
-    if (state.cart.length === 0) return; 
-
-    const amount = state.cart.reduce((a,b)=>a+b.price,0).toFixed(2); 
-    tg.showPopup({ 
-        title: 'Purchase', 
-        message: `Pay $${amount}?`, 
-        buttons: [{type:'ok', text:'Pay'}, {type:'cancel'}] 
-    }, (id) => { 
-        if (id === 'ok') { 
-            state.cart = []; 
-            app.saveState(); 
-            app.updateCartUI(); 
+    
+    checkout: () => {
+        if (!state.isLoggedIn) {
             app.toggleCart(); 
-            tg.HapticFeedback.notificationOccurred('success'); 
+            setTimeout(() => {
+                tg.showAlert('Please Log In first');
+                app.handleAuthClick();
+            }, 300);
+            return; 
         } 
-    }); 
-},
+        if (state.cart.length === 0) return; 
+        const amount = state.cart.reduce((a,b)=>a+b.price,0).toFixed(2); 
+        tg.showPopup({ 
+            title: 'Purchase', 
+            message: `Pay $${amount}?`, 
+            buttons: [{type:'ok', text:'Pay'}, {type:'cancel'}] 
+        }, (id) => { 
+            if (id === 'ok') { 
+                state.cart = []; 
+                app.saveState(); 
+                app.updateCartUI(); 
+                app.toggleCart(); 
+                tg.HapticFeedback.notificationOccurred('success'); 
+            } 
+        }); 
+    },
+
     _LEGACY_toggleLogin: () => { if(state.isLoggedIn) return; document.getElementById('login-modal').classList.toggle('open'); },
+    
     processLogin: () => { const e = document.getElementById('email-input').value; if(!e.includes('@')) return; document.querySelector('.login-step-1').classList.add('hidden'); document.querySelector('.login-loader').classList.remove('hidden'); setTimeout(() => { state.isLoggedIn = true; state.userEmail = e; app.saveState(); document.getElementById('login-modal').classList.remove('open'); app.checkLoginUI(); setTimeout(() => { document.querySelector('.login-step-1').classList.remove('hidden'); document.querySelector('.login-loader').classList.add('hidden'); }, 500); }, 1500); },
+    
     checkLoginUI: () => { const btn = document.querySelector('.login-btn'); if(state.isLoggedIn) { const name = state.userEmail.split('@')[0]; btn.innerHTML = `👤 ${name.slice(0,8)}`; btn.style.background = '#28ca42'; btn.style.color = '#fff'; } else { btn.innerHTML = `LOG IN <span class="id-icon">ID</span>`; } }
 };
 
