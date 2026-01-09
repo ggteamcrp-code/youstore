@@ -1,59 +1,151 @@
 :root {
-    --bg-light: #f7f7f9;
+    --bg-light: #f0f2f5; /* Чуть темнее для контраста */
     --text-main: #111;
     --font: 'Rubik', sans-serif;
-    --card-radius: 20px;
+    --card-radius: 24px;
+    --gold-gradient: linear-gradient(135deg, #fff5c3 0%, #ffd700 100%);
+    
+    /* Game Colors */
     --bs-color: #4737ff;
     --coc-color: #5c3c2e; 
     --cr-color: #2b3b75;  
     --hd-color: #f7b232;
-    --gold-gradient: linear-gradient(135deg, #fff5c3 0%, #ffd700 100%);
 }
 
 body {
     margin: 0; padding: 0;
     font-family: var(--font);
     background-color: var(--bg-light);
+    /* Глобальный фон: легкая сетка */
+    background-image: linear-gradient(#e1e4e8 1px, transparent 1px), linear-gradient(90deg, #e1e4e8 1px, transparent 1px);
+    background-size: 30px 30px;
     color: var(--text-main);
     -webkit-tap-highlight-color: transparent;
     transition: background 0.3s ease;
     overflow-x: hidden;
 }
 
-/* Hard Reset Views */
-#view-hub, #view-brawlstars, #view-clashofclans, #view-clashroyale, #view-hayday {
-    display: none !important; opacity: 0;
-}
-#view-hub.active, #view-brawlstars.active, #view-clashofclans.active, #view-clashroyale.active, #view-hayday.active {
-    display: block !important; animation: fadeIn 0.4s forwards;
-}
+/* Reset Views */
+#view-hub, #view-brawlstars, #view-clashofclans, #view-clashroyale, #view-hayday { display: none !important; opacity: 0; }
+#view-hub.active, #view-brawlstars.active, #view-clashofclans.active, #view-clashroyale.active, #view-hayday.active { display: block !important; animation: fadeIn 0.4s forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 /* Navbar */
 .navbar {
     display: flex; justify-content: space-between; align-items: center;
     padding: 12px 20px; position: sticky; top: 0; z-index: 9999;
-    background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03); height: 60px; transition: background 0.3s, color 0.3s;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    height: 60px; transition: background 0.3s, color 0.3s;
 }
 .supercell-logo { font-weight: 900; line-height: 0.85; font-size: 13px; letter-spacing: 0.5px; text-align: center; }
 .store-badge { background: #ffd700; color: #000; font-size: 9px; padding: 2px 4px; border-radius: 4px; font-weight: bold; margin-left: 2px; vertical-align: super;}
 .nav-actions { display: flex; gap: 12px; align-items: center; }
-
-.login-btn {
-    background: #000; color: #fff; border: none; padding: 8px 14px; border-radius: 50px;
-    font-weight: 800; font-size: 12px; display: flex; align-items: center; gap: 6px; cursor: pointer;
-}
+.login-btn { background: #000; color: #fff; border: none; padding: 8px 14px; border-radius: 50px; font-weight: 800; font-size: 12px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
 .id-icon { background: #fff; color: #000; padding: 1px 3px; border-radius: 3px; font-size: 9px; font-weight: 900; }
 .cart-icon { font-size: 24px; cursor: pointer; position: relative; }
-.cart-badge {
-    position: absolute; top: -5px; right: -8px; background: #ff3b30; color: white;
-    font-size: 10px; padding: 2px 5px; border-radius: 10px; font-weight: bold; border: 2px solid #fff;
-    min-width: 16px; text-align: center;
-}
+.cart-badge { position: absolute; top: -5px; right: -8px; background: #ff3b30; color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; font-weight: bold; border: 2px solid #fff; min-width: 16px; text-align: center; }
 .hidden { display: none !important; }
 
-/* Backgrounds */
+/* HUB Styling */
+.hub-header { padding: 10px 10px 20px; text-align: left; }
+.hub-header h1 { font-size: 28px; font-weight: 900; margin: 0; letter-spacing: -0.5px; }
+.hub-header p { margin: 5px 0 0; color: #666; font-size: 14px; font-weight: 500; }
+
+.games-grid { display: grid; gap: 20px; padding: 0 10px 40px; }
+
+.game-card {
+    background: #fff; border-radius: var(--card-radius);
+    overflow: hidden; box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    position: relative; cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.game-card:active { transform: scale(0.97); }
+.game-card:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(0,0,0,0.12); }
+
+.card-bg {
+    height: 150px; /* Больше высота для красоты */
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* --- PREMIUM PATTERNS & ANIMATIONS --- */
+
+/* 1. Brawl Stars: Neon & Skulls */
+.bs-pattern {
+    background: radial-gradient(circle at top right, #6a35ff, #3d22b3);
+}
+/* Черепа на фоне */
+.bs-pattern::before {
+    content: ''; position: absolute; width: 100%; height: 100%;
+    background-image: radial-gradient(rgba(255,255,255,0.15) 2px, transparent 2px);
+    background-size: 24px 24px; opacity: 0.6;
+}
+.card-character.floating { font-size: 80px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); animation: float 3s ease-in-out infinite; }
+
+/* 2. Clash of Clans: WOOD PLANKS */
+.coc-pattern {
+    background-color: #eecda3;
+    /* Рисуем доски градиентом */
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,0.1) 40px),
+                      repeating-linear-gradient(90deg, transparent, transparent 150px, rgba(0,0,0,0.05) 151px);
+    background-size: 100% 40px; /* Высота доски */
+}
+/* Тень виньетка */
+.coc-pattern::after {
+    content: ''; position: absolute; width: 100%; height: 100%;
+    box-shadow: inset 0 0 40px rgba(92, 60, 46, 0.6);
+}
+.card-character.clashing { font-size: 75px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); animation: clash 2s infinite; }
+
+/* 3. Clash Royale: CHECKERED ARENA */
+.cr-pattern {
+    background-color: #2b3b75;
+    background-image: 
+        linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d),
+        linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d);
+    background-position: 0 0, 20px 20px;
+    background-size: 40px 40px;
+}
+.card-character.tilting { font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4)); animation: tilt 3s ease-in-out infinite; }
+
+/* 4. Hay Day: SUN RAYS */
+.hd-pattern {
+    background: #6ecbf5;
+    overflow: hidden;
+}
+/* Вращающиеся лучи */
+.hd-pattern::before {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    width: 200%; height: 200%;
+    background: conic-gradient(from 0deg, rgba(255,255,255,0.4) 0deg 20deg, transparent 20deg 40deg, rgba(255,255,255,0.4) 40deg 60deg, transparent 60deg 80deg, rgba(255,255,255,0.4) 80deg 100deg, transparent 100deg 120deg, rgba(255,255,255,0.4) 120deg 140deg, transparent 140deg 160deg, rgba(255,255,255,0.4) 160deg 180deg, transparent 180deg 200deg, rgba(255,255,255,0.4) 200deg 220deg, transparent 220deg 240deg, rgba(255,255,255,0.4) 240deg 260deg, transparent 260deg 280deg, rgba(255,255,255,0.4) 280deg 300deg, transparent 300deg 320deg, rgba(255,255,255,0.4) 320deg 340deg, transparent 340deg 360deg);
+    transform: translate(-50%, -50%);
+    animation: rotateRays 20s linear infinite;
+}
+.card-character.bouncing { font-size: 75px; position: relative; z-index: 1; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.2)); animation: bounceChar 1.5s infinite; }
+
+/* ANIMATION KEYFRAMES */
+@keyframes float { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
+@keyframes clash { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1) rotate(10deg); } }
+@keyframes tilt { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
+@keyframes rotateRays { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes bounceChar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px) scaleY(0.9); } }
+
+
+.card-content { padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; }
+.game-info { display: flex; flex-direction: column; gap: 4px; }
+.game-info h3 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: 0.3px; }
+.action-text { font-size: 12px; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.game-icon-box { 
+    width: 48px; height: 48px; border-radius: 14px; 
+    display: flex; align-items: center; justify-content: center; 
+    font-size: 24px; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
+}
+.bs-icon { background: #333; } .coc-icon { background: #ff4d4d; } .cr-icon { background: #2f80ed; } .hd-icon { background: #56ab2f; }
+
+/* Inner Pages Backgrounds (Same as before) */
 #view-brawlstars { background-color: var(--bs-color); background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; min-height: calc(100vh - 60px); color: white; }
 #view-clashofclans { background-color: var(--coc-color); background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 10px, transparent 10px, transparent 20px); min-height: calc(100vh - 60px); color: white; }
 #view-clashroyale { background-color: var(--cr-color); background-image: linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366), linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366); background-position: 0 0, 20px 20px; background-size: 40px 40px; min-height: calc(100vh - 60px); color: white; }
@@ -61,7 +153,7 @@ body {
 #view-hayday .sub-header .back-btn, #view-hayday .sub-header .game-logo { color: #2a5a00; }
 #view-hayday .section-title { color: #2a5a00; text-shadow: none; }
 
-/* Components */
+/* Components (Header, Cards, Modals etc - from previous step) */
 .sub-header { padding: 15px 20px; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 10px; z-index: 1; }
 .back-btn { position: absolute; left: 20px; font-weight: 700; cursor: pointer; color: white; font-size: 14px; }
 .game-logo { font-weight: 900; letter-spacing: 2px; font-style: italic; font-size: 14px; color: white; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
@@ -72,9 +164,7 @@ body {
 .coc-hero { background: linear-gradient(180deg, #eecda3 0%, #d8b07d 100%); color: #442817; }
 .cr-hero { background: linear-gradient(135deg, #0055ff 0%, #a044ff 100%); }
 .hd-hero { background: linear-gradient(135deg, #d369e5 0%, #a443b5 100%); background-image: radial-gradient(rgba(255,255,255,0.2) 10%, transparent 10%); background-size: 15px 15px; }
-
 .shine-effect { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent); animation: shine 3s infinite; }
-@keyframes shine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 .bonus-tag { background: #000; color: #fff; display: inline-block; padding: 6px 10px; font-size: 11px; font-weight: 900; border-radius: 6px; margin-bottom: 10px; text-transform: uppercase; }
 .hero-content { display: flex; align-items: center; gap: 20px; }
 .hero-visual { font-size: 50px; filter: drop-shadow(0 6px 0 rgba(0,0,0,0.2)); }
@@ -107,81 +197,23 @@ body {
 input[type="email"] { width: 100%; padding: 16px; border: 2px solid #e0e0e0; border-radius: 14px; font-size: 16px; margin: 15px 0; outline: none; background: #f9f9f9; }
 .modal-action-btn { background: #4737ff; color: #fff; width: 100%; padding: 16px; border: none; border-radius: 16px; font-weight: 800; font-size: 16px; cursor: pointer; }
 
-/* HUB Cards */
-.games-grid { display: grid; gap: 16px; padding: 20px; }
-.game-card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.05); position: relative; cursor: pointer; transition: transform 0.2s; }
-.game-card:active { transform: scale(0.98); }
-.card-bg { height: 120px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-.card-character { font-size: 70px; filter: drop-shadow(0 8px 8px rgba(0,0,0,0.25)); transform: rotate(-8deg); transition: transform 0.3s; }
-.game-card:hover .card-character { transform: rotate(0deg) scale(1.1); }
-.bs-card .card-bg { background: linear-gradient(135deg, #a044ff, #6a35ff); }
-.coc-card .card-bg { background: linear-gradient(135deg, #ffb347, #ffcc33); }
-.cr-card .card-bg { background: linear-gradient(135deg, #4481eb, #04befe); }
-.hd-card .card-bg { background: linear-gradient(135deg, #a8e063, #56ab2f); }
-.card-content { padding: 16px; display: flex; align-items: center; gap: 15px; }
-.game-icon-box { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: white; }
-.bs-icon { background: #333; } .coc-icon { background: #ff4d4d; } .cr-icon { background: #2f80ed; } .hd-icon { background: #56ab2f; }
-.card-text h3 { margin: 0; font-size: 17px; font-weight: 800; }
-.action-text { font-size: 11px; color: #999; font-weight: 700; text-transform: uppercase; }
-
-/* --- NEW PROMO CODE STYLES --- */
+/* PROMO STYLES */
 .promo-section { margin-top: 25px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
-
-.promo-input-group { 
-    display: flex; gap: 10px; background: #f9f9f9; 
-    border: 2px solid #e5e5e5; border-radius: 16px; padding: 6px;
-}
-#promo-input { 
-    margin: 0; padding: 10px; flex-grow: 1; border: none; background: transparent; 
-    font-weight: 700; text-transform: uppercase; letter-spacing: 1px; outline: none;
-}
-.promo-btn { 
-    background: #000; color: white; border: none; border-radius: 12px; 
-    font-weight: 800; padding: 0 20px; cursor: pointer; font-size: 13px;
-    transition: transform 0.1s;
-}
+.promo-input-group { display: flex; gap: 10px; background: #f9f9f9; border: 2px solid #e5e5e5; border-radius: 16px; padding: 6px; }
+#promo-input { margin: 0; padding: 10px; flex-grow: 1; border: none; background: transparent; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; outline: none; }
+.promo-btn { background: #000; color: white; border: none; border-radius: 12px; font-weight: 800; padding: 0 20px; cursor: pointer; font-size: 13px; transition: transform 0.1s; }
 .promo-btn:active { transform: scale(0.95); }
-
 .promo-msg { font-size: 13px; font-weight: 700; margin-top: 10px; text-align: center; min-height: 20px;}
 .promo-msg.success { color: #28ca42; animation: bounce 0.5s; }
 .promo-msg.error { color: #ff3b30; animation: shake 0.4s; }
 
-/* Promo Item - GOLDEN CARD */
-.cart-item.promo-item {
-    background: var(--gold-gradient);
-    border: 2px solid #ffd700;
-    border-radius: 16px;
-    padding: 15px !important;
-    margin-bottom: 10px;
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-    animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.promo-item .item-name {
-    color: #442817; /* Dark Brown for contrast on gold */
-    font-size: 15px; font-weight: 900;
-}
-
-.old-price { 
-    position: relative; color: #886655; margin-right: 8px; font-size: 13px; font-weight: 600;
-}
-.old-price::after {
-    content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 2px;
-    background: #ff3b30; transform: rotate(-5deg);
-}
-
+.cart-item.promo-item { background: var(--gold-gradient); border: 2px solid #ffd700; border-radius: 16px; padding: 15px !important; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; justify-content: space-between; align-items: center; }
+.promo-item .item-name { color: #442817; font-size: 15px; font-weight: 900; }
+.old-price { position: relative; color: #886655; margin-right: 8px; font-size: 13px; font-weight: 600; }
+.old-price::after { content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 2px; background: #ff3b30; transform: rotate(-5deg); }
 .new-price { color: #2a5a00; font-weight: 900; font-size: 15px; }
+.promo-badge { background: #ff3b30; color: #fff; font-size: 10px; padding: 3px 6px; border-radius: 50px; font-weight: 900; vertical-align: middle; margin-left: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-.promo-badge { 
-    background: #ff3b30; color: #fff; font-size: 10px; padding: 3px 6px; 
-    border-radius: 50px; font-weight: 900; vertical-align: middle; margin-left: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-@keyframes popIn {
-    0% { opacity: 0; transform: scale(0.5) translateY(20px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
-}
+@keyframes popIn { 0% { opacity: 0; transform: scale(0.5) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-5px);} }
 @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
-
