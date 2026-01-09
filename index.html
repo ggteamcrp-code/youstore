@@ -6,13 +6,11 @@
     <title>Supercell YouStore</title>
     <link rel="stylesheet" href="styles.css?v=29.0">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;900&display=swap" rel="stylesheet">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
-    <!-- NAVBAR (Без изменений) -->
+    <!-- NAVBAR -->
     <nav class="navbar">
-        <!-- ...код навбара... -->
         <div class="logo-container" onclick="app.router('hub')">
             <div class="supercell-logo">SUPER<br>CELL</div>
             <div class="store-badge">YOUSTORE</div>
@@ -34,12 +32,11 @@
                 <h1>Choose Game</h1>
                 <p>Select a universe to view offers</p>
             </div>
-            <!-- ПУСТОЙ КОНТЕЙНЕР! JS САМ ЗАПОЛНИТ ЕГО -->
             <div id="hub-grid" class="games-grid"></div>
         </div>
     </main>
 
-    <!-- DYNAMIC GAME VIEW (ОДИН ШАБЛОН ДЛЯ ВСЕХ ИГР) -->
+    <!-- DYNAMIC GAME VIEW -->
     <main id="view-game" class="view">
         <div class="sub-header">
             <div class="back-btn" onclick="app.router('hub')">‹ Back</div>
@@ -47,20 +44,16 @@
         </div>
         
         <section class="hero-section">
-            <!-- Сюда JS вставит героя -->
             <div id="game-hero"></div>
         </section>
-
         <section class="offers-section">
             <div class="section-title">OFFERS</div>
-            <!-- Сюда JS вставит товары -->
             <div id="game-offers"></div>
         </section>
     </main>
 
-    <!-- MODALS (LOGIN & CART) - Оставляем как было -->
+    <!-- MODALS (LOGIN & CART) -->
     <div id="login-modal" class="modal-overlay">
-        <!-- ...код логина... -->
         <div class="modal-content">
             <div class="modal-header"><h2>SUPERCELL <span class="id-bold">ID</span></h2><span class="close-btn" onclick="app.toggleLogin()">✕</span></div>
             <div class="login-step-1">
@@ -71,9 +64,7 @@
             <div class="login-loader hidden"><div class="spinner"></div><p>Authorization...</p></div>
         </div>
     </div>
-
     <div id="cart-modal" class="modal-overlay">
-         <!-- ...код корзины... -->
         <div class="modal-content cart-content">
             <div class="modal-header"><h2>Your Cart 🛒</h2><span class="close-btn" onclick="app.toggleCart()">✕</span></div>
             <div id="cart-items" class="cart-list"></div>
@@ -91,8 +82,15 @@
         </div>
     </div>
 
-    <!-- ВАЖНО: Сначала база данных, потом скрипт -->
+    <!-- 
+        FIX: All scripts moved to the end of the body in the correct order.
+        1. Telegram's script
+        2. Our database
+        3. Our main application script
+    -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="database.js"></script>
     <script src="script.js"></script>
+
 </body>
 </html>
