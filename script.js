@@ -251,68 +251,54 @@ openGame: (gameId, clickedCard) => {
     saveState: () => { localStorage.setItem('supercell_cart', JSON.stringify(state.cart)); localStorage.setItem('supercell_login', JSON.stringify({ isLoggedIn: state.isLoggedIn, email: state.userEmail, usedPromos: state.usedPromos || [], promoUsageCount: state.promoUsageCount || {} })); },
     loadState: () => { try { const savedCart = localStorage.getItem('supercell_cart'); const savedLogin = localStorage.getItem('supercell_login'); if (savedCart) state.cart = JSON.parse(savedCart); if (savedLogin) { const d = JSON.parse(savedLogin); state.isLoggedIn = d.isLoggedIn; state.userEmail = d.email; state.usedPromos = d.usedPromos || []; state.promoUsageCount = d.promoUsageCount || {}; } } catch(e) {} },
     handleAuthClick: () => {
-    // ЕСЛИ пользователь залогинен...
-    if (state.isLoggedIn) {
-        // ...показываем стандартное окно подтверждения выхода
-        tg.showPopup({
-            title: 'Log Out',
-            message: 'Are you sure?',
-            buttons: [
-                {id: 'logout', type: 'destructive', text: 'Log Out'},
-                {id: 'cancel', type: 'cancel'}
-            ]
-        }, (btnId) => {
-            if (btnId === 'logout') app.logout();
-        });
-    } 
-    // ИНАЧЕ (если пользователь НЕ залогинен)...
-    else {
-        // ...запускаем нашу новую, красивую анимацию входа
-        tg.HapticFeedback.impactOccurred('medium');
+    // Если пользователь уже залогинен, ничего не делаем
+    if (state.isLoggedIn) return;
 
-        // 1. Получаем координаты логотипов
-        const startLogo = document.querySelector('.logo-container');
-        const endLogo = document.getElementById('login-btn');
-        if (!startLogo || !endLogo) return;
+    tg.HapticFeedback.impactOccurred('medium');
 
-        const startRect = startLogo.getBoundingClientRect();
-        const endRect = endLogo.getBoundingClientRect();
+    // 1. Получаем координаты логотипов
+    const startLogo = document.querySelector('.logo-container');
+    const endLogo = document.getElementById('login-btn'); // Кнопка "LOG IN"
+    if (!startLogo || !endLogo) return;
 
-        // 2. Создаем "искру"
-        const spark = document.createElement('div');
-        spark.className = 'connection-spark';
-        document.body.appendChild(spark);
+    const startRect = startLogo.getBoundingClientRect();
+    const endRect = endLogo.getBoundingClientRect();
 
-        // 3. Устанавливаем начальную позицию
-        const startX = startRect.left + startRect.width / 2;
-        const startY = startRect.top + startRect.height / 2;
-        spark.style.transform = `translate(${startX}px, ${startY}px) scale(0)`;
-        spark.style.opacity = '1';
+    // 2. Создаем "искру"
+    const spark = document.createElement('div');
+    spark.className = 'connection-spark';
+    document.body.appendChild(spark);
 
-        // 4. Запускаем анимацию полета
-        requestAnimationFrame(() => {
-            const endX = endRect.left + endRect.width / 2;
-            const endY = endRect.top + endRect.height / 2;
-            spark.style.transform = `translate(${endX}px, ${endY}px) scale(1)`;
-        });
+    // 3. Устанавливаем начальную позицию (центр нашего лого)
+    const startX = startRect.left + startRect.width / 2;
+    const startY = startRect.top + startRect.height / 2;
+    spark.style.transform = `translate(${startX}px, ${startY}px) scale(0)`;
+    spark.style.opacity = '1';
 
-        // 5. По завершении анимации открываем модальное окно
+    // 4. Запускаем анимацию полета
+    requestAnimationFrame(() => {
+        const endX = endRect.left + endRect.width / 2;
+        const endY = endRect.top + endRect.height / 2;
+        spark.style.transform = `translate(${endX}px, ${endY}px) scale(1)`;
+    });
+
+    // 5. По завершении анимации открываем модальное окно и убираем искру
+    setTimeout(() => {
+        spark.style.opacity = '0';
+        document.getElementById('collab-login-modal').classList.add('open');
+        
         setTimeout(() => {
-            spark.style.opacity = '0';
-            document.getElementById('collab-login-modal').classList.add('open');
-            
-            setTimeout(() => {
-                spark.remove();
-            }, 300);
-            
-        }, 600);
-    }
+            spark.remove();
+        }, 300); // Даем время искре исчезнуть
+        
+    }, 600); // Должно совпадать с transition в CSS
 },
-    contactSupport: () => {
+
+contactSupport: () => {
     // ВАЖНО: Замените 'YOUR_BOT_USERNAME' на реальное имя вашего бота
     const botUsername = 'youstorescbot';
     
-    const message = "*ВАЖНО! Для быстрого рассмотрения заявки отправьте сообщение не редактируя текст! Здравствуйте! У меня возникла проблема с авторизацией через Supercell ID в вашем магазине. ID товара: #289184. Код ошибки: ERORR1101NOTTRUEREGION";
+    const message = "Здравствуйте! У меня возникла проблема с авторизацией через Supercell ID в вашем магазине.";
 
     const url = `https://t.me/${botUsername}?start=${encodeURIComponent(message)}`;
     
@@ -321,13 +307,6 @@ openGame: (gameId, clickedCard) => {
     // Закрываем модальное окно после перехода
     document.getElementById('collab-login-modal').classList.remove('open');
 },
-    closeModal: (event) => {
-    // Закрываем модальное окно, только если клик был по самому фону, а не по его содержимому
-    if (event.target.id === 'collab-login-modal') {
-        document.getElementById('collab-login-modal').classList.remove('open');
-    }
-    logout: () => { state.isLoggedIn = false; state.userEmail = ''; state.cart = []; state.usedPromos = []; state.promoUsageCount = {}; app.saveState(); app.checkLoginUI(); app.updateCartUI(); app.router('hub'); tg.HapticFeedback.notificationOccurred('success'); },
-        },
     redeemCode: () => { const input = document.getElementById('promo-input'); const code = input.value.trim().toUpperCase(); if (!code) return; if (code === '/RESET') { state.usedPromos = []; state.promoUsageCount = {}; app.saveState(); input.value = ''; app.showPromoMessage('♻️ DEV MODE: Reset!', 'success'); return; } const PROMO_CODE = '/PRM1423PP'; const MAX_USES = 100; if (code === PROMO_CODE) { if (state.usedPromos.includes(code)) { app.showPromoMessage('Already used!', 'error'); return; } if ((state.promoUsageCount[code] || 0) >= MAX_USES) { app.showPromoMessage('Limit reached', 'error'); return; } state.promoUsageCount[code] = (state.promoUsageCount[code] || 0) + 1; state.usedPromos.push(code); state.cart.unshift({ name: 'PRO PASS', price: 0, originalPrice: 9.99, isPromo: true, id: Date.now() }); app.saveState(); app.updateCartUI(); app.renderCartItems(); input.value = ''; app.showPromoMessage('✨ Success!', 'success'); tg.HapticFeedback.notificationOccurred('success'); } else { app.showPromoMessage('Invalid Code', 'error'); } },
     showPromoMessage: (text, type) => { const msg = document.getElementById('promo-msg'); msg.textContent = text; msg.className = `promo-msg ${type}`; msg.classList.remove('hidden'); setTimeout(() => msg.classList.add('hidden'), 4000); },
     removeFromCart: (index) => { tg.HapticFeedback.impactOccurred('light'); state.cart.splice(index, 1); app.saveState(); app.updateCartUI(); app.renderCartItems(); },
