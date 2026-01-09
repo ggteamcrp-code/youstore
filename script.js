@@ -4,8 +4,8 @@ const state = {
     cart: [],
     isLoggedIn: false,
     userEmail: '',
-    usedPromos: [], // Список активированных кодов
-    promoUsageCount: {} // Счетчик использования кодов (глобально имитируем)
+    usedPromos: [], 
+    promoUsageCount: {} 
 };
 
 const app = {
@@ -48,13 +48,12 @@ const app = {
         } catch(e) {}
     },
 
-    // --- LOGOUT LOGIC (FIXED) ---
+    // --- LOGOUT LOGIC (HARD RESET) ---
     handleAuthClick: () => {
         if (state.isLoggedIn) {
-            // Используем нативный Telegram попап
             tg.showPopup({
                 title: 'Log Out',
-                message: 'Are you sure? Your cart will be cleared.',
+                message: 'Are you sure? This will reset your cart and promo history.',
                 buttons: [
                     {id: 'logout', type: 'destructive', text: 'Log Out'},
                     {id: 'cancel', type: 'cancel'}
@@ -70,37 +69,47 @@ const app = {
     },
 
     logout: () => {
-        // Полный сброс
         state.isLoggedIn = false;
         state.userEmail = '';
         state.cart = [];
         state.usedPromos = []; 
-        // promoUsageCount НЕ сбрасываем, так как это "глобальный" лимит на код
+        state.promoUsageCount = {}; // СБРОС ПРИ ВЫХОДЕ (для тестов)
         
         app.saveState();
         app.checkLoginUI();
         app.updateCartUI();
-        app.router('hub'); // Возвращаем на главную
+        app.router('hub'); 
         
         tg.HapticFeedback.notificationOccurred('success');
     },
 
-    // --- PROMO CODE LOGIC (WOW EFFECT) ---
+    // --- PROMO CODE LOGIC ---
     redeemCode: () => {
         const input = document.getElementById('promo-input');
-        const msg = document.getElementById('promo-msg');
         const code = input.value.trim().toUpperCase();
 
         if (!code) return;
 
-        // Код из ТЗ: /PRM1423PP
-        const PROMO_CODE = '/PRM1423PPP';
+        // --- DEV CHEAT CODE ---
+        if (code === '/RESET') {
+            state.usedPromos = [];
+            state.promoUsageCount = {};
+            app.saveState();
+            input.value = '';
+            app.showPromoMessage('♻️ DEV MODE: History Reset!', 'success');
+            tg.HapticFeedback.notificationOccurred('warning');
+            return;
+        }
+        // ----------------------
+
+        const PROMO_CODE = '/PRM1423PP';
         const MAX_USES = 100;
 
         if (code === PROMO_CODE) {
             // 1. Проверка: уже использовал?
             if (state.usedPromos.includes(code)) {
                 app.showPromoMessage('You already used this code!', 'error');
+                tg.HapticFeedback.notificationOccurred('error');
                 return;
             }
 
@@ -112,12 +121,11 @@ const app = {
             }
 
             // SUCCESS FLOW
-            // Увеличиваем счетчик
             state.promoUsageCount[code] = currentUses + 1;
             state.usedPromos.push(code);
 
             // Добавляем золотой товар
-            state.cart.unshift({ // unshift чтобы добавился сверху
+            state.cart.unshift({ 
                 name: 'PRO PASS',
                 price: 0,
                 originalPrice: 9.99,
@@ -129,11 +137,10 @@ const app = {
             app.updateCartUI();
             app.renderCartItems(); 
 
-            // Очистка и сообщение
             input.value = '';
             app.showPromoMessage(`✨ Success! (${state.promoUsageCount[code]}/${MAX_USES} claimed)`, 'success');
             
-            // SUPER HAPTICS & CONFETTI FEELS
+            // SUPER HAPTICS
             tg.HapticFeedback.notificationOccurred('success');
             setTimeout(() => tg.HapticFeedback.impactOccurred('heavy'), 150);
             setTimeout(() => tg.HapticFeedback.impactOccurred('heavy'), 300);
@@ -149,13 +156,11 @@ const app = {
         msg.textContent = text;
         msg.className = `promo-msg ${type}`;
         msg.classList.remove('hidden');
-        // Автоскрытие через 3 сек
         setTimeout(() => {
             msg.classList.add('hidden');
         }, 4000);
     },
 
-    // Standard Methods...
     router: (viewId) => {
         document.querySelectorAll('.view').forEach(el => {
             el.classList.remove('active');
@@ -249,11 +254,8 @@ const app = {
             list.innerHTML = '<div style="padding:20px 0; color:#999;">Cart is empty</div>';
         } else {
             list.innerHTML = state.cart.map((item, i) => {
-                // ВИЗУАЛ ДЛЯ ПРОМО
                 const isPromo = item.isPromo;
                 const itemClass = isPromo ? 'cart-item promo-item' : 'cart-item';
-                
-                // Стиль для обычных товаров
                 const baseStyle = isPromo ? '' : 'display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #eee;';
 
                 const priceHTML = item.originalPrice 
@@ -291,7 +293,7 @@ const app = {
         }, (id) => {
             if (id === 'ok') {
                 state.cart = [];
-                // Промокоды НЕ сбрасываем, чтобы нельзя было абузить
+                // Не сбрасываем промо (чтобы нельзя было абузить)
                 app.saveState();
                 app.updateCartUI();
                 app.toggleCart();
@@ -337,13 +339,10 @@ const app = {
             btn.style.background = '#28ca42';
             btn.style.color = '#fff';
         } else {
-            // Reset to defaults
             btn.innerHTML = `LOG IN <span class="id-icon">ID</span>`;
-            // Цвет будет установлен роутером
+            // Цвет кнопки сбросится роутером
         }
     }
 };
 
 document.addEventListener('DOMContentLoaded', app.init);
-
-
