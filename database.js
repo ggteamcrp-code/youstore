@@ -9,15 +9,18 @@ const DB = [
         character: '⭐', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
         icon: '💀',
         hero: {
-            tag: 'FREE GEMS',
-            title: 'LEGENDARY PASS',
+            tag: 'EXCLUSIVE OFFER',
+            title: 'PRO PASS',
             desc: 'Unlock exclusive content and accelerate your progress!',
-            visual: '💎'
+            visual: '🎟️'
         },
         products: [
             { name: '170 Gems', price: 9.99, icon: '💎', badge: 'Popular' },
             { name: '360 Gems', price: 19.99, icon: '💎', badge: 'Best Value' },
             { name: '950 Gems', price: 49.99, icon: '💎', badge: 'Large' },
+            { name: '300 Coins', price: 19.99, icon: '🟡', badge: 'Small' },
+            { name: '880 Coins', price: 29.99, icon: '🟡', badge: 'Large' },
+            { name: '2040 Coins', price: 39.99, icon: '🟡', badge: 'Best Value' },
         ]
     },
     {
