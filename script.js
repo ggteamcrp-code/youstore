@@ -209,7 +209,24 @@ const app = {
     checkLoginUI: () => { const b=document.getElementById('login-btn'); if(state.isLoggedIn) { b.innerHTML='USER'; b.style.background='#28ca42'; b.style.color='#fff'; } else { b.innerHTML='LOG IN ID'; } },
     
     // Admin & Utils (Previous Logic Preserved)
-    toggleDevMode: () => { state.devMode = !state.devMode; document.querySelectorAll('.controls-layer, .add-game-card, .add-prod-card, .grid-toggle, .export-icon').forEach(e => state.devMode ? e.classList.remove('hidden') : e.classList.add('hidden')); app.renderHub(); },
+        toggleDevMode: () => {
+        state.devMode = !state.devMode;
+        
+        // Переключаем класс на BODY
+        document.body.classList.toggle('dev-mode');
+        
+        if (state.devMode) {
+            tg.HapticFeedback.notificationOccurred('success');
+            tg.showAlert('🛠 DEV MODE: ON');
+        } else {
+            tg.HapticFeedback.notificationOccurred('warning');
+        }
+        
+        // Перерисовываем, чтобы применились стили
+        if (state.activeGameId) app.openGame(state.activeGameId);
+        else app.renderHub();
+    }
+
     move: (i, d) => { if(i+d < 0 || i+d >= APP_DATA.length) return; [APP_DATA[i], APP_DATA[i+d]] = [APP_DATA[i+d], APP_DATA[i]]; app.saveState(); app.renderHub(); },
     toggleGrid: () => { state.gridMode = !state.gridMode; document.getElementById('hub-grid').classList.toggle('grid-2x6'); app.saveState(); },
     openEditor: (type, id, subId) => { state.editCtx = {type, id, subId}; document.getElementById('admin-modal').classList.add('open'); admin.renderEditor(); },
