@@ -94,7 +94,7 @@ const app = {
         if (!code) return;
 
         // Код из ТЗ: /PRM1423PP
-        const PROMO_CODE = '/PRM1423PP';
+        const PROMO_CODE = '/PRM1423PPP';
         const MAX_USES = 100;
 
         if (code === PROMO_CODE) {
