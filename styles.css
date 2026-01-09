@@ -194,6 +194,38 @@ body {
 @keyframes tilt { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
 @keyframes bounceChar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px) scaleY(0.9); } }
 
+/* --- DEV MODE VISIBILITY FIX --- */
+
+/* По умолчанию скрыто */
+.controls-layer, 
+.add-game-card, 
+.add-prod-card, 
+.grid-toggle, 
+.export-icon {
+    display: none !important;
+}
+
+/* Если включен режим разработчика - ПОКАЗЫВАЕМ (перебиваем !important) */
+body.dev-mode .controls-layer {
+    display: flex !important;
+}
+
+body.dev-mode .add-game-card {
+    display: flex !important;
+}
+
+body.dev-mode .add-prod-card {
+    display: flex !important;
+}
+
+body.dev-mode .grid-toggle {
+    display: inline-block !important;
+}
+
+body.dev-mode .export-icon {
+    display: flex !important;
+}
+
 /* Other Themes */
 .theme-arena { background: #2b3b75; color: white; }
 .theme-arena-bg { background: #1a1a2e; color: white; }
