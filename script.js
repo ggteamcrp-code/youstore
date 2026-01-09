@@ -85,25 +85,77 @@ const app = {
         app.router('game');
     },
 
-    router: (viewId) => {
-        document.querySelectorAll('.view').forEach(el => {
-            el.classList.remove('active');
-            el.style.display = 'none';
-        });
-
-        // Если открываем игру, ID вьюхи всегда 'view-game', но стили зависят от state.activeGameId
-        const targetId = viewId === 'game' ? 'view-game' : `view-${viewId}`;
-        const target = document.getElementById(targetId);
+        router: (viewId) => {
+        // 1. Скрываем все страницы
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
         
-        if (target) {
-            target.style.display = 'block';
-            requestAnimationFrame(() => target.classList.add('active'));
-        }
-        window.scrollTo(0,0);
+        // 2. Определяем цель
+        const target = document.getElementById(`view-${viewId}`);
+        if(target) target.classList.add('active');
+        
+        window.scrollTo(0, 0);
 
-        // Styling based on Game
-        app.applyTheme(viewId === 'game' ? state.activeGameId : 'hub');
-    },
+        // 3. --- ТЕМАТИЗАЦИЯ (THEME ENGINE) ---
+        const navbar = document.querySelector('.navbar');
+        const viewGame = document.getElementById(`view-${viewId}`); // Текущая страница
+        
+        // Сброс классов темы (удаляем все старые)
+        viewGame.classList.remove('theme-bs', 'theme-coc', 'theme-cr', 'theme-hd', 'view-bg-animated');
+        
+        // Настройки по умолчанию (Белая тема)
+        let headerColor = '#ffffff';
+        let navBg = 'rgba(255,255,255,0.95)';
+        let navColor = '#000';
+        
+        // Применяем тему в зависимости от ID страницы
+        if (viewId === 'brawlstars') {
+            viewGame.classList.add('view-bg-animated', 'theme-bs');
+            headerColor = '#4737ff'; // Синий
+            navBg = 'rgba(71, 55, 255, 0.98)';
+            navColor = '#fff';
+        } 
+        else if (viewId === 'clashofclans') {
+            viewGame.classList.add('view-bg-animated', 'theme-coc');
+            headerColor = '#eecda3'; // Песочный
+            navBg = 'rgba(238, 205, 163, 0.98)';
+            navColor = '#442817'; // Коричневый текст
+        }
+        else if (viewId === 'clashroyale') {
+            viewGame.classList.add('view-bg-animated', 'theme-cr');
+            headerColor = '#2b3b75'; // Темно-синий
+            navBg = 'rgba(43, 59, 117, 0.98)';
+            navColor = '#fff';
+        }
+        else if (viewId === 'hayday') {
+            viewGame.classList.add('view-bg-animated', 'theme-hd');
+            headerColor = '#6ecbf5'; // Голубой
+            navBg = 'rgba(110, 203, 245, 0.98)';
+            navColor = '#2a5a00'; // Зеленый текст
+        }
+
+        // Применяем цвета к шапке
+        tg.setHeaderColor(headerColor);
+        navbar.style.background = navBg;
+        
+        // Красим элементы в шапке
+        const logo = document.querySelector('.supercell-logo');
+        const loginBtn = document.querySelector('.login-btn');
+        const cartIcon = document.querySelector('.cart-icon');
+        const backBtns = document.querySelectorAll('.back-btn'); // Кнопки "Назад"
+
+        if (logo) logo.style.color = navColor;
+        if (cartIcon) cartIcon.style.color = navColor;
+        
+        // Кнопка логина инвертируется (если фон темный - она белая, и наоборот)
+        if (loginBtn) {
+            loginBtn.style.background = navColor === '#fff' ? '#fff' : '#000';
+            loginBtn.style.color = navColor === '#fff' ? headerColor : '#fff';
+        }
+        
+        // Красим кнопки "Назад" в цвет текста темы
+        backBtns.forEach(btn => btn.style.color = navColor);
+    }
+
 
     applyTheme: (context) => {
         // Defaults
