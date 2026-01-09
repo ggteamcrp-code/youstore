@@ -26,7 +26,7 @@ const DB = [
         theme: 'coc',
         anim: 'clashing',
         pattern: 'jungle-ruins-pattern',
-        character: 'img/coc-character.gif', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
+        character: 'img/coc-character.png', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
         icon: '👺',
         hero: {
             tag: '20% MORE',
