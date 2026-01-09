@@ -54,12 +54,12 @@ body { margin: 0; padding: 0; font-family: var(--font); background-color: var(--
 .hd-pattern::before { content: ''; position: absolute; top: 50%; left: 50%; width: 200%; height: 200%; background: conic-gradient(from 0deg, rgba(255,255,255,0.4) 0deg 20deg, transparent 20deg 40deg, rgba(255,255,255,0.4) 40deg 60deg, transparent 60deg 80deg, rgba(255,255,255,0.4) 80deg 100deg, transparent 100deg 120deg, rgba(255,255,255,0.4) 120deg 140deg, transparent 140deg 160deg, rgba(255,255,255,0.4) 160deg 180deg, transparent 180deg 200deg, rgba(255,255,255,0.4) 200deg 220deg, transparent 220deg 240deg, rgba(255,255,255,0.4) 240deg 260deg, transparent 260deg 280deg, rgba(255,255,255,0.4) 280deg 300deg, transparent 300deg 320deg, rgba(255,255,255,0.4) 320deg 340deg, transparent 340deg 360deg); transform: translate(-50%, -50%); animation: rotateRays 20s linear infinite; }
 .card-character.bouncing { font-size: 75px; position: relative; z-index: 1; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.2)); animation: bounceChar 1.5s infinite; }
 
-/* FIX: Styles for the new Clash Royale Battle Arena Pattern */
+/* FIX: Corrected height for CR Arena Pattern */
 .cr-battle-arena-pattern {
     background: linear-gradient(to bottom, #b1ec82, #89d05a);
     position: relative;
     overflow: hidden;
-    height: 100% !important; /* Ensure it fills the card */
+    height: 150px; /* This was the missing rule! */
 }
 .cr-battle-arena-pattern::before {
     content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 35px;
@@ -80,7 +80,6 @@ body { margin: 0; padding: 0; font-family: var(--font); background-color: var(--
 @keyframes fire-fly { from { transform: translate(30px, 0) scale(0.8); } to { transform: translate(250px, 40px) scale(1.2) rotate(90deg); } }
 @keyframes swords-fly { from { transform: translate(-30px, 0) scale(0.8) rotate(180deg); } to { transform: translate(-250px, -40px) scale(1.2) rotate(270deg); } }
 
-/* FIX: Styles for content overlay on CR card */
 .card-content-overlay {
     position: absolute; bottom: 0; left: 0; width: 100%;
     padding: 18px 20px;
@@ -123,7 +122,6 @@ body { margin: 0; padding: 0; font-family: var(--font); background-color: var(--
 .hero-info h1 { font-size: 20px; font-weight: 900; line-height: 1; margin: 0 0 5px 0; text-transform: uppercase; }
 .hero-info p { margin: 0; font-size: 12px; font-weight: 600; opacity: 0.9; }
 
-/* FIX: Styles for particles in Hero block */
 .particles-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 1; }
 .particle { position: absolute; bottom: -20px; width: 8px; height: 8px; background: #fff; border-radius: 50%; opacity: 0; animation-name: rise-particle; animation-timing-function: linear; animation-iteration-count: infinite; }
 @keyframes rise-particle {
