@@ -90,56 +90,85 @@ renderHub: () => {
     grid.innerHTML = gameCardsHTML;
 },
 
-    openGame: (gameId) => {
-        const game = DB.find(g => g.id === gameId);
-        if (!game) return;
-        state.activeGameId = gameId;
-        document.getElementById('game-title').textContent = game.name.toUpperCase();
+    // И ЗАМЕНИТЕ ЕЕ НА ЭТОТ НОВЫЙ КОД:
+openGame: (gameId, clickedCard) => {
+    const game = DB.find(g => g.id === gameId);
+    if (!game) return;
+
+    tg.HapticFeedback.impactOccurred('light');
+
+    // 1. Получаем "до" и "после" элементы
+    const hubView = document.getElementById('view-hub');
+    const gameView = document.getElementById('view-game');
+    
+    // ----- Сначала рендерим контент на новом экране, но держим его невидимым -----
+    state.activeGameId = gameId;
+    document.getElementById('game-title').textContent = game.name.toUpperCase();
+    
+    let heroHTML;
+    if (game.id === 'brawlstars') {
+        const particles = Array.from({ length: 50 }).map(() => `<div class="particle"></div>`).join('');
+        heroHTML = `<div class="hero-card ${game.theme}-hero"><div class="shine-effect"></div><div class="particles-container">${particles}</div> <div class="bonus-tag">${game.hero.tag}</div><div class="hero-content"><div class="hero-visual">${game.hero.visual}</div><div class="hero-info"><h1>${game.hero.title}</h1><p>${game.hero.desc}</p></div></div></div>`;
+    } else {
+         heroHTML = `<div class="hero-card ${game.theme}-hero"><div class="shine-effect"></div><div class="bonus-tag">${game.hero.tag}</div><div class="hero-content"><div class="hero-visual">${game.hero.visual}</div><div class="hero-info"><h1>${game.hero.title}</h1><p>${game.hero.desc}</p></div></div></div>`;
+    }
+    const gameHeroElement = document.getElementById('game-hero');
+    gameHeroElement.innerHTML = heroHTML;
+
+    const offersHTML = game.products.map(prod => `<div class="offer-card ${game.theme}-offer"><span class="badge">${prod.badge}</span><div class="offer-visual">${prod.icon}</div><h3>${prod.name}</h3><p class="price">$${prod.price}</p><button class="buy-btn" onclick="app.addToCart(this, '${prod.name}', ${prod.price}, '${prod.icon}')">Purchase</button></div>`).join('');
+    document.getElementById('game-offers').innerHTML = offersHTML;
+
+    app.applyTheme(gameId);
+
+    // 2. Получаем геометрию начальной и конечной точек
+    const startRect = clickedCard.getBoundingClientRect();
+    const targetHeroCard = gameHeroElement.querySelector('.hero-card');
+
+    // Временно показываем, чтобы измерить
+    gameView.style.display = 'block';
+    const endRect = targetHeroCard.getBoundingClientRect();
+    gameView.style.display = 'none';
+
+    // 3. Создаем и настраиваем клон
+    const clone = clickedCard.cloneNode(true);
+    clone.classList.add('game-card-clone');
+    document.body.appendChild(clone);
+    
+    clone.style.top = `${startRect.top}px`;
+    clone.style.left = `${startRect.left}px`;
+    clone.style.width = `${startRect.width}px`;
+    clone.style.height = `${startRect.height}px`;
+
+    // 4. Скрываем оригинал и готовим сцену
+    clickedCard.style.opacity = '0';
+    hubView.classList.add('view-transitioning');
+
+    // 5. ЗАПУСК АНИМАЦИИ (FLIP)
+    requestAnimationFrame(() => {
+        const scaleX = endRect.width / startRect.width;
+        const scaleY = endRect.height / startRect.height;
+        const translateX = endRect.left - startRect.left;
+        const translateY = endRect.top - startRect.top;
+
+        clone.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
+        clone.style.transformOrigin = 'top left';
+        // Углы тоже анимируем
+        clone.style.borderRadius = getComputedStyle(targetHeroCard).borderRadius;
+    });
+
+    // 6. Завершение и очистка
+    setTimeout(() => {
+        hubView.classList.remove('active', 'view-transitioning');
+        hubView.style.display = 'none';
         
-        let heroHTML;
-        if (game.id === 'brawlstars') {
-            const particles = Array.from({ length: 50 }).map(() => `<div class="particle"></div>`).join('');
-            heroHTML = `
-                <div class="hero-card ${game.theme}-hero">
-                    <div class="shine-effect"></div>
-                    <div class="particles-container">${particles}</div> 
-                    <div class="bonus-tag">${game.hero.tag}</div>
-                    <div class="hero-content">
-                        <div class="hero-visual">${game.hero.visual}</div>
-                        <div class="hero-info">
-                            <h1>${game.hero.title}</h1>
-                            <p>${game.hero.desc}</p>
-                        </div>
-                    </div>
-                </div>`;
-        } else {
-             heroHTML = `
-                <div class="hero-card ${game.theme}-hero">
-                    <div class="shine-effect"></div>
-                    <div class="bonus-tag">${game.hero.tag}</div>
-                    <div class="hero-content">
-                        <div class="hero-visual">${game.hero.visual}</div>
-                        <div class="hero-info">
-                            <h1>${game.hero.title}</h1>
-                            <p>${game.hero.desc}</p>
-                        </div>
-                    </div>
-                </div>`;
-        }
-        document.getElementById('game-hero').innerHTML = heroHTML;
-
-        const offersHTML = game.products.map(prod => `
-            <div class="offer-card ${game.theme}-offer">
-                <span class="badge">${prod.badge}</span>
-                <div class="offer-visual">${prod.icon}</div>
-                <h3>${prod.name}</h3>
-                <p class="price">$${prod.price}</p>
-                <button class="buy-btn" onclick="app.addToCart(this, '${prod.name}', ${prod.price}, '${prod.icon}')">Purchase</button>
-            </div>`).join('');
-        document.getElementById('game-offers').innerHTML = offersHTML;
-
-        app.router('game');
-    },
+        gameView.style.display = 'block';
+        gameView.classList.add('active');
+        
+        clone.remove();
+        clickedCard.style.opacity = '1'; // Возвращаем видимость на случай возврата назад
+        window.scrollTo(0,0);
+    }, 500); // Должно совпадать с длительностью transition
+},
     
     addToCart: (button, name, price, icon) => {
         tg.HapticFeedback.impactOccurred('medium');
