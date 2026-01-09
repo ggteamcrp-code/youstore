@@ -1,16 +1,22 @@
-/* --- [Вставь это в начало] --- */
 :root {
-    --bg-light: #f5f5f7;
+    --bg-light: #f0f2f5; /* Чуть темнее для контраста */
     --text-main: #111;
     --font: 'Rubik', sans-serif;
     --card-radius: 24px;
     --gold-gradient: linear-gradient(135deg, #fff5c3 0%, #ffd700 100%);
+    
+    /* Game Colors */
+    --bs-color: #4737ff;
+    --coc-color: #5c3c2e; 
+    --cr-color: #2b3b75;  
+    --hd-color: #f7b232;
 }
 
 body {
     margin: 0; padding: 0;
     font-family: var(--font);
     background-color: var(--bg-light);
+    /* Глобальный фон: легкая сетка */
     background-image: linear-gradient(#e1e4e8 1px, transparent 1px), linear-gradient(90deg, #e1e4e8 1px, transparent 1px);
     background-size: 30px 30px;
     color: var(--text-main);
@@ -19,129 +25,188 @@ body {
     overflow-x: hidden;
 }
 
-/* Fix visibility */
-.hidden { display: none !important; }
-
-/* DEV MODE VISIBILITY OVERRIDE (Самое важное!) */
-body.dev-mode .controls-layer,
-body.dev-mode .add-game-card,
-body.dev-mode .add-prod-card,
-body.dev-mode .grid-toggle,
-body.dev-mode .export-icon {
-    display: flex !important;
-}
-body.dev-mode .grid-toggle { display: inline-block !important; }
-
-/* Navbar Logo Animation */
-.logo-container { cursor: pointer; transition: transform 0.1s; user-select: none; }
-.logo-container.active-click { transform: scale(0.9); opacity: 0.7; }
-
-/* --- [Остальной CSS скопируй из прошлого ответа, он был правильный] --- */
-/* (Вставь сюда остальной CSS, начиная с .navbar и ниже, из моего прошлого сообщения) */
-/* ... */
-/* Чтобы не дублировать огромный текст, возьми CSS из v10.0 выше, он рабочий, главное добавь блок body.dev-mode в начало */
+/* Reset Views */
+#view-hub, #view-brawlstars, #view-clashofclans, #view-clashroyale, #view-hayday { display: none !important; opacity: 0; }
+#view-hub.active, #view-brawlstars.active, #view-clashofclans.active, #view-clashroyale.active, #view-hayday.active { display: block !important; animation: fadeIn 0.4s forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 /* Navbar */
 .navbar {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 20px; position: sticky; top: 0; z-index: 100;
-    background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(0,0,0,0.05); height: 60px;
+    padding: 12px 20px; position: sticky; top: 0; z-index: 9999;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    height: 60px; transition: background 0.3s, color 0.3s;
 }
-.supercell-logo { font-weight: 900; line-height: 0.9; font-size: 14px; text-align: center; color: #000; }
-.store-badge { background: #ffd700; color: #000; font-size: 9px; padding: 2px 4px; border-radius: 4px; font-weight: 900; margin-left: 2px; vertical-align: super;}
+.supercell-logo { font-weight: 900; line-height: 0.85; font-size: 13px; letter-spacing: 0.5px; text-align: center; }
+.store-badge { background: #ffd700; color: #000; font-size: 9px; padding: 2px 4px; border-radius: 4px; font-weight: bold; margin-left: 2px; vertical-align: super;}
 .nav-actions { display: flex; gap: 12px; align-items: center; }
-
-.login-btn { background: #000; color: #fff; border: none; padding: 8px 16px; border-radius: 50px; font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-.id-icon { background: #fff; color: #000; padding: 1px 4px; border-radius: 4px; font-size: 10px; font-weight: 900; }
-.cart-icon { font-size: 24px; cursor: pointer; position: relative; color: #000; }
-.export-icon { font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: #eee; border-radius: 50%; }
+.login-btn { background: #000; color: #fff; border: none; padding: 8px 14px; border-radius: 50px; font-weight: 800; font-size: 12px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.id-icon { background: #fff; color: #000; padding: 1px 3px; border-radius: 3px; font-size: 9px; font-weight: 900; }
+.cart-icon { font-size: 24px; cursor: pointer; position: relative; }
 .cart-badge { position: absolute; top: -5px; right: -8px; background: #ff3b30; color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; font-weight: bold; border: 2px solid #fff; min-width: 16px; text-align: center; }
+.hidden { display: none !important; }
 
-/* HUB */
-.container { padding: 20px 16px; max-width: 600px; margin: 0 auto; }
-.hub-header { margin-bottom: 20px; text-align: left; }
-.hub-header h1 { font-size: 28px; font-weight: 900; margin: 0; color: #000; }
-.hub-header p { margin: 5px 0 0; color: #666; font-size: 15px; font-weight: 500; }
-.grid-toggle { display: inline-block; background: #000; color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+/* HUB Styling */
+.hub-header { padding: 10px 10px 20px; text-align: left; }
+.hub-header h1 { font-size: 28px; font-weight: 900; margin: 0; letter-spacing: -0.5px; }
+.hub-header p { margin: 5px 0 0; color: #666; font-size: 14px; font-weight: 500; }
 
-.games-grid { display: grid; gap: 16px; grid-template-columns: 1fr; transition: all 0.3s; }
-.games-grid.grid-2x6 { grid-template-columns: 1fr 1fr; }
+.games-grid { display: grid; gap: 20px; padding: 0 10px 40px; }
 
-.game-card { background: #fff; border-radius: var(--card-radius); overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.06); position: relative; cursor: pointer; transition: transform 0.2s; border: 1px solid rgba(0,0,0,0.05); }
-.game-card:active { transform: scale(0.98); }
-.card-bg { height: 140px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-.games-grid.grid-2x6 .card-bg { height: 100px; }
-.card-character { font-size: 70px; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.3)); z-index: 2; transition: transform 0.3s; }
-.card-character img { width: 90px; height: 90px; object-fit: contain; }
+.game-card {
+    background: #fff; border-radius: var(--card-radius);
+    overflow: hidden; box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    position: relative; cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.game-card:active { transform: scale(0.97); }
+.game-card:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(0,0,0,0.12); }
 
-.card-content { padding: 16px; display: flex; align-items: center; justify-content: space-between; background: #fff; }
+.card-bg {
+    height: 150px; /* Больше высота для красоты */
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* --- PREMIUM PATTERNS & ANIMATIONS --- */
+
+/* 1. Brawl Stars: Neon & Skulls */
+.bs-pattern {
+    background: radial-gradient(circle at top right, #6a35ff, #3d22b3);
+}
+/* Черепа на фоне */
+.bs-pattern::before {
+    content: ''; position: absolute; width: 100%; height: 100%;
+    background-image: radial-gradient(rgba(255,255,255,0.15) 2px, transparent 2px);
+    background-size: 24px 24px; opacity: 0.6;
+}
+.card-character.floating { font-size: 80px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); animation: float 3s ease-in-out infinite; }
+
+/* 2. Clash of Clans: WOOD PLANKS */
+.coc-pattern {
+    background-color: #eecda3;
+    /* Рисуем доски градиентом */
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,0.1) 40px),
+                      repeating-linear-gradient(90deg, transparent, transparent 150px, rgba(0,0,0,0.05) 151px);
+    background-size: 100% 40px; /* Высота доски */
+}
+/* Тень виньетка */
+.coc-pattern::after {
+    content: ''; position: absolute; width: 100%; height: 100%;
+    box-shadow: inset 0 0 40px rgba(92, 60, 46, 0.6);
+}
+.card-character.clashing { font-size: 75px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); animation: clash 2s infinite; }
+
+/* 3. Clash Royale: CHECKERED ARENA */
+.cr-pattern {
+    background-color: #2b3b75;
+    background-image: 
+        linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d),
+        linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d);
+    background-position: 0 0, 20px 20px;
+    background-size: 40px 40px;
+}
+.card-character.tilting { font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4)); animation: tilt 3s ease-in-out infinite; }
+
+/* 4. Hay Day: SUN RAYS */
+.hd-pattern {
+    background: #6ecbf5;
+    overflow: hidden;
+}
+/* Вращающиеся лучи */
+.hd-pattern::before {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    width: 200%; height: 200%;
+    background: conic-gradient(from 0deg, rgba(255,255,255,0.4) 0deg 20deg, transparent 20deg 40deg, rgba(255,255,255,0.4) 40deg 60deg, transparent 60deg 80deg, rgba(255,255,255,0.4) 80deg 100deg, transparent 100deg 120deg, rgba(255,255,255,0.4) 120deg 140deg, transparent 140deg 160deg, rgba(255,255,255,0.4) 160deg 180deg, transparent 180deg 200deg, rgba(255,255,255,0.4) 200deg 220deg, transparent 220deg 240deg, rgba(255,255,255,0.4) 240deg 260deg, transparent 260deg 280deg, rgba(255,255,255,0.4) 280deg 300deg, transparent 300deg 320deg, rgba(255,255,255,0.4) 320deg 340deg, transparent 340deg 360deg);
+    transform: translate(-50%, -50%);
+    animation: rotateRays 20s linear infinite;
+}
+.card-character.bouncing { font-size: 75px; position: relative; z-index: 1; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.2)); animation: bounceChar 1.5s infinite; }
+
+/* ANIMATION KEYFRAMES */
+@keyframes float { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
+@keyframes clash { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1) rotate(10deg); } }
+@keyframes tilt { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
+@keyframes rotateRays { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes bounceChar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px) scaleY(0.9); } }
+
+
+.card-content { padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; }
 .game-info { display: flex; flex-direction: column; gap: 4px; }
-.game-info h3 { margin: 0; font-size: 18px; font-weight: 800; color: #000; }
+.game-info h3 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: 0.3px; }
 .action-text { font-size: 12px; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-.game-icon-box { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow: hidden; }
-.game-icon-box img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Views */
-.view { display: none !important; opacity: 0; transition: opacity 0.3s; padding-bottom: 40px; }
-.view.active { display: block !important; opacity: 1; animation: fadeIn 0.4s forwards; }
+.game-icon-box { 
+    width: 48px; height: 48px; border-radius: 14px; 
+    display: flex; align-items: center; justify-content: center; 
+    font-size: 24px; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
+}
+.bs-icon { background: #333; } .coc-icon { background: #ff4d4d; } .cr-icon { background: #2f80ed; } .hd-icon { background: #56ab2f; }
 
-/* Game Page */
-#view-game { min-height: 100vh; color: white; transition: background 0.3s; }
-.sub-header { padding: 15px 20px; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 10px; z-index: 5; }
-.back-btn { position: absolute; left: 20px; font-weight: 700; cursor: pointer; color: inherit; font-size: 15px; }
-.game-logo { font-weight: 900; letter-spacing: 1px; font-size: 16px; color: inherit; text-transform: uppercase; }
+/* Inner Pages Backgrounds (Same as before) */
+#view-brawlstars { background-color: var(--bs-color); background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; min-height: calc(100vh - 60px); color: white; }
+#view-clashofclans { background-color: var(--coc-color); background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 10px, transparent 10px, transparent 20px); min-height: calc(100vh - 60px); color: white; }
+#view-clashroyale { background-color: var(--cr-color); background-image: linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366), linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366); background-position: 0 0, 20px 20px; background-size: 40px 40px; min-height: calc(100vh - 60px); color: white; }
+#view-hayday { background: linear-gradient(180deg, #6ecbf5 0%, #b2e6ff 30%, #ffd966 100%); min-height: calc(100vh - 60px); color: #000; }
+#view-hayday .sub-header .back-btn, #view-hayday .sub-header .game-logo { color: #2a5a00; }
+#view-hayday .section-title { color: #2a5a00; text-shadow: none; }
 
-.hero-section { padding: 0 20px; margin-bottom: 30px; position: relative; z-index: 5; }
-.hero-card { border-radius: 24px; padding: 24px; border: 3px solid #000; box-shadow: 0 8px 0 rgba(0,0,0,0.3); position: relative; overflow: hidden; color: white; background: #333; }
-.shine-effect { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent); animation: shine 3s infinite; }
-@keyframes shine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+/* Components (Header, Cards, Modals etc - from previous step) */
+.sub-header { padding: 15px 20px; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 10px; z-index: 1; }
+.back-btn { position: absolute; left: 20px; font-weight: 700; cursor: pointer; color: white; font-size: 14px; }
+.game-logo { font-weight: 900; letter-spacing: 2px; font-style: italic; font-size: 14px; color: white; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+
+.hero-section { padding: 0 20px; margin-bottom: 30px; position: relative; z-index: 1; }
+.hero-card { border-radius: 24px; padding: 24px; border: 3px solid #000; box-shadow: 0 8px 0 rgba(0,0,0,0.3); position: relative; overflow: hidden; color: white; }
+.bs-hero { background: linear-gradient(180deg, #5ebeff 0%, #0066ff 100%); }
+.coc-hero { background: linear-gradient(180deg, #eecda3 0%, #d8b07d 100%); color: #442817; }
+.cr-hero { background: linear-gradient(135deg, #0055ff 0%, #a044ff 100%); }
+.hd-hero { background: linear-gradient(135deg, #d369e5 0%, #a443b5 100%); background-image: radial-gradient(rgba(255,255,255,0.2) 10%, transparent 10%); background-size: 15px 15px; }
+.shine-effect { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent); animation: shine 3s infinite; }
 .bonus-tag { background: #000; color: #fff; display: inline-block; padding: 6px 10px; font-size: 11px; font-weight: 900; border-radius: 6px; margin-bottom: 10px; text-transform: uppercase; }
 .hero-content { display: flex; align-items: center; gap: 20px; }
 .hero-visual { font-size: 50px; filter: drop-shadow(0 6px 0 rgba(0,0,0,0.2)); }
-.hero-info h1 { font-size: 22px; font-weight: 900; line-height: 1; margin: 0 0 5px 0; text-transform: uppercase; }
-.hero-info p { margin: 0; font-size: 13px; font-weight: 500; opacity: 0.9; }
+.hero-info h1 { font-size: 20px; font-weight: 900; line-height: 1; margin: 0 0 5px 0; text-transform: uppercase; }
+.hero-info p { margin: 0; font-size: 12px; font-weight: 600; opacity: 0.9; }
 
-.offers-section { padding: 0 20px 40px; position: relative; z-index: 5; }
-.section-title { font-size: 13px; font-weight: 900; opacity: 0.8; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; color: inherit; }
-.carousel-wrapper { position: relative; }
-.carousel-track { display: flex; gap: 15px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-.carousel-track::-webkit-scrollbar { display: none; }
-.offer-card { min-width: 85%; scroll-snap-align: center; flex-shrink: 0; background: #fff; border-radius: 24px; padding: 20px; color: #000; border: 2px solid #000; box-shadow: 0 6px 0 rgba(0,0,0,0.2); text-align: center; position: relative; }
+.offers-section { padding: 0 20px; position: relative; z-index: 1; }
+.section-title { font-size: 12px; font-weight: 900; opacity: 0.8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+.offer-card { background: #fff; border-radius: 24px; padding: 20px; color: #000; margin-bottom: 16px; border: 2px solid #000; box-shadow: 0 6px 0 rgba(0,0,0,0.2); text-align: center; }
+.pass-plus { background: linear-gradient(135deg, #ff99cc, #cc66ff); }
+.coc-offer-1 { background: linear-gradient(135deg, #8b0000, #b22222); color: white; }
+.cr-offer-1 { background: #fff; }
+.hd-offer-1 { background: #fff; border-color: #56ab2f; }
 .badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); margin-bottom: 10px; background: #fff; color: #000; text-transform: uppercase; }
-.offer-visual { font-size: 45px; margin: 10px 0; display: block; filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1)); }
-.offer-card h3 { font-weight: 800; font-size: 18px; margin: 5px 0; }
-.price { font-weight: 600; font-size: 16px; opacity: 0.9; margin-bottom: 15px; }
-.buy-btn { width: 100%; padding: 14px; border: 2px solid #000; border-radius: 14px; background: #fff; color: #000; font-weight: 700; font-size: 15px; box-shadow: 0 4px 0 #ccc; cursor: pointer; }
+.offer-visual { font-size: 40px; margin: 8px 0; display: block; filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1)); }
+.offer-card h3 { font-weight: 800; font-size: 18px; margin: 6px 0; }
+.price { font-weight: 600; font-size: 15px; opacity: 0.9; margin-bottom: 16px; }
+.buy-btn { width: 100%; padding: 12px; border: 2px solid #000; border-radius: 12px; background: #fff; color: #000; font-weight: 700; font-size: 14px; box-shadow: 0 4px 0 #ccc; cursor: pointer; }
 .buy-btn:active { transform: translateY(4px); box-shadow: none; }
 
-/* Controls */
-.controls-layer { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; z-index: 20; }
-.control-btn { width: 28px; height: 28px; background: #fff; color: #000; border: 2px solid #000; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
-.add-game-card { min-height: 140px; background: rgba(0,0,0,0.05); border: 3px dashed #ccc; border-radius: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: 10px; font-size: 40px; color: #ccc; }
-.add-prod-card { min-width: 60px; border: 3px dashed #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 30px; color: #fff; opacity: 0.5; cursor: pointer; }
-
 /* Modals */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(4px); }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(4px); }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
-.modal-content { background: #fff; width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; padding: 25px; text-align: center; color: #111; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1); max-height: 85vh; overflow-y: auto; }
+.modal-content { background: #fff; width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; padding: 30px 25px 50px; text-align: center; color: #111; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1); }
 .modal-overlay.open .modal-content { transform: translateY(0); }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.modal-header h2 { margin: 0; font-size: 20px; font-weight: 900; }
-.close-btn { font-size: 28px; padding: 10px; cursor: pointer; opacity: 0.5; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+.modal-header h2 { margin: 0; font-size: 20px; font-weight: 900; text-transform: uppercase; }
 .id-bold { background: #000; color: #fff; padding: 2px 6px; border-radius: 6px; font-size: 14px; }
-.edit-row { margin-bottom: 10px; text-align: left; }
-.edit-row label { display: block; font-size: 11px; font-weight: bold; color: #666; margin-bottom: 4px; text-transform: uppercase; }
-.edit-input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 12px; font-size: 14px; font-family: var(--font); box-sizing: border-box; }
-.modal-action-btn { width: 100%; padding: 16px; border: none; border-radius: 14px; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 10px; }
-.save-btn { background: #4737ff; color: #fff; }
-.delete-btn { color: #ff3b30; background: none; font-size: 13px; text-decoration: underline; margin-top: 5px; cursor: pointer; }
-.promo-input-group { display: flex; gap: 10px; background: #f9f9f9; border: 2px solid #e5e5e5; border-radius: 16px; padding: 6px; margin-top: 20px; }
+.close-btn { font-size: 24px; cursor: pointer; opacity: 0.5; }
+input[type="email"] { width: 100%; padding: 16px; border: 2px solid #e0e0e0; border-radius: 14px; font-size: 16px; margin: 15px 0; outline: none; background: #f9f9f9; }
+.modal-action-btn { background: #4737ff; color: #fff; width: 100%; padding: 16px; border: none; border-radius: 16px; font-weight: 800; font-size: 16px; cursor: pointer; }
+
+/* PROMO STYLES */
+.promo-section { margin-top: 25px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
+.promo-input-group { display: flex; gap: 10px; background: #f9f9f9; border: 2px solid #e5e5e5; border-radius: 16px; padding: 6px; }
 #promo-input { margin: 0; padding: 10px; flex-grow: 1; border: none; background: transparent; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; outline: none; }
-.promo-btn { background: #000; color: white; border: none; border-radius: 12px; font-weight: 800; padding: 0 20px; cursor: pointer; font-size: 13px; }
+.promo-btn { background: #000; color: white; border: none; border-radius: 12px; font-weight: 800; padding: 0 20px; cursor: pointer; font-size: 13px; transition: transform 0.1s; }
+.promo-btn:active { transform: scale(0.95); }
 .promo-msg { font-size: 13px; font-weight: 700; margin-top: 10px; text-align: center; min-height: 20px;}
 .promo-msg.success { color: #28ca42; animation: bounce 0.5s; }
 .promo-msg.error { color: #ff3b30; animation: shake 0.4s; }
+
 .cart-item.promo-item { background: var(--gold-gradient); border: 2px solid #ffd700; border-radius: 16px; padding: 15px !important; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; justify-content: space-between; align-items: center; }
 .promo-item .item-name { color: #442817; font-size: 15px; font-weight: 900; }
 .old-price { position: relative; color: #886655; margin-right: 8px; font-size: 13px; font-weight: 600; }
@@ -149,36 +214,41 @@ body.dev-mode .grid-toggle { display: inline-block !important; }
 .new-price { color: #2a5a00; font-weight: 900; font-size: 15px; }
 .promo-badge { background: #ff3b30; color: #fff; font-size: 10px; padding: 3px 6px; border-radius: 50px; font-weight: 900; vertical-align: middle; margin-left: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-/* THEMES */
-.theme-preview-box { height: 100px; border-radius: 16px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; border: 2px solid #000; }
-.theme-controls { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-.theme-char-preview { font-size: 40px; }
-.nav-arrow.static { opacity: 1; pointer-events: all; position: static; transform: none; background: #444; color: #fff; border: none; width: 30px; height: 30px; }
+@keyframes popIn { 0% { opacity: 0; transform: scale(0.5) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-5px);} }
+@keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
 
-/* PATTERNS */
-.bs-pattern { background: radial-gradient(circle at top right, #6a35ff, #3d22b3); color: white; }
-.coc-pattern { background: #eecda3; background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,0.1) 40px); border-bottom: 4px solid #d4a76a; color: #442817; }
-.cr-pattern { background: #2b3b75; background-image: linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d), linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d); background-size: 40px 40px; color: white; }
-.hd-pattern { background: linear-gradient(180deg, #6ecbf5 0%, #b2e6ff 30%, #ffd966 100%); color: #2a5a00; }
+/* Dynamic Game Backgrounds */
+.bs-bg-dynamic {
+    background-color: var(--bs-color);
+    background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    color: white;
+}
 
-/* PAGE BG */
-.bs-bg { background-color: #4737ff; background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; color: white; }
-.coc-bg { background-color: #eecda3; background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,0.1) 40px); background-attachment: fixed; color: white; }
-.cr-bg { background-color: #2b3b75; background-image: linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d), linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d); background-size: 40px 40px; color: white; }
-.hd-bg { background: linear-gradient(180deg, #6ecbf5 0%, #b2e6ff 30%, #ffd966 100%); color: #2a5a00; }
+.coc-bg-dynamic {
+    background-color: var(--coc-color);
+    background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 10px, transparent 10px, transparent 20px);
+    color: white;
+}
 
-/* Extra Themes */
-.theme-arena { background: #2b3b75; color: white; }
-.theme-gold { background: radial-gradient(circle, #ffd700, #b8860b); color: #442817; }
-.theme-space { background: #0b0d17; color: white; }
-/* ... (добавь остальные темы из прошлого шага, если они нужны, но базовые 4 уже работают) */
+.cr-bg-dynamic {
+    background-color: var(--cr-color);
+    background-image: linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366), linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366);
+    background-position: 0 0, 20px 20px;
+    background-size: 40px 40px;
+    color: white;
+}
 
-/* Animations */
-.card-character.floating { animation: float 3s ease-in-out infinite; }
-.card-character.clashing { animation: clash 2s infinite; }
-.card-character.tilting { animation: tilt 3s ease-in-out infinite; }
-.card-character.bouncing { animation: bounceChar 1.5s infinite; }
-@keyframes float { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
-@keyframes clash { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1) rotate(10deg); } }
-@keyframes tilt { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
-@keyframes bounceChar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px) scaleY(0.9); } }
+.hd-bg-dynamic {
+    background: linear-gradient(180deg, #6ecbf5 0%, #b2e6ff 30%, #ffd966 100%);
+    color: #000;
+}
+.hd-bg-dynamic .back-btn, .hd-bg-dynamic .game-logo { color: #2a5a00; text-shadow: none; }
+.hd-bg-dynamic .section-title { color: #2a5a00; text-shadow: none; }
+
+/* Динамические стили для предложений (offers) */
+.bs-offer { background: #fff; }
+.coc-offer { background: #fff; border-color: #5c3c2e; }
+.cr-offer { background: #fff; border-color: #2b3b75; }
+.hd-offer { background: #fff; border-color: #56ab2f; }
