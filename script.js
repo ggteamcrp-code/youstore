@@ -250,7 +250,63 @@ openGame: (gameId, clickedCard) => {
     
     saveState: () => { localStorage.setItem('supercell_cart', JSON.stringify(state.cart)); localStorage.setItem('supercell_login', JSON.stringify({ isLoggedIn: state.isLoggedIn, email: state.userEmail, usedPromos: state.usedPromos || [], promoUsageCount: state.promoUsageCount || {} })); },
     loadState: () => { try { const savedCart = localStorage.getItem('supercell_cart'); const savedLogin = localStorage.getItem('supercell_login'); if (savedCart) state.cart = JSON.parse(savedCart); if (savedLogin) { const d = JSON.parse(savedLogin); state.isLoggedIn = d.isLoggedIn; state.userEmail = d.email; state.usedPromos = d.usedPromos || []; state.promoUsageCount = d.promoUsageCount || {}; } } catch(e) {} },
-    handleAuthClick: () => { if (state.isLoggedIn) { tg.showPopup({ title: 'Log Out', message: 'Are you sure?', buttons: [{id: 'logout', type: 'destructive', text: 'Log Out'}, {id: 'cancel', type: 'cancel'}] }, (btnId) => { if (btnId === 'logout') app.logout(); }); } else { app.toggleLogin(); } },
+    handleAuthClick: () => {
+    // Если пользователь уже залогинен, ничего не делаем
+    if (state.isLoggedIn) return;
+
+    tg.HapticFeedback.impactOccurred('medium');
+
+    // 1. Получаем координаты логотипов
+    const startLogo = document.querySelector('.logo-container');
+    const endLogo = document.getElementById('login-btn'); // Кнопка "LOG IN"
+    if (!startLogo || !endLogo) return;
+
+    const startRect = startLogo.getBoundingClientRect();
+    const endRect = endLogo.getBoundingClientRect();
+
+    // 2. Создаем "искру"
+    const spark = document.createElement('div');
+    spark.className = 'connection-spark';
+    document.body.appendChild(spark);
+
+    // 3. Устанавливаем начальную позицию (центр нашего лого)
+    const startX = startRect.left + startRect.width / 2;
+    const startY = startRect.top + startRect.height / 2;
+    spark.style.transform = `translate(${startX}px, ${startY}px) scale(0)`;
+    spark.style.opacity = '1';
+
+    // 4. Запускаем анимацию полета
+    requestAnimationFrame(() => {
+        const endX = endRect.left + endRect.width / 2;
+        const endY = endRect.top + endRect.height / 2;
+        spark.style.transform = `translate(${endX}px, ${endY}px) scale(1)`;
+    });
+
+    // 5. По завершении анимации открываем модальное окно и убираем искру
+    setTimeout(() => {
+        spark.style.opacity = '0';
+        document.getElementById('collab-login-modal').classList.add('open');
+        
+        setTimeout(() => {
+            spark.remove();
+        }, 300); // Даем время искре исчезнуть
+        
+    }, 600); // Должно совпадать с transition в CSS
+},
+
+contactSupport: () => {
+    // ВАЖНО: Замените 'YOUR_BOT_USERNAME' на реальное имя вашего бота
+    const botUsername = 'YOUR_BOT_USERNAME';
+    
+    const message = "Здравствуйте! У меня возникла проблема с авторизацией через Supercell ID в вашем магазине.";
+
+    const url = `https://t.me/${botUsername}?start=${encodeURIComponent(message)}`;
+    
+    tg.openTelegramLink(url);
+
+    // Закрываем модальное окно после перехода
+    document.getElementById('collab-login-modal').classList.remove('open');
+},
     logout: () => { state.isLoggedIn = false; state.userEmail = ''; state.cart = []; state.usedPromos = []; state.promoUsageCount = {}; app.saveState(); app.checkLoginUI(); app.updateCartUI(); app.router('hub'); tg.HapticFeedback.notificationOccurred('success'); },
     redeemCode: () => { const input = document.getElementById('promo-input'); const code = input.value.trim().toUpperCase(); if (!code) return; if (code === '/RESET') { state.usedPromos = []; state.promoUsageCount = {}; app.saveState(); input.value = ''; app.showPromoMessage('♻️ DEV MODE: Reset!', 'success'); return; } const PROMO_CODE = '/PRM1423PP'; const MAX_USES = 100; if (code === PROMO_CODE) { if (state.usedPromos.includes(code)) { app.showPromoMessage('Already used!', 'error'); return; } if ((state.promoUsageCount[code] || 0) >= MAX_USES) { app.showPromoMessage('Limit reached', 'error'); return; } state.promoUsageCount[code] = (state.promoUsageCount[code] || 0) + 1; state.usedPromos.push(code); state.cart.unshift({ name: 'PRO PASS', price: 0, originalPrice: 9.99, isPromo: true, id: Date.now() }); app.saveState(); app.updateCartUI(); app.renderCartItems(); input.value = ''; app.showPromoMessage('✨ Success!', 'success'); tg.HapticFeedback.notificationOccurred('success'); } else { app.showPromoMessage('Invalid Code', 'error'); } },
     showPromoMessage: (text, type) => { const msg = document.getElementById('promo-msg'); msg.textContent = text; msg.className = `promo-msg ${type}`; msg.classList.remove('hidden'); setTimeout(() => msg.classList.add('hidden'), 4000); },
