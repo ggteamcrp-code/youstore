@@ -6,6 +6,7 @@
     <title>Supercell YouStore</title>
     <link rel="stylesheet" href="styles.css?v=29.0">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;900&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
@@ -83,14 +84,11 @@
     </div>
 
     <!-- 
-        FIX: All scripts moved to the end of the body in the correct order.
-        1. Telegram's script
-        2. Our database
-        3. Our main application script
+        FINAL FIX: Added 'defer' to the main script to ensure it executes
+        only after the database has been loaded and the page is ready.
     -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="database.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 
 </body>
 </html>
