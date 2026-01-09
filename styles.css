@@ -83,6 +83,132 @@ body { margin: 0; padding: 0; font-family: var(--font); background-color: var(--
 @keyframes fire-fly { from { transform: translate(30px, 0) scale(0.8); } to { transform: translate(250px, 40px) scale(1.2) rotate(90deg); } }
 @keyframes swords-fly { from { transform: translate(-30px, 0) scale(0.8) rotate(180deg); } to { transform: translate(-250px, -40px) scale(1.2) rotate(270deg); } }
 
+/* --- NEW: Additional Animated Backgrounds --- */
+
+/* 1. Techno Grid */
+.techno-grid-pattern {
+    background-color: #010409;
+    background-image:
+        linear-gradient(rgba(0, 186, 255, 0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 186, 255, 0.3) 1px, transparent 1px);
+    background-size: 30px 30px;
+    animation: techno-pulse 5s infinite linear;
+    overflow: hidden;
+    position: relative;
+}
+.techno-grid-pattern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #79e9ff;
+    filter: blur(3px);
+    animation: scanline 4s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes techno-pulse {
+    50% {
+        background-color: #0d1117;
+    }
+}
+@keyframes scanline {
+    0% {
+        top: 100%;
+        opacity: 0;
+    }
+    40%, 60% {
+        opacity: 1;
+    }
+    100% {
+        top: 0%;
+        opacity: 0;
+    }
+}
+
+/* 2. Ocean Deep */
+.ocean-deep-pattern {
+    background: linear-gradient(to top, #001f3f, #004a7c);
+    position: relative;
+    overflow: hidden;
+}
+.ocean-deep-pattern::before, .ocean-deep-pattern::after {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    background: rgba(173, 216, 230, 0.3);
+    border-radius: 50%;
+    animation: rise 10s infinite ease-in;
+    will-change: transform;
+}
+.ocean-deep-pattern::before {
+    width: 20px;
+    height: 20px;
+    left: 20%;
+    animation-duration: 8s;
+    animation-delay: 0s;
+}
+.ocean-deep-pattern::after {
+    width: 10px;
+    height: 10px;
+    left: 60%;
+    animation-duration: 12s;
+    animation-delay: -3s;
+}
+@keyframes rise {
+    0% {
+        transform: translateY(0) scale(1) translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-180px) scale(0.5) translateX(20px);
+        opacity: 0;
+    }
+}
+
+/* 3. Jungle Ruins */
+.jungle-ruins-pattern {
+    background: #1e4620;
+    background-image: 
+        radial-gradient(circle at 10% 90%, rgba(0,0,0,0.4) 30%, transparent 70%),
+        linear-gradient(135deg, #2a622c 25%, transparent 25%),
+        linear-gradient(225deg, #2a622c 25%, transparent 25%),
+        linear-gradient(45deg, #2a622c 25%, transparent 25%),
+        linear-gradient(315deg, #2a622c 25%, #1e4620 25%);
+    background-position: 10px 0, 10px 0, 0 0, 0 0;
+    background-size: 20px 20px, 20px 20px, 20px 20px, 20px 20px;
+    background-repeat: repeat, repeat, repeat, repeat;
+    position: relative;
+    overflow: hidden;
+}
+.jungle-ruins-pattern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.6) 100%); /* Darker at the bottom */
+}
+.jungle-ruins-pattern::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 8px;
+    height: 120%;
+    background: linear-gradient(to bottom, #3e8e41, #2a622c);
+    border-radius: 5px;
+    transform-origin: top center;
+    animation: sway 5s infinite ease-in-out;
+    animation-delay: -2s;
+}
+@keyframes sway {
+    0%, 100% { transform: rotate(8deg); }
+    50% { transform: rotate(-8deg); }
+}
+
+
 
 @keyframes float { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
 @keyframes clash { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1) rotate(10deg); } }
