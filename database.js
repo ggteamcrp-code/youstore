@@ -1,75 +1,83 @@
 const DB = [
     {
-        id: "brawlstars",
-        name: "Brawl Stars",
-        icon: "★",
-        character: "💀",
-        anim: "floating", // floating, clashing, tilting, bouncing
-        theme: "bs", // bs, coc, cr, hd (для цветов)
+        id: 'brawlstars',
+        name: 'Brawl Stars',
+        theme: 'bs',
+        anim: 'floating',
+        pattern: 'techno-grid-pattern', // <-- ИСПОЛЬЗУЕМ НОВЫЙ ФОН
+        character: '⭐️',
+        icon: '💀',
         hero: {
-            tag: "STORE BONUS",
-            visual: "💎",
-            title: "+10% ON GEMS",
-            desc: "Get bonus gems, coins, or bling instantly!"
+            tag: 'FREE GEMS',
+            title: 'LEGENDARY PASS',
+            desc: 'Unlock exclusive content and accelerate your progress!',
+            visual: '💎'
         },
         products: [
-            { name: "Brawl Pass Plus", price: 9.99, icon: "🎫", badge: "INSTANT 30%" },
-            { name: "170 Gems Pack", price: 9.99, icon: "💰", badge: "BONUS x2" },
-            { name: "Skin: Mecha Crow", price: 14.99, icon: "🤖", badge: "LEGENDARY" }
+            { name: '170 Gems', price: 9.99, icon: '💎', badge: 'Popular' },
+            { name: '360 Gems', price: 19.99, icon: '💎', badge: 'Best Value' },
+            { name: '950 Gems', price: 49.99, icon: '💎', badge: 'Large' },
         ]
     },
     {
-        id: "clashofclans",
-        name: "Clash of Clans",
-        icon: "🔨",
-        character: "⚔️",
-        anim: "clashing",
-        theme: "coc",
+        id: 'clashofclans',
+        name: 'Clash of Clans',
+        theme: 'coc',
+        anim: 'clashing',
+        pattern: 'jungle-ruins-pattern', // <-- ИСПОЛЬЗУЕМ НОВЫЙ ФОН
+        character: '⚔️',
+        icon: '👺',
         hero: {
-            tag: "GOLD PASS",
-            visual: "🛡️",
-            title: "STAMP CARD",
-            desc: "You'll earn a free Book of Everything!"
+            tag: '20% MORE',
+            title: 'GOLDEN BOAR',
+            desc: 'Fill your treasury with this limited time offer.',
+            visual: '🐷'
         },
         products: [
-            { name: "Book of Building", price: 4.99, icon: "📕", badge: "x5 VALUE" },
-            { name: "Resource Potion", price: 1.99, icon: "🧪", badge: "BOOST" }
+            { name: '1500 Gems', price: 9.99, icon: '💎', badge: 'Popular' },
+            { name: '3200 Gems', price: 19.99, icon: '💎', badge: 'Best Value' },
+            { name: '8000 Gems', price: 49.99, icon: '💎', badge: 'Large' },
         ]
     },
     {
-        id: "clashroyale",
-        name: "Clash Royale",
-        icon: "🏰",
-        character: "👑",
-        anim: "tilting",
-        theme: "cr",
+        id: 'clashroyale',
+        name: 'Clash Royale',
+        theme: 'cr',
+        anim: 'tilting',
+        pattern: 'cr-battle-arena-wrapper', // <-- Оставляем нашу особую арену
+        character: '👑',
+        icon: '🤴',
         hero: {
-            tag: "ROYALE PASS",
-            visual: "👑",
-            title: "PASS ROYALE",
-            desc: "Earn a free Royal Wild Chest!"
+            tag: 'BEST VALUE',
+            title: 'CHEST OF LEGENDS',
+            desc: 'Guaranteed Legendary card and a huge amount of gold.',
+            visual: '📦'
         },
         products: [
-            { name: "Ice Golem Bundle", price: 6.99, icon: "☃️", badge: "BUNDLE" },
-            { name: "Lucky Drop", price: 2.99, icon: "📦", badge: "2 STARS" }
+            { name: '170 Gems', price: 9.99, icon: '💎', badge: 'Popular' },
+            { name: '360 Gems', price: 19.99, icon: '💎', badge: 'Best Value' },
+            { name: '950 Gems', price: 49.99, icon: '💎', badge: 'Large' },
         ]
     },
     {
-        id: "hayday",
-        name: "Hay Day",
-        icon: "🌾",
-        character: "🐔",
-        anim: "bouncing",
-        theme: "hd",
+        id: 'hayday',
+        name: 'Hay Day',
+        theme: 'hd',
+        anim: 'bouncing',
+        pattern: 'ocean-deep-pattern', // <-- ИСПОЛЬЗУЕМ НОВЫЙ ФОН
+        character: '🐔',
+        icon: '🚜',
         hero: {
-            tag: "SEASON",
-            visual: "🐣",
-            title: "FARM PASS",
-            desc: "Activate it in game at any time!"
+            tag: 'SEASONAL',
+            title: 'FARMER\'S DELIGHT',
+            desc: 'Get a head start on the season with this bundle.',
+            visual: '🌽'
         },
         products: [
-            { name: "Expansion Pack", price: 5.99, icon: "🪵", badge: "EXPANSION" },
-            { name: "1000 Keys", price: 9.99, icon: "🗝️", badge: "KEY DEAL" }
+            { name: '170 Diamonds', price: 9.99, icon: '💎', badge: 'Popular' },
+            { name: '360 Diamonds', price: 19.99, icon: '💎', badge: 'Best Value' },
+            { name: '950 Diamonds', price: 49.99, icon: '💎', badge: 'Large' },
         ]
     }
 ];
+
