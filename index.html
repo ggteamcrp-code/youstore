@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Supercell Store</title>
-    <!-- v=5.0 для сброса кэша -->
+    <!-- v=6.0 для сброса кэша -->
     <link rel="stylesheet" href="styles.css?v=6.0">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -21,49 +21,83 @@
             <div id="cart-btn" class="cart-icon" onclick="app.toggleCart()">
                 🛒 <span id="cart-count" class="cart-badge hidden">0</span>
             </div>
-            <!-- Обработчик клика теперь умный (в JS) -->
             <button id="login-btn" class="login-btn" onclick="app.handleAuthClick()">
                 LOG IN <span class="id-icon">ID</span>
             </button>
         </div>
     </nav>
 
-    <!-- VIEW: HUB -->
+    <!-- VIEW: HUB (REDESIGNED) -->
     <main id="view-hub" class="view active">
         <div class="container">
+            <div class="hub-header">
+                <h1>Choose Game</h1>
+                <p>Select a universe to view offers</p>
+            </div>
             <div class="games-grid">
+                
+                <!-- Brawl Stars -->
                 <div class="game-card bs-card" onclick="app.router('brawlstars')">
-                    <div class="card-bg"><div class="card-character">💀</div></div>
+                    <div class="card-bg bs-pattern">
+                        <div class="card-character floating">💀</div>
+                        <div class="card-particles"></div>
+                    </div>
                     <div class="card-content">
+                        <div class="game-info">
+                            <h3>Brawl Stars</h3>
+                            <span class="action-text">View Offers →</span>
+                        </div>
                         <div class="game-icon-box bs-icon">★</div>
-                        <div class="card-text"><h3>Brawl Stars</h3><span class="action-text">View Offers →</span></div>
                     </div>
                 </div>
+                
+                <!-- Clash of Clans -->
                 <div class="game-card coc-card" onclick="app.router('clashofclans')">
-                    <div class="card-bg"><div class="card-character">⚔️</div></div>
+                    <div class="card-bg coc-pattern">
+                        <div class="card-character clashing">⚔️</div>
+                    </div>
                     <div class="card-content">
+                        <div class="game-info">
+                            <h3>Clash of Clans</h3>
+                            <span class="action-text">View Offers →</span>
+                        </div>
                         <div class="game-icon-box coc-icon">🔨</div>
-                        <div class="card-text"><h3>Clash of Clans</h3><span class="action-text">View Offers →</span></div>
                     </div>
                 </div>
+                
+                <!-- Clash Royale -->
                 <div class="game-card cr-card" onclick="app.router('clashroyale')">
-                    <div class="card-bg"><div class="card-character">👑</div></div>
+                    <div class="card-bg cr-pattern">
+                        <div class="card-character tilting">👑</div>
+                    </div>
                     <div class="card-content">
+                        <div class="game-info">
+                            <h3>Clash Royale</h3>
+                            <span class="action-text">View Offers →</span>
+                        </div>
                         <div class="game-icon-box cr-icon">🏰</div>
-                        <div class="card-text"><h3>Clash Royale</h3><span class="action-text">View Offers →</span></div>
                     </div>
                 </div>
+                
+                <!-- Hay Day -->
                 <div class="game-card hd-card" onclick="app.router('hayday')">
-                    <div class="card-bg"><div class="card-character">🐔</div></div>
+                    <div class="card-bg hd-pattern">
+                        <div class="card-character bouncing">🐔</div>
+                    </div>
                     <div class="card-content">
+                        <div class="game-info">
+                            <h3>Hay Day</h3>
+                            <span class="action-text">View Offers →</span>
+                        </div>
                         <div class="game-icon-box hd-icon">🌾</div>
-                        <div class="card-text"><h3>Hay Day</h3><span class="action-text">View Offers →</span></div>
                     </div>
                 </div>
+
             </div>
         </div>
     </main>
 
+    <!-- ОСТАЛЬНЫЕ VIEW ОСТАВЛЯЕМ БЕЗ ИЗМЕНЕНИЙ (Copy-Paste из прошлого шага) -->
     <!-- VIEW: BRAWL STARS -->
     <main id="view-brawlstars" class="view">
         <div class="sub-header"><div class="back-btn" onclick="app.router('hub')">‹ Back</div><div class="game-logo">BRAWL STARS</div></div>
@@ -156,7 +190,7 @@
         </section>
     </main>
 
-    <!-- MODAL: LOGIN -->
+    <!-- MODALS (LOGIN & CART) -->
     <div id="login-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header"><h2>SUPERCELL <span class="id-bold">ID</span></h2><span class="close-btn" onclick="app.toggleLogin()">✕</span></div>
@@ -169,14 +203,10 @@
         </div>
     </div>
 
-    <!-- MODAL: CART -->
     <div id="cart-modal" class="modal-overlay">
         <div class="modal-content cart-content">
             <div class="modal-header"><h2>Your Cart 🛒</h2><span class="close-btn" onclick="app.toggleCart()">✕</span></div>
-            
             <div id="cart-items" class="cart-list"></div>
-
-            <!-- PROMO CODE SECTION -->
             <div class="promo-section">
                 <div class="promo-input-group">
                     <input type="text" id="promo-input" placeholder="Enter Promo Code">
@@ -184,7 +214,6 @@
                 </div>
                 <p id="promo-msg" class="promo-msg hidden"></p>
             </div>
-
             <div class="cart-footer">
                 <div class="total-row">Total: <span id="cart-total">$0.00</span></div>
                 <button class="modal-action-btn checkout-btn" onclick="app.checkout()">CHECKOUT</button>
