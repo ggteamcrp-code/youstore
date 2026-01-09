@@ -1,45 +1,32 @@
 const tg = window.Telegram.WebApp;
 
-// THEMES REGISTRY
+// --- CONFIG ---
 const THEMES = [
-    {id: 'bs', name: 'Brawl Stars', class: 'bs-pattern'},
-    {id: 'coc', name: 'Clash Clans', class: 'coc-pattern'},
-    {id: 'cr', name: 'Clash Royale', class: 'cr-pattern'},
-    {id: 'hd', name: 'Hay Day', class: 'hd-pattern'},
-    {id: 'arena', name: 'CR Arena', class: 'theme-arena'},
-    {id: 'inferno', name: 'Inferno', class: 'theme-inferno'},
-    {id: 'cyber', name: 'Cyberpunk', class: 'theme-cyber'},
-    {id: 'forest', name: 'Forest', class: 'theme-forest'},
-    {id: 'gold', name: 'Gold Vault', class: 'theme-gold'},
-    {id: 'ice', name: 'Ice Age', class: 'theme-ice'},
-    {id: 'space', name: 'Space', class: 'theme-space'},
-    {id: 'candy', name: 'Candy', class: 'theme-candy'},
-    {id: 'blueprint', name: 'Blueprint', class: 'theme-blueprint'},
-    {id: 'matrix', name: 'Matrix', class: 'theme-matrix'},
-    {id: 'water', name: 'Underwater', class: 'theme-water'},
-    {id: 'noir', name: 'Noir', class: 'theme-noir'},
-    {id: 'glitch', name: 'Glitch', class: 'theme-glitch'},
-    {id: 'sunset', name: 'Sunset', class: 'theme-sunset'},
-    {id: 'toxic', name: 'Toxic', class: 'theme-toxic'},
-    {id: 'galaxy', name: 'Galaxy', class: 'theme-galaxy'}
+    {id: 'bs', name: 'Brawl Stars', class: 'bs-pattern', bgClass: 'bs-bg'},
+    {id: 'coc', name: 'Clash Clans', class: 'coc-pattern', bgClass: 'coc-bg'},
+    {id: 'cr', name: 'Clash Royale', class: 'cr-pattern', bgClass: 'cr-bg'},
+    {id: 'hd', name: 'Hay Day', class: 'hd-pattern', bgClass: 'hd-bg'},
+    {id: 'arena', name: 'Arena', class: 'theme-arena', bgClass: 'theme-arena-bg'},
+    {id: 'gold', name: 'Gold', class: 'theme-gold', bgClass: 'theme-gold-bg'},
+    {id: 'ice', name: 'Ice', class: 'theme-ice', bgClass: 'theme-ice-bg'},
+    {id: 'inferno', name: 'Inferno', class: 'theme-inferno', bgClass: 'theme-inferno-bg'},
+    {id: 'space', name: 'Space', class: 'theme-space', bgClass: 'theme-space-bg'},
+    {id: 'forest', name: 'Forest', class: 'theme-forest', bgClass: 'theme-forest-bg'},
+    {id: 'candy', name: 'Candy', class: 'theme-candy', bgClass: 'theme-candy-bg'},
+    {id: 'cyber', name: 'Cyber', class: 'theme-cyber', bgClass: 'theme-space-bg'},
+    {id: 'water', name: 'Water', class: 'theme-water', bgClass: 'theme-ice-bg'}
 ];
 
 const state = {
-    cart: [],
-    isLoggedIn: false,
-    userEmail: '',
-    devMode: false,
-    secretTapCount: 0,
-    activeGameId: null,
-    gridMode: false, // 1col vs 2col
-    editingThemeGameId: null, // Какую игру красим
-    currentThemeIndex: 0 // Для листалки тем
+    cart: [], isLoggedIn: false, userEmail: '',
+    devMode: false, secretTapCount: 0,
+    activeGameId: null, gridMode: false,
+    editCtx: null, currentThemeIndex: 0
 };
 
 const app = {
     init: () => {
-        tg.expand();
-        tg.ready();
+        tg.expand(); tg.ready();
         
         // 5 Taps Secret
         document.querySelector('.logo-container').addEventListener('click', () => {
@@ -51,317 +38,274 @@ const app = {
         app.loadState();
         app.updateCartUI();
         app.checkLoginUI();
-        
-        // Apply Grid Settings
         if(state.gridMode) document.getElementById('hub-grid').classList.add('grid-2x6');
         
         app.renderHub();
-        document.querySelectorAll('.view').forEach(el => el.style.display = 'none');
         app.router('hub');
     },
 
     saveState: () => {
-        // Save everything including admin settings
-        localStorage.setItem('sc_store_data', JSON.stringify({
-            cart: state.cart,
-            user: {loggedin: state.isLoggedIn, email: state.userEmail},
-            settings: {gridMode: state.gridMode},
-            data: APP_DATA // Save modified DB!
+        localStorage.setItem('sc_store_v2', JSON.stringify({
+            cart: state.cart, user: {l: state.isLoggedIn, e: state.userEmail},
+            settings: {g: state.gridMode}, data: APP_DATA
         }));
     },
 
     loadState: () => {
         try {
-            const raw = localStorage.getItem('sc_store_data');
+            const raw = localStorage.getItem('sc_store_v2');
             if(raw) {
                 const d = JSON.parse(raw);
                 state.cart = d.cart || [];
-                state.isLoggedIn = d.user?.loggedin || false;
-                state.userEmail = d.user?.email || '';
-                state.gridMode = d.settings?.gridMode || false;
-                if(d.data) window.APP_DATA = d.data; // Overwrite DB with local changes
+                state.isLoggedIn = d.user?.l || false;
+                state.userEmail = d.user?.e || '';
+                state.gridMode = d.settings?.g || false;
+                if(d.data) window.APP_DATA = d.data;
             }
         } catch(e) {}
     },
 
-    // RENDER HELPERS
-    renderChar: (char) => {
-        // Проверяем, это URL картинки или эмодзи
-        if(char.includes('http') || char.includes('data:image')) {
-            return `<img src="${char}" alt="char">`;
-        }
-        return char;
-    },
+    // RENDER
+    renderChar: (c) => (c.includes('/') || c.includes('data:')) ? `<img src="${c}">` : c,
 
     renderHub: () => {
         const grid = document.getElementById('hub-grid');
-        grid.innerHTML = APP_DATA.map((game, i) => {
-            // Находим класс темы
-            const themeObj = THEMES.find(t => t.id === game.theme) || THEMES[0];
-            const themeClass = themeObj.class;
-            
+        grid.innerHTML = APP_DATA.map((g, i) => {
+            const theme = THEMES.find(t => t.id === g.theme) || THEMES[0];
             return `
-            <div class="game-card" onclick="app.openGame('${game.id}')">
-                <!-- CONTROLS LAYER (Dev Mode) -->
-                <div class="controls-layer ${state.devMode ? '' : 'hidden'}">
-                    <div class="control-btn move-btn" onclick="admin.moveGame(${i}, -1); event.stopPropagation();">↑</div>
-                    <div class="control-btn move-btn" onclick="admin.moveGame(${i}, 1); event.stopPropagation();">↓</div>
-                    <div class="control-btn" onclick="admin.openThemeEditor('${game.id}'); event.stopPropagation();">🎨</div>
-                    <div class="control-btn" onclick="admin.openEditor('game', '${game.id}'); event.stopPropagation();">✎</div>
+            <div class="game-card" onclick="app.openGame('${g.id}')">
+                <div class="controls-layer ${state.devMode?'':'hidden'}">
+                    <div class="control-btn move-btn" onclick="admin.move(${i},-1); event.stopPropagation()">↑</div>
+                    <div class="control-btn move-btn" onclick="admin.move(${i},1); event.stopPropagation()">↓</div>
+                    <div class="control-btn" onclick="admin.openTheme('${g.id}'); event.stopPropagation()">🎨</div>
+                    <div class="control-btn" onclick="admin.openEditor('game','${g.id}'); event.stopPropagation()">✎</div>
                 </div>
-
-                <div class="card-bg ${themeClass}">
-                    <div class="card-character ${game.anim}">${app.renderChar(game.character)}</div>
+                <div class="card-bg ${theme.class}">
+                    <div class="card-character ${g.anim}">${app.renderChar(g.character)}</div>
                 </div>
                 <div class="card-content">
-                    <div class="game-info">
-                        <h3>${game.name}</h3>
-                        <span class="action-text">View Offers →</span>
-                    </div>
-                    <div class="game-icon-box" style="background:${game.iconBg || '#333'}">
-                        ${app.renderChar(game.icon)}
-                    </div>
+                    <div class="game-info"><h3>${g.name}</h3><span class="action-text">View Offers →</span></div>
+                    <div class="game-icon-box" style="background:${g.iconBg||'#333'}">${app.renderChar(g.icon)}</div>
                 </div>
-            </div>
-        `}).join('');
+            </div>`;
+        }).join('');
     },
 
-    openGame: (gameId) => {
-        const game = APP_DATA.find(g => g.id === gameId);
-        if(!game) return;
-        state.activeGameId = gameId;
+    openGame: (id) => {
+        const g = APP_DATA.find(x => x.id === id);
+        if(!g) return;
+        state.activeGameId = id;
         
-        document.getElementById('game-title').textContent = game.name.toUpperCase();
-        const themeObj = THEMES.find(t => t.id === game.theme) || THEMES[0];
+        document.getElementById('game-title').textContent = g.name;
         
         // Hero
+        const theme = THEMES.find(t => t.id === g.theme) || THEMES[0];
         document.getElementById('game-hero').innerHTML = `
-            <div class="hero-card" style="background:${game.hero.bg || '#333'}">
+            <div class="hero-card" style="background:${g.hero.bg||'#333'}; color:white;">
                 <div class="shine-effect"></div>
-                <div class="bonus-tag">${game.hero.tag}</div>
+                <div class="bonus-tag">${g.hero.tag}</div>
                 <div class="hero-content">
-                    <div class="hero-visual">${game.hero.visual}</div>
-                    <div class="hero-info"><h1>${game.hero.title}</h1><p>${game.hero.desc}</p></div>
+                    <div class="hero-visual">${g.hero.visual}</div>
+                    <div class="hero-info"><h1>${g.hero.title}</h1><p>${g.hero.desc}</p></div>
                 </div>
-            </div>
-        `;
+            </div>`;
 
-        // Products
+        // Products Carousel
         const list = document.getElementById('prod-track');
-        list.innerHTML = game.products.map((prod, i) => `
+        list.innerHTML = g.products.map((p, i) => `
             <div class="offer-card carousel-card">
-                <div class="controls-layer ${state.devMode ? '' : 'hidden'}" style="top:5px; right:5px;">
-                    <div class="control-btn" onclick="admin.openEditor('product', '${game.id}', ${i}); event.stopPropagation();">✎</div>
+                <div class="controls-layer ${state.devMode?'':'hidden'}" style="top:5px; right:5px;">
+                    <div class="control-btn" onclick="admin.openEditor('prod','${id}',${i}); event.stopPropagation()">✎</div>
                 </div>
-                <span class="badge">${prod.badge}</span>
-                <div class="offer-visual">${prod.icon}</div>
-                <h3>${prod.name}</h3>
-                <p class="price">$${prod.price}</p>
-                <button class="buy-btn" onclick="app.addToCart('${prod.name}', ${prod.price})">Purchase</button>
-            </div>
-        `).join('');
+                <span class="badge">${p.badge}</span>
+                <div class="offer-visual">${p.icon}</div>
+                <h3>${p.name}</h3>
+                <p class="price">$${p.price}</p>
+                <button class="buy-btn" onclick="app.addToCart('${p.name}',${p.price})">Purchase</button>
+            </div>`).join('');
 
-        // Apply theme color to dynamic background
-        const view = document.getElementById('view-game');
-        view.className = `view active`; // Reset
-        view.style.background = '#f0f2f5'; // Reset
-        // Можно добавить логику динамического фона по теме, но пока оставим просто цвет
-        
         app.router('game');
     },
 
-    // --- STANDARD ROUTER & CART (Compact) ---
     router: (id) => {
         document.querySelectorAll('.view').forEach(e => {e.classList.remove('active'); e.style.display='none'});
-        const t = document.getElementById(id==='game'?'view-game':`view-${id}`);
-        if(t){t.style.display='block'; requestAnimationFrame(()=>t.classList.add('active'));}
+        const target = document.getElementById(id==='game'?'view-game':`view-${id}`);
+        if(target) { target.style.display='block'; requestAnimationFrame(()=>target.classList.add('active')); }
         window.scrollTo(0,0);
-        // Header color logic omitted for brevity, stick to white/black
+        app.applyTheme(id==='game' ? state.activeGameId : 'hub');
     },
+
+    applyTheme: (ctx) => {
+        const view = document.getElementById('view-game');
+        const navbar = document.querySelector('.navbar');
+        const logo = document.querySelector('.supercell-logo');
+        const login = document.querySelector('.login-btn');
+        const backBtn = document.querySelector('.back-btn');
+        const title = document.getElementById('game-title');
+
+        if (ctx === 'hub') {
+            tg.setHeaderColor('#ffffff');
+            navbar.style.background = 'rgba(255,255,255,0.98)';
+            logo.style.color = '#000';
+            login.style.background = '#000'; login.style.color = '#fff';
+            return;
+        }
+
+        // Game Page Theme
+        const game = APP_DATA.find(x => x.id === ctx);
+        const theme = THEMES.find(t => t.id === game.theme) || THEMES[0];
+        
+        // Reset styles then apply
+        view.className = `view active ${theme.bgClass}`; 
+        
+        // Set Header Color based on theme bg (approximation)
+        // Hardcoded mapping for safety
+        let headerColor = '#ffffff';
+        if(game.theme === 'bs') headerColor = '#4737ff';
+        if(game.theme === 'coc') headerColor = '#5c3c2e';
+        if(game.theme === 'cr') headerColor = '#2b3b75';
+        if(game.theme === 'hd') headerColor = '#6ecbf5';
+        
+        tg.setHeaderColor(headerColor);
+        navbar.style.background = headerColor;
+        logo.style.color = '#fff'; // Always white on colored header
+        login.style.background = '#fff'; login.style.color = headerColor;
+        
+        backBtn.style.color = 'inherit';
+        title.style.color = 'inherit';
+    },
+
+    // Standard Logic
     addToCart: (n,p) => { state.cart.push({name:n, price:p}); app.saveState(); app.updateCartUI(); tg.HapticFeedback.impactOccurred('medium'); },
-    toggleCart: () => { const m=document.getElementById('cart-modal'); if(!m.classList.contains('open')) app.renderCart(); m.classList.toggle('open'); },
+    toggleCart: () => document.getElementById('cart-modal').classList.toggle('open'),
+    // ... (rest of cart/login logic - same as before)
     renderCart: () => { document.getElementById('cart-items').innerHTML = state.cart.map(i=>`<div style="padding:10px; border-bottom:1px solid #eee;"><b>${i.name}</b> $${i.price}</div>`).join(''); document.getElementById('cart-total').textContent='$'+state.cart.reduce((a,b)=>a+b.price,0).toFixed(2); },
+    updateCartUI: () => { const c=state.cart.length; const b=document.getElementById('cart-count'); b.textContent=c; c>0?b.classList.remove('hidden'):b.classList.add('hidden'); },
+    scrollCarousel: (d) => document.getElementById('prod-track').scrollBy({left:200*d, behavior:'smooth'}),
     handleAuthClick: () => { if(state.isLoggedIn) admin.logout(); else document.getElementById('login-modal').classList.add('open'); },
     processLogin: () => { state.isLoggedIn=true; app.saveState(); document.getElementById('login-modal').classList.remove('open'); app.checkLoginUI(); },
-    checkLoginUI: () => { const b=document.getElementById('login-btn'); if(state.isLoggedIn) { b.innerHTML='👤 USER'; b.style.background='#28ca42'; } else { b.innerHTML='LOG IN ID'; b.style.background='#000'; } },
-    updateCartUI: () => { 
-        const c=state.cart.length; 
-        const b=document.getElementById('cart-count'); 
-        b.textContent=c; 
-        c>0?b.classList.remove('hidden'):b.classList.add('hidden');
-    },
-    scrollCarousel: (d) => { document.getElementById('prod-track').scrollBy({left:200*d, behavior:'smooth'}); }
+    checkLoginUI: () => { const b=document.getElementById('login-btn'); if(state.isLoggedIn) { b.innerHTML='USER'; b.style.background='#28ca42'; } else { b.innerHTML='LOG IN ID'; } }
 };
 
-// --- ADMIN ENGINE ---
+// --- ADMIN ---
 const admin = {
     toggleDevMode: () => {
         state.devMode = !state.devMode;
-        
-        // Show/Hide controls
-        document.querySelectorAll('.controls-layer, .add-game-card, .add-prod-card, .grid-toggle, .export-icon').forEach(el => {
-            state.devMode ? el.classList.remove('hidden') : el.classList.add('hidden');
-        });
-        
-        tg.showAlert(state.devMode ? '🛠 DEV MODE ON' : 'DEV MODE OFF');
-        app.renderHub(); // Refresh to show controls
+        const els = document.querySelectorAll('.controls-layer, .add-game-card, .add-prod-card, .grid-toggle, .export-icon');
+        els.forEach(e => state.devMode ? e.classList.remove('hidden') : e.classList.add('hidden'));
+        app.renderHub(); // Re-render to apply controls to cards
     },
-
-    toggleGrid: () => {
-        state.gridMode = !state.gridMode;
-        const grid = document.getElementById('hub-grid');
-        state.gridMode ? grid.classList.add('grid-2x6') : grid.classList.remove('grid-2x6');
-        app.saveState();
+    move: (i, dir) => {
+        if(i+dir < 0 || i+dir >= APP_DATA.length) return;
+        [APP_DATA[i], APP_DATA[i+dir]] = [APP_DATA[i+dir], APP_DATA[i]];
+        app.saveState(); app.renderHub();
     },
-
-    moveGame: (index, dir) => {
-        if (index + dir < 0 || index + dir >= APP_DATA.length) return;
-        // Swap
-        [APP_DATA[index], APP_DATA[index+dir]] = [APP_DATA[index+dir], APP_DATA[index]];
-        app.saveState();
-        app.renderHub();
-    },
-
+    toggleGrid: () => { state.gridMode = !state.gridMode; document.getElementById('hub-grid').classList.toggle('grid-2x6'); app.saveState(); },
+    
+    // Editor Logic
     openEditor: (type, id, subId) => {
+        state.editCtx = {type, id, subId};
         const modal = document.getElementById('admin-modal');
-        const content = document.getElementById('admin-editor');
+        const cont = document.getElementById('admin-editor');
         modal.classList.add('open');
         
-        // Store context for save/delete
-        state.editContext = { type, id, subId };
-
-        let html = '';
-        if (type === 'game') {
-            const g = APP_DATA.find(x => x.id === id);
-            html = `
-                <h3>Edit Game</h3>
-                <div class="edit-row"><label>Name</label><input id="ed-name" value="${g.name}"></div>
-                <div class="edit-row"><label>Icon (Emoji/URL)</label><input id="ed-icon" value="${g.icon}"></div>
-                <div class="edit-row"><label>Icon BG (Color)</label><input id="ed-bg" value="${g.iconBg || '#333'}"></div>
-                <div class="edit-row"><label>Char (Emoji/URL)</label><input id="ed-char" value="${g.character}"></div>
-            `;
-        } else if (type === 'product') {
-            const g = APP_DATA.find(x => x.id === id);
+        let h = '';
+        if(type==='game') {
+            const g = APP_DATA.find(x=>x.id===id);
+            h=`<div class="edit-row"><label>Name</label><input id="e-name" value="${g.name}"></div>
+               <div class="edit-row"><label>Icon (URL/Emoji)</label><input id="e-icon" value="${g.icon}"></div>
+               <div class="edit-row"><label>Char (URL/Emoji)</label><input id="e-char" value="${g.character}"></div>
+               <div class="edit-row"><label>Anim</label><input id="e-anim" value="${g.anim}" placeholder="floating/clashing/tilting"></div>`;
+        } else if(type==='prod') {
+            const g = APP_DATA.find(x=>x.id===id);
             const p = g.products[subId];
-            html = `
-                <h3>Edit Product</h3>
-                <div class="edit-row"><label>Name</label><input id="ed-name" value="${p.name}"></div>
-                <div class="edit-row"><label>Price</label><input id="ed-price" value="${p.price}"></div>
-                <div class="edit-row"><label>Badge</label><input id="ed-badge" value="${p.badge}"></div>
-            `;
-        } else if (type === 'new_game') {
-            html = `
-                <h3>New Game</h3>
-                <div class="edit-row"><label>ID</label><input id="ed-id" placeholder="unique_id"></div>
-                <div class="edit-row"><label>Name</label><input id="ed-name" placeholder="Name"></div>
-            `;
+            h=`<div class="edit-row"><label>Name</label><input id="e-name" value="${p.name}"></div>
+               <div class="edit-row"><label>Price</label><input id="e-price" value="${p.price}"></div>
+               <div class="edit-row"><label>Icon</label><input id="e-icon" value="${p.icon}"></div>`;
+        } else if(type==='new_game') {
+            h=`<div class="edit-row"><label>ID</label><input id="e-id" placeholder="id"></div>
+               <div class="edit-row"><label>Name</label><input id="e-name" placeholder="Name"></div>`;
         }
-        content.innerHTML = html;
-        
-        // Show/Hide delete button
-        const delBtn = document.getElementById('delete-trigger');
-        if(type === 'new_game') delBtn.style.display = 'none';
-        else delBtn.style.display = 'block';
+        cont.innerHTML = h;
     },
-
     save: () => {
-        const ctx = state.editContext;
-        if(ctx.type === 'game') {
-            const g = APP_DATA.find(x => x.id === ctx.id);
-            g.name = document.getElementById('ed-name').value;
-            g.icon = document.getElementById('ed-icon').value;
-            g.iconBg = document.getElementById('ed-bg').value;
-            g.character = document.getElementById('ed-char').value;
+        const c = state.editCtx;
+        if(c.type==='game') {
+            const g = APP_DATA.find(x=>x.id===c.id);
+            g.name = document.getElementById('e-name').value;
+            g.icon = document.getElementById('e-icon').value;
+            g.character = document.getElementById('e-char').value;
+            g.anim = document.getElementById('e-anim').value;
             app.renderHub();
-        } else if (ctx.type === 'product') {
-            const g = APP_DATA.find(x => x.id === ctx.id);
-            const p = g.products[ctx.subId];
-            p.name = document.getElementById('ed-name').value;
-            p.price = parseFloat(document.getElementById('ed-price').value);
-            p.badge = document.getElementById('ed-badge').value;
-            app.openGame(ctx.id);
-        } else if (ctx.type === 'new_game') {
-            const newG = {
-                id: document.getElementById('ed-id').value,
-                name: document.getElementById('ed-name').value,
-                icon: '🎮', iconBg: '#000', character: '❓', theme: 'bs', anim: 'floating',
-                hero: {tag:'NEW', visual:'✨', title:'Welcome', desc:'New game'},
-                products: []
-            };
-            APP_DATA.push(newG);
+        } else if(c.type==='prod') {
+            const g = APP_DATA.find(x=>x.id===c.id);
+            const p = g.products[c.subId];
+            p.name = document.getElementById('e-name').value;
+            p.price = parseFloat(document.getElementById('e-price').value);
+            p.icon = document.getElementById('e-icon').value;
+            app.openGame(c.id);
+        } else if(c.type==='new_game') {
+            APP_DATA.push({
+                id: document.getElementById('e-id').value,
+                name: document.getElementById('e-name').value,
+                icon: '🎮', character: '❓', theme: 'bs', anim: 'floating',
+                hero: {tag:'NEW', visual:'✨', title:'Welcome', desc:'New game'}, products: []
+            });
             app.renderHub();
         }
         app.saveState();
         document.getElementById('admin-modal').classList.remove('open');
     },
-
     deleteItem: () => {
-        const ctx = state.editContext;
-        if(confirm('Delete this item?')) {
-            if(ctx.type === 'game') {
-                const idx = APP_DATA.findIndex(x => x.id === ctx.id);
-                APP_DATA.splice(idx, 1);
-                app.renderHub();
-            } else if(ctx.type === 'product') {
-                const g = APP_DATA.find(x => x.id === ctx.id);
-                g.products.splice(ctx.subId, 1);
-                app.openGame(ctx.id);
-            }
-            app.saveState();
-            document.getElementById('admin-modal').classList.remove('open');
+        if(!confirm('Delete?')) return;
+        const c = state.editCtx;
+        if(c.type==='game') {
+            const idx = APP_DATA.findIndex(x=>x.id===c.id);
+            APP_DATA.splice(idx,1);
+            app.renderHub();
+        } else if(c.type==='prod') {
+            const g = APP_DATA.find(x=>x.id===c.id);
+            g.products.splice(c.subId,1);
+            app.openGame(c.id);
         }
+        app.saveState();
+        document.getElementById('admin-modal').classList.remove('open');
     },
-
     addProduct: () => {
         if(!state.activeGameId) return;
-        const g = APP_DATA.find(x => x.id === state.activeGameId);
-        g.products.push({name: 'New Item', price: 0.99, badge: 'NEW', icon: '📦'});
+        const g = APP_DATA.find(x=>x.id===state.activeGameId);
+        g.products.push({name:'New Item', price:1.99, icon:'📦', badge:'NEW'});
         app.saveState();
         app.openGame(state.activeGameId);
     },
-
-    // THEME EDITOR
-    openThemeEditor: (gameId) => {
-        state.editingThemeGameId = gameId;
-        const game = APP_DATA.find(x => x.id === gameId);
-        // Find index of current theme
-        state.currentThemeIndex = THEMES.findIndex(t => t.id === game.theme);
-        if(state.currentThemeIndex === -1) state.currentThemeIndex = 0;
-        
-        admin.updateThemePreview();
+    // Theme Editor
+    openTheme: (id) => {
+        state.editCtx = {id};
         document.getElementById('theme-modal').classList.add('open');
+        admin.updateThemePreview();
     },
-
-    changeThemePreview: (dir) => {
-        state.currentThemeIndex += dir;
-        if(state.currentThemeIndex < 0) state.currentThemeIndex = THEMES.length - 1;
+    changeThemePreview: (d) => {
+        state.currentThemeIndex += d;
+        if(state.currentThemeIndex < 0) state.currentThemeIndex = THEMES.length-1;
         if(state.currentThemeIndex >= THEMES.length) state.currentThemeIndex = 0;
         admin.updateThemePreview();
     },
-
     updateThemePreview: () => {
-        const theme = THEMES[state.currentThemeIndex];
-        const box = document.getElementById('theme-preview-box');
-        document.getElementById('theme-name-display').textContent = theme.name;
-        
-        // Remove all theme classes and add new one
-        box.className = 'theme-preview-box ' + theme.class;
+        const t = THEMES[state.currentThemeIndex];
+        document.getElementById('theme-name-display').textContent = t.name;
+        document.getElementById('theme-preview-box').className = `theme-preview-box ${t.class}`;
     },
-
     applyTheme: () => {
-        const game = APP_DATA.find(x => x.id === state.editingThemeGameId);
-        game.theme = THEMES[state.currentThemeIndex].id;
-        app.saveState();
-        app.renderHub();
+        const g = APP_DATA.find(x=>x.id===state.editCtx.id);
+        g.theme = THEMES[state.currentThemeIndex].id;
+        app.saveState(); app.renderHub();
         document.getElementById('theme-modal').classList.remove('open');
     },
-
     exportConfig: () => {
-        const code = `const DEFAULT_DB = ${JSON.stringify(APP_DATA, null, 2)};\nlet APP_DATA = JSON.parse(localStorage.getItem('sc_store_data'))?.data || DEFAULT_DB;`;
-        navigator.clipboard.writeText(code);
-        tg.showAlert('Config copied to clipboard!');
-    }
+        const c = `const DEFAULT_DB = ${JSON.stringify(APP_DATA, null, 2)};\nlet APP_DATA = JSON.parse(localStorage.getItem('sc_store_v2'))?.data || DEFAULT_DB;`;
+        navigator.clipboard.writeText(c); tg.showAlert('Config Copied!');
+    },
+    logout: () => { state.isLoggedIn=false; state.userEmail=''; app.saveState(); app.checkLoginUI(); }
 };
 
 document.addEventListener('DOMContentLoaded', app.init);
-
