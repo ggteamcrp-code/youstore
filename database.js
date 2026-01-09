@@ -6,7 +6,7 @@ const DB = [
         theme: 'bs',
         anim: 'floating',
         pattern: 'techno-grid-pattern',
-        character: 'img/bs-character.png', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
+        character: 'bs-character.png', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
         icon: '💀',
         hero: {
             tag: 'FREE GEMS',
@@ -26,7 +26,7 @@ const DB = [
         theme: 'coc',
         anim: 'clashing',
         pattern: 'jungle-ruins-pattern',
-        character: 'img/coc-character.png', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
+        character: 'coc-character.png', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
         icon: '👺',
         hero: {
             tag: '20% MORE',
@@ -66,7 +66,7 @@ const DB = [
         theme: 'hd',
         anim: 'bouncing',
         pattern: 'ocean-deep-pattern',
-        character: 'img/hd-character.png', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
+        character: 'hd-character.png', // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
         icon: '🚜',
         hero: {
             tag: 'SEASONAL',
