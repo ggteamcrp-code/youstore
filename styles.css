@@ -252,3 +252,78 @@ input[type="email"] { width: 100%; padding: 16px; border: 2px solid #e0e0e0; bor
 .coc-offer { background: #fff; border-color: #5c3c2e; }
 .cr-offer { background: #fff; border-color: #2b3b75; }
 .hd-offer { background: #fff; border-color: #56ab2f; }
+
+/* --- THEME ENGINE V1 --- */
+
+/* Базовая анимация появления */
+@keyframes fadeInBg { from { opacity: 0; } to { opacity: 1; } }
+
+/* Общий класс для динамического фона */
+.view-bg-animated {
+    min-height: 100vh;
+    color: white;
+    transition: background-color 0.3s ease;
+    animation: fadeInBg 0.5s ease-out;
+}
+
+/* 1. CLASH OF CLANS: WOOD (Дощечки) */
+.theme-coc {
+    background-color: #eecda3;
+    /* Рисуем доски градиентом */
+    background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(0,0,0,0.1) 50px),
+        repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(0,0,0,0.05) 50px);
+    background-size: 100% 50px;
+    background-attachment: fixed;
+    color: #442817; /* Темно-коричневый текст для контраста */
+}
+/* Тень по краям для атмосферы */
+.theme-coc::before {
+    content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    box-shadow: inset 0 0 80px rgba(92, 60, 46, 0.5); pointer-events: none;
+}
+
+/* 2. CLASH ROYALE: ARENA (Шахматка) */
+.theme-cr {
+    background-color: #2b3b75;
+    background-image: 
+        linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d),
+        linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d);
+    background-position: 0 0, 20px 20px;
+    background-size: 40px 40px;
+}
+/* Анимированная корона на фоне */
+.theme-cr::after {
+    content: '👑'; position: fixed; bottom: -20px; right: -20px; font-size: 150px; opacity: 0.1;
+    transform: rotate(-15deg); animation: floatCrown 4s ease-in-out infinite; pointer-events: none;
+}
+@keyframes floatCrown { 0%,100%{transform: rotate(-15deg) translateY(0);} 50%{transform: rotate(-10deg) translateY(-10px);} }
+
+/* 3. BRAWL STARS: NEON SKULLS (Космос) */
+.theme-bs {
+    background-color: #4737ff;
+    background-image: radial-gradient(rgba(255,255,255,0.1) 2px, transparent 2px);
+    background-size: 30px 30px;
+}
+.theme-bs::before {
+    content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at 50% 0%, #8e2de2, transparent 70%);
+    opacity: 0.6; pointer-events: none;
+}
+
+/* 4. HAY DAY: SUNNY FARM (Солнце) */
+.theme-hd {
+    background: linear-gradient(180deg, #6ecbf5 0%, #b2e6ff 40%, #ffd966 100%);
+    color: #2a5a00; /* Зеленый текст */
+}
+/* Облака (упрощенно) */
+.theme-hd::after {
+    content: '☁️'; position: fixed; top: 10%; left: -50px; font-size: 60px; opacity: 0.6;
+    animation: moveCloud 20s linear infinite; pointer-events: none;
+}
+@keyframes moveCloud { from {left: -60px;} to {left: 110%;} }
+
+/* Адаптация карточек под темы (чтобы они не сливались) */
+.theme-coc .offer-card { border: 2px solid #8b5a2b; background: #fff8e7; }
+.theme-cr .offer-card { border: 2px solid #2b3b75; box-shadow: 0 4px 0 #1a237e; }
+.theme-hd .offer-card { border: 2px solid #7cb342; background: #f1f8e9; }
