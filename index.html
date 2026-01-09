@@ -4,23 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Supercell Store</title>
-    <!-- Исправленный импорт шрифтов (добавлен 400) -->
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=10.0"> <!-- v9 для сброса стилей -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=11.0"> <!-- Версия 10 -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
-    <!-- NAVBAR -->
     <nav class="navbar">
         <div class="logo-container" onclick="app.router('hub')">
             <div class="supercell-logo">SUPER<br>CELL</div>
             <div class="store-badge">STORE</div>
         </div>
         <div class="nav-actions">
-            <!-- Кнопка экспорта (только для админа) -->
             <div id="export-btn" class="export-icon hidden" onclick="admin.exportConfig()">📤</div>
-            
             <div id="cart-btn" class="cart-icon" onclick="app.toggleCart()">
                 🛒 <span id="cart-count" class="cart-badge hidden">0</span>
             </div>
@@ -30,52 +26,32 @@
         </div>
     </nav>
 
-    <!-- VIEW: HUB -->
+    <!-- HUB -->
     <main id="view-hub" class="view active">
         <div class="container">
             <div class="hub-header">
                 <h1>Choose Game</h1>
                 <p>Select a universe to view offers</p>
-                <!-- Переключатель сетки -->
-                <div id="grid-toggle" class="grid-toggle hidden" onclick="admin.toggleGrid()">Layout: 1x / 2x</div>
+                <div id="grid-toggle" class="grid-toggle hidden" onclick="admin.toggleGrid()">⊞ Layout</div>
             </div>
-            
-            <div id="hub-grid" class="games-grid">
-                <!-- Сюда скрипт вставит игры -->
-            </div>
-            
-            <!-- Кнопка добавления игры -->
-            <div id="add-game-btn" class="add-game-card hidden" onclick="admin.openEditor('new_game')">
-                <div class="plus-icon">+</div>
-            </div>
+            <div id="hub-grid" class="games-grid"></div>
+            <div id="add-game-btn" class="add-game-card hidden" onclick="admin.openEditor('new_game')"><div class="plus-icon">+</div></div>
         </div>
     </main>
 
-    <!-- VIEW: GAME PAGE -->
+    <!-- GAME PAGE -->
     <main id="view-game" class="view">
         <div class="sub-header">
             <div class="back-btn" onclick="app.router('hub')">‹ Back</div>
             <div id="game-title" class="game-logo">GAME</div>
         </div>
-        
-        <section class="hero-section">
-            <div id="game-hero">
-                <!-- Сюда скрипт вставит баннер -->
-            </div>
-        </section>
-
+        <section class="hero-section"><div id="game-hero"></div></section>
         <section class="offers-section">
             <div class="section-title">OFFERS</div>
-            
-            <!-- Карусель товаров -->
             <div class="carousel-wrapper">
                 <div class="nav-arrow left" onclick="app.scrollCarousel(-1)">‹</div>
-                <div class="carousel-track" id="prod-track">
-                    <!-- Сюда скрипт вставит товары -->
-                </div>
+                <div class="carousel-track" id="prod-track"></div>
                 <div class="nav-arrow right" onclick="app.scrollCarousel(1)">›</div>
-                
-                <!-- Кнопка добавления товара в карусель -->
                 <div id="add-prod-btn" class="add-prod-card hidden" onclick="admin.addProduct()"><span>+</span></div>
             </div>
         </section>
@@ -111,7 +87,7 @@
         </div>
     </div>
 
-    <!-- EDITORS -->
+    <!-- ADMIN -->
     <div id="admin-modal" class="modal-overlay">
         <div class="modal-content admin-content">
             <div class="modal-header"><h2>🛠 EDITOR</h2><span class="close-btn" onclick="document.getElementById('admin-modal').classList.remove('open')">✕</span></div>
