@@ -217,3 +217,38 @@ input[type="email"] { width: 100%; padding: 16px; border: 2px solid #e0e0e0; bor
 @keyframes popIn { 0% { opacity: 0; transform: scale(0.5) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-5px);} }
 @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+
+/* Dynamic Game Backgrounds */
+.bs-bg-dynamic {
+    background-color: var(--bs-color);
+    background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    color: white;
+}
+
+.coc-bg-dynamic {
+    background-color: var(--coc-color);
+    background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 10px, transparent 10px, transparent 20px);
+    color: white;
+}
+
+.cr-bg-dynamic {
+    background-color: var(--cr-color);
+    background-image: linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366), linear-gradient(45deg, #253366 25%, transparent 25%, transparent 75%, #253366 75%, #253366);
+    background-position: 0 0, 20px 20px;
+    background-size: 40px 40px;
+    color: white;
+}
+
+.hd-bg-dynamic {
+    background: linear-gradient(180deg, #6ecbf5 0%, #b2e6ff 30%, #ffd966 100%);
+    color: #000;
+}
+.hd-bg-dynamic .back-btn, .hd-bg-dynamic .game-logo { color: #2a5a00; text-shadow: none; }
+.hd-bg-dynamic .section-title { color: #2a5a00; text-shadow: none; }
+
+/* Динамические стили для предложений (offers) */
+.bs-offer { background: #fff; }
+.coc-offer { background: #fff; border-color: #5c3c2e; }
+.cr-offer { background: #fff; border-color: #2b3b75; }
+.hd-offer { background: #fff; border-color: #56ab2f; }
