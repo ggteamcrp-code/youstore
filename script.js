@@ -51,44 +51,44 @@ const app = {
         });
     },
     
-    // FINAL, FINAL FIX: Correctly apply patternClass to all cards in the return statement
-    renderHub: () => {
-        const grid = document.getElementById('hub-grid');
-        const gameCardsHTML = DB.map(game => {
-            let patternClass = `${game.theme}-pattern`;
-            let characterHTML = `<div class="card-character ${game.anim}">${game.character}</div>`;
+    // И ЗАМЕНИТЕ ЕЕ НА ЭТОТ КОД:
+renderHub: () => {
+    const grid = document.getElementById('hub-grid');
+    const gameCardsHTML = DB.map(game => {
+        let patternClass = `${game.theme}-pattern`;
+        let characterHTML = `<div class="card-character ${game.anim}">${game.character}</div>`;
 
-            if (game.id === 'clashroyale') {
-                 patternClass = 'cr-battle-arena-wrapper'; // This class is for the container
-                 // The characterHTML is replaced by the whole arena structure
-                 characterHTML = `
-                    <div class="cr-battle-arena-pattern">
-                         <div class="arena-projectiles">
-                            <span class="projectile fire">🔥</span>
-                            <span class="projectile swords">⚔️</span>
-                        </div>
-                    </div>
-                 `;
-            }
-            
-            // The bug was here. Now ${patternClass} is correctly placed.
-            return `
-                <div class="game-card ${game.theme}-card" onclick="app.openGame('${game.id}')">
-                    <div class="card-bg ${patternClass}">
-                        ${characterHTML}
-                    </div>
-                    <div class="card-content">
-                        <div class="game-info">
-                            <h3>${game.name}</h3>
-                            <span class="action-text">View Offers →</span>
-                        </div>
-                        <div class="game-icon-box ${game.theme}-icon">${game.icon}</div>
+        if (game.id === 'clashroyale') {
+             patternClass = 'cr-battle-arena-wrapper';
+             characterHTML = `
+                <div class="cr-battle-arena-pattern">
+                     <div class="arena-projectiles">
+                        <span class="projectile fire">🔥</span>
+                        <span class="projectile swords">⚔️</span>
                     </div>
                 </div>
-            `;
-        }).join('');
-        grid.innerHTML = gameCardsHTML;
-    },
+             `;
+        }
+        
+        // ИЗМЕНЕНИЕ ЗДЕСЬ: в onclick теперь передается 'this', чтобы
+        // функция знала, по какому элементу кликнули.
+        return `
+            <div class="game-card ${game.theme}-card" onclick="app.openGame('${game.id}', this)">
+                <div class="card-bg ${patternClass}">
+                    ${characterHTML}
+                </div>
+                <div class="card-content">
+                    <div class="game-info">
+                        <h3>${game.name}</h3>
+                        <span class="action-text">View Offers →</span>
+                    </div>
+                    <div class="game-icon-box ${game.theme}-icon">${game.icon}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    grid.innerHTML = gameCardsHTML;
+},
 
     openGame: (gameId) => {
         const game = DB.find(g => g.id === gameId);
