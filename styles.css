@@ -340,3 +340,147 @@ body.dev-mode .add-game-card {
     pointer-events: none; display: none;
 }
 body.dev-mode .dev-badge { display: block; }
+
+/* ... [ВСТАВИТЬ В НАЧАЛО] Стили из прошлых шагов ... */
+
+/* --- 1. GLOBAL & GRID --- */
+.games-grid { display: grid; gap: 16px; padding: 0 10px 40px; grid-template-columns: 1fr; transition: all 0.3s; }
+.games-grid.grid-2x6 { grid-template-columns: 1fr 1fr; } /* Сетка 2 колонки */
+.games-grid.grid-2x6 .game-card { min-height: 180px; }
+.games-grid.grid-2x6 .card-bg { height: 100px; }
+.games-grid.grid-2x6 .game-info h3 { font-size: 14px; }
+
+/* --- 2. ICONS & IMAGES --- */
+.game-icon-box img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
+.card-character img { width: 100px; height: 100px; object-fit: contain; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); }
+
+/* --- 3. UI ELEMENTS --- */
+.export-icon { 
+    font-size: 20px; cursor: pointer; padding: 8px; 
+    border-radius: 50%; background: #eee; width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+}
+.grid-toggle { 
+    display: inline-block; background: #000; color: #fff; padding: 5px 10px; 
+    border-radius: 8px; font-size: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; 
+}
+.add-prod-card {
+    min-width: 60px; height: 100%; display: flex !important;
+    align-items: center; justify-content: center;
+    border: 2px dashed #ccc; border-radius: 16px; margin-left: 10px; cursor: pointer;
+    font-size: 30px; color: #ccc;
+}
+
+/* Edit Controls Overlay */
+.game-card .controls-layer {
+    position: absolute; top: 10px; right: 10px; z-index: 20; display: flex; gap: 5px;
+}
+.control-btn {
+    width: 28px; height: 28px; background: #fff; color: #000;
+    border: 2px solid #000; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; cursor: pointer; box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+}
+.control-btn.move-btn { font-size: 10px; } /* Стрелочки */
+
+/* --- 4. THEME ENGINE (20 Themes) --- */
+
+/* Theme 1: Clash Royale Arena (Animated Figures) */
+.theme-arena {
+    background-color: #2b3b75;
+    background-image: 
+        linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d),
+        linear-gradient(45deg, #35468d 25%, transparent 25%, transparent 75%, #35468d 75%, #35468d);
+    background-position: 0 0, 20px 20px; background-size: 40px 40px;
+    overflow: hidden;
+}
+.theme-arena::before, .theme-arena::after {
+    content: '♟️'; position: absolute; font-size: 20px;
+    animation: troopMove 6s linear infinite;
+}
+.theme-arena::before { top: 20%; left: -20px; animation-delay: 0s; }
+.theme-arena::after { bottom: 20%; right: -20px; animation-direction: reverse; animation-delay: 3s; filter: hue-rotate(180deg); }
+@keyframes troopMove { 0% { transform: translateX(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateX(400px); opacity: 0; } }
+
+/* Theme 2: Inferno */
+.theme-inferno { background: linear-gradient(0deg, #500000, #ff4500); }
+.theme-inferno::before { content: ''; position: absolute; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, transparent 0, transparent 5px, rgba(255,200,0,0.1) 6px); animation: heat 1s infinite; }
+
+/* Theme 3: Cyberpunk */
+.theme-cyber { background: #000; border: 2px solid #0ff; }
+.theme-cyber::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent 50%, rgba(0,255,255,0.2) 50%); background-size: 4px 100%; }
+
+/* Theme 4: Forest */
+.theme-forest { background: #2a5a00; background-image: radial-gradient(#3a7a00 15%, transparent 16%), radial-gradient(#3a7a00 15%, transparent 16%); background-size: 20px 20px; background-position: 0 0, 10px 10px; }
+
+/* Theme 5: Gold Vault */
+.theme-gold { background: radial-gradient(circle, #ffd700, #b8860b); }
+.theme-gold::before { content: '✨'; position: absolute; animation: sparkle 2s infinite; top: 10%; left: 10%; font-size: 10px; }
+
+/* Theme 6: Ice Age */
+.theme-ice { background: linear-gradient(135deg, #e0f7fa 0%, #00bcd4 100%); }
+.theme-ice::after { content: ''; position: absolute; width: 200%; height: 200%; background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="white" opacity="0.5"/></svg>'); animation: snow 10s linear infinite; }
+
+/* Theme 7: Space */
+.theme-space { background: #0b0d17; background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px); background-size: 50px 50px; }
+
+/* Theme 8: Candy */
+.theme-candy { background: repeating-linear-gradient(45deg, #ff9a9e, #ff9a9e 10px, #fad0c4 10px, #fad0c4 20px); }
+
+/* Theme 9: Blueprint */
+.theme-blueprint { background: #0d47a1; background-image: linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 20px 20px; }
+
+/* Theme 10: Matrix */
+.theme-matrix { background: #000; color: #0f0; }
+.theme-matrix::before { content: '1010101010'; position: absolute; color: rgba(0,255,0,0.2); font-family: monospace; font-size: 20px; writing-mode: vertical-rl; }
+
+/* Theme 11: Underwater */
+.theme-water { background: linear-gradient(180deg, #4fc3f7, #0288d1); }
+.theme-water::after { content: '○'; position: absolute; bottom: 0; left: 50%; color: rgba(255,255,255,0.4); animation: bubbles 4s infinite; }
+
+/* Theme 12: Noir */
+.theme-noir { background: #222; background-image: radial-gradient(circle, #444 1px, transparent 1px); background-size: 10px 10px; filter: grayscale(100%); }
+
+/* Theme 13: Glitch */
+.theme-glitch { background: #222; animation: glitch-bg 3s infinite; }
+@keyframes glitch-bg { 0% { background: #222; } 2% { background: #333; } 4% { background: #222; } }
+
+/* Theme 14: Sunset */
+.theme-sunset { background: linear-gradient(180deg, #ff512f, #dd2476); }
+
+/* Theme 15: Toxic */
+.theme-toxic { background: repeating-radial-gradient(circle, #76b852, #76b852 10px, #8dc26f 10px, #8dc26f 20px); }
+
+/* Theme 16: Paper */
+.theme-paper { background: #fdfbf7; border: 1px solid #ccc; box-shadow: inset 0 0 20px rgba(0,0,0,0.05); }
+
+/* Theme 17: Neon City */
+.theme-neon { background: #111; border-bottom: 4px solid #f0f; }
+.theme-neon::after { content: ''; position: absolute; bottom: 0; width: 100%; height: 2px; background: #f0f; box-shadow: 0 0 10px #f0f; }
+
+/* Theme 18: Retro */
+.theme-retro { background: #d7c49e; border: 4px double #8b4513; }
+
+/* Theme 19: Galaxy */
+.theme-galaxy { background: linear-gradient(135deg, #1a2980, #26d0ce); }
+
+/* Theme 20: Lava */
+.theme-lava { background: radial-gradient(circle at bottom, #ff0, #f00, #300); }
+
+/* Theme Preview Box */
+.theme-preview-box {
+    width: 100%; height: 120px; border-radius: 16px; margin-bottom: 20px;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transition: all 0.3s;
+}
+.theme-char-preview { font-size: 50px; }
+.theme-content { background: #222; color: #fff; text-align: center; padding: 20px; border-radius: 24px 24px 0 0; }
+.theme-controls { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 20px; }
+.nav-arrow.static { opacity: 1; pointer-events: all; position: static; transform: none; background: #444; color: #fff; border: none; }
+
+/* ANIMATIONS */
+@keyframes snow { from { background-position: 0 0; } to { background-position: 50px 100px; } }
+@keyframes bubbles { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(-100px) scale(1.2); opacity: 0; } }
+@keyframes heat { 0%,100% {opacity: 0.5;} 50% {opacity: 0.8;} }
+@keyframes sparkle { 0%,100% { opacity:0; transform: scale(0.5); } 50% { opacity:1; transform: scale(1.2); } }
